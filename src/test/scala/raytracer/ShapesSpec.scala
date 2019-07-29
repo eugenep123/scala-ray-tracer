@@ -50,9 +50,9 @@ class ShapesSpec extends BaseSpec {
       And("xs ← intersect(s, r)")
       val xs = intersect(s, r)
       Then("s.saved_ray.origin = point(0, 0, -2.5)")
-      assert(s.savedRay.origin == point(0, 0, -2.5))
+      assert(s.savedRay.value.origin == point(0, 0, -2.5))
       And("s.saved_ray.direction = vector(0, 0, 0.5)")
-      assert(s.savedRay.direction == vector(0, 0, 0.5))
+      assert(s.savedRay.value.direction == vector(0, 0, 0.5))
     }
 
     scenario("Intersecting a translated shape with a ray") {
@@ -64,9 +64,9 @@ class ShapesSpec extends BaseSpec {
       And("xs ← intersect(s, r)")
       val xs = intersect(s, r)
       Then("s.saved_ray.origin = point(-5, 0, -5)")
-      assert(s.savedRay.origin == point(-5, 0, -5))
+      assert(s.savedRay.value.origin == point(-5, 0, -5))
       And("s.saved_ray.direction = vector(0, 0, 1)")
-      assert(s.savedRay.direction == vector(0, 0, 1))
+      assert(s.savedRay.value.direction == vector(0, 0, 1))
     }
 
     scenario("Computing the normal on a translated shape") {

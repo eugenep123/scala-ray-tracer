@@ -5,10 +5,10 @@ import raytracer.shapes.MutableShape
 
 class TestShape extends MutableShape {
 
-  var savedRay: Ray = _
+  private var _savedRay = Option.empty[Ray]
 
   override def localIntersect(ray: Ray): Seq[Intersection] = {
-    this.savedRay = ray
+    this._savedRay = Some(ray)
     Nil
   }
 
@@ -19,6 +19,7 @@ class TestShape extends MutableShape {
   override def bounds: BoundingBox =
     BoundingBox(Point3D(-1, -1, -1), Point3D(1, 1, 1))
 
+  def savedRay: Option[Ray] = _savedRay
 }
 
 object TestShape {

@@ -103,11 +103,46 @@ class GroupsSpec extends BaseSpec {
       assert(xs.size == 2)
     }
 
+    scenario("Intersecting ray+group doesn't test children if box is missed") {
+      Given("child ← test_shape()")
+      And("shape ← group()")
+      And("add_child(shape, child)")
+      And("r ← ray(point(0, 0, -5), vector(0, 1, 0))")
+      When("xs ← intersect(shape, r)")
+      Then("child.saved_ray is unset")
 
+      val child = testShape()
+      val shape = group().add(child)
+      val r = ray(point(0, 0, -5), vector(0, 1, 0))
+      val xs = intersect(shape, r)
+      assert(child.savedRay.isEmpty)
+    }
+
+    scenario("Intersecting ray+group tests children if box is hit") {
+      Given("child ← test_shape()")
+      And("shape ← group()")
+      And("add_child(shape, child)")
+      And("r ← ray(point(0, 0, -5), vector(0, 0, 1))")
+      When("xs ← intersect(shape, r)")
+      Then("child.saved_ray is set")
+
+      val child = testShape()
+      val shape = group()
+      addChild(shape, child)
+      val r = ray(point(0, 0, -5), vector(0, 0, 1))
+      val xs = intersect(shape, r)
+      assert(child.savedRay.isDefined)
+    }
   }
 
 }
 /*
+
+Scenario:
+
+
+Scenario:
+
 
 Scenario: A group has a bounding box that contains its children
     Given s ← sphere()

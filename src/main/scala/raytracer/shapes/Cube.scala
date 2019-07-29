@@ -20,9 +20,9 @@ class Cube extends MutableShape {
 
   override def localIntersect(ray: Ray): Seq[Intersection] = {
     import ray.{direction, origin}
-    val (xtmin, xtmax) = Cube.checkAxis(origin.x, direction.x)
-    val (ytmin, ytmax) = Cube.checkAxis(origin.y, direction.y)
-    val (ztmin, ztmax) = Cube.checkAxis(origin.z, direction.z)
+    val (xtmin, xtmax) = Cube.checkAxis(origin.x, direction.x, -1, 1)
+    val (ytmin, ytmax) = Cube.checkAxis(origin.y, direction.y, -1, 1)
+    val (ztmin, ztmax) = Cube.checkAxis(origin.z, direction.z, -1, 1)
 
     val tmin = max(max(xtmin, ytmin), ztmin)
     val tmax = min(min(xtmax, ytmax), ztmax)
@@ -42,9 +42,9 @@ object Cube {
     new Cube().setTransform(transform).setMaterial(material).setParent(parent)
   }
 
-  @inline final def checkAxis(origin: Double, direction: Double): (Double, Double) = {
-    val tminNumerator = -1 - origin
-    val tmaxNumerator = 1 - origin
+  @inline final def checkAxis(origin: Double, direction: Double, min: Double, max: Double): (Double, Double) = {
+    val tminNumerator = min - origin
+    val tmaxNumerator = max - origin
 
     if (abs(direction) >= EPSILON) {
       val tmin = tminNumerator / direction

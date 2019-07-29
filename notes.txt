@@ -10,7 +10,21 @@ yaml reader
 Matrix optimizations:
 
 :
-before  400x400  = Render time: 112625.905523 ms
-after   400x400  = Render time:   5580.347912 ms
-before 1024x768  = Render time: 531141.445412 ms
-after  1024x768  = Render time:  22597.537039 ms
+baseline      -  400x400  = Render time: 112625.905523 ms
+fast matrix   -  400x400  = Render time:   5580.347912 ms   20.182596
+initial group -  400x400  = Render time:  20579.920096 ms   5.472611
+cached bounds -  400x400  = Render time:   1436.438503 ms   78.406354
+
+baseline      - 1024x768  = Render time: 531141.445412 ms
+fast matrix   - 1024x768  = Render time:  22597.537039 ms   23.504395
+initial group - 1024x768  = Render time:  84814.712728 ms   6.262374
+cached bounds - 1024x768  = Render time:   4814.635046 ms   110.318111
+
+
+
+
+
+
+
+
+

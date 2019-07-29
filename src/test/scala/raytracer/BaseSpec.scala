@@ -1,10 +1,7 @@
 package raytracer
 
-import org.scalatest.{FeatureSpec, GivenWhenThen}
-import raytracer.files.PpmWriter
-import raytracer.patterns.{CheckersPattern, GradientPattern, RingPattern, StripePattern}
-import raytracer.shapes.Sphere
+import org.scalatest.{FeatureSpec, GivenWhenThen, OptionValues}
 
 trait BaseSpec extends FeatureSpec
-  with GivenWhenThen with TestHelpers
+  with GivenWhenThen with TestHelpers with OptionValues
 

@@ -14,8 +14,8 @@ object RenderCoverApp extends App {
   val resource = "/examples/group.yaml" //Render time: 531141.445412 ms (1024x768)!!!
   val scene = Scene
     .fromResourceYaml(resource)
-    .withDimensions(1024,768)
-//    .withDimensions(400,400)
+//    .withDimensions(1024,768)
+    .withDimensions(400,400)
   scene.saveTo(Settings.folder)
 }
 

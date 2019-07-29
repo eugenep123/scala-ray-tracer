@@ -34,16 +34,16 @@ class Group extends MutableShape {
   }
 
   override def localIntersect(ray: Ray): Seq[Intersection] = {
-    if (isEmpty) Nil
+    if (isEmpty || !bounds.intersects(ray)) Nil
     else {
       val xs = children.flatMap(_.intersect(ray))
       Intersection.sort(xs)
     }
   }
 
-  override def bounds: BoundingBox = {
-    ???
-  }
+  // TODO: cache this value
+//  override def bounds: BoundingBox = BoundingBox(children)
+  override lazy val bounds: BoundingBox = BoundingBox(children)
 }
 
 object Group {
