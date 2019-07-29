@@ -1,2 +1,8 @@
 *.class
 *.log
+
+pasteBin\.txt
+
+project/\.DS_Store
+target
+old-code

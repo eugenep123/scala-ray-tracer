@@ -1,0 +1,91 @@
+#http://forum.raytracerchallenge.com/thread/15/first-light-refraction-code
+# ======================================================
+# the camera
+# ======================================================
+
+- add: camera
+  width: 400
+  height: 400
+  field-of-view: 1.0471975512 # pi/3
+  from: [ 0, 2.5, 0 ]
+  to: [ 0, 0, 0 ]
+  up: [ 0, 0, -1 ]
+
+# ======================================================
+# light sources
+# ======================================================
+
+- add: light
+  at: [ 20, 10, 0 ]
+  intensity: [ 0.7, 0.7, 0.7 ]
+
+# ======================================================
+# a white backdrop for the scene
+# ======================================================
+
+#- add: plane
+#  material:
+#    color: [ 1, 1, 1 ]
+#    ambient: 1
+#    diffuse: 0
+#    specular: 0
+#
+#    pattern:
+#      type: checkers
+#      colors:
+#        - [0, 0, 0]
+#        - [1, 1, 1]
+#      transform:
+#        - [ translate, 0, 0.1, 0 ]
+#  transform:
+#    - [ rotate-x, 1.5707963267948966 ] # pi/2
+#    - [ translate, 0, -10.1, 0 ]
+
+
+- add: plane
+  material:
+    color: [ 1, 1, 1 ]
+    ambient: 1
+    diffuse: 0
+    specular: 0
+    reflective: 0.4
+    pattern:
+      type: checkers
+      colors:
+        - [0.35, 0.35, 0.35]
+        - [0.65, 0.65, 0.65]
+      transform:
+        - [ translate, 0, 0.1, 0 ]
+  transform:
+    - [ rotate-x, 1.5707963267948966 ] # pi/2
+    - [ translate, 0, -10.1, 0 ]
+
+- add: sphere
+  material:
+    diffuse: 0.1
+    shininess: 300
+    reflective: 1
+    transparency: 1.0     #refractive???
+    refractive-index: 1.52
+
+#air sphere
+- add: sphere
+  material:
+    diffuse: 0.1
+    shininess: 300
+    reflective: 1
+    transparency: 1     #refractive???
+    refractive-index: 1
+  transform:
+    - [ scale, 0.5, 0.5, 0.5 ]
+
+
+#A plane with a checker pattern. The plane is translated by (0, -10.1, 0).
+#The pattern itself is also translated by (0, 0.1, 0). The 0.1 avoids pattern "acne".
+#Then there is a glass sphere. It's just a unit sphere placed in the origin so there is no transformation at all.
+#Material is supposed to emulate glass, it's set to:
+#    diffuse=0.1, shininess=300, reflective=1, refractive=1, index_of_refraction=1.52.
+#Finally, there is an air sphere inside the glass sphere. It's just another unit sphere scaled by (0.5, 0.5, 0.5), i.e. half size.
+#It has the same material parameters as the glass sphere except for index_of_refraction=1, i.e. that of air.
+#A point light is placed at (20, 10, 0), intensity is 0.7.
+#The camera is placed at (0, 2.5, 0), looking towards the origin (0, 0, 0) and field of view = pi/3.

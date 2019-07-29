@@ -1,0 +1,16 @@
+
+yaml reader
+
+
+
+
+
+
+
+Matrix optimizations:
+
+:
+before  400x400  = Render time: 112625.905523 ms
+after   400x400  = Render time:   5580.347912 ms
+before 1024x768  = Render time: 531141.445412 ms
+after  1024x768  = Render time:  22597.537039 ms
