@@ -48,6 +48,13 @@ trait Shapes {
     transform: Matrix = Transform,
     parent: Option[Shape] = None): Group = Group(transform, parent)
 
+  def triangle(
+    p1: Point3D,
+    p2: Point3D,
+    p3: Point3D,
+    transform: Matrix = Transform,
+    material: Material = Material,
+    parent: Option[Shape] = None): Triangle = Triangle(p1, p2, p3, transform, material, parent)
 
 }
 

@@ -1,6 +1,7 @@
 package raytracer
+package shapes
 
-import math.sqrt
+import scala.math.sqrt
 
 class ShapesSpec extends BaseSpec {
 

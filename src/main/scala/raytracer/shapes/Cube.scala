@@ -38,7 +38,7 @@ object Cube {
   def apply(
     transform: Matrix = Matrix.identity,
     material: Material = Material(),
-    parent: Option[Shape]): Cube = {
+    parent: Option[Shape] = None): Cube = {
     new Cube().setTransform(transform).setMaterial(material).setParent(parent)
   }
 

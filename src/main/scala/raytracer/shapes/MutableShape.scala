@@ -1,15 +1,17 @@
 package raytracer.shapes
 
-import raytracer.{BoundingBox, Intersection, Material, Matrix, Point3D, Ray, Shape, Vector3D}
+import raytracer.{Intersection, Material, Matrix, Point3D, Ray, Shape, Vector3D}
 
 abstract class MutableShape extends Shape {
   protected var _material: Material = Material.Default
   protected var _parent: Option[Shape] = None
   protected var _transform: Matrix = Matrix.identity
+  protected var _renderAllRays: Boolean = true
 
   final override def transform: Matrix = this._transform
   final override def material: Material = this._material
   final override def parent: Option[Shape] = this._parent
+  final override def renderAllRays: Boolean = _renderAllRays
 
   final override def setTransform(t: Matrix): this.type = {
     this._transform = t
@@ -26,6 +28,12 @@ abstract class MutableShape extends Shape {
     this._material = m
     this
   }
+
+  final override def setRenderAllRays(enabled: Boolean): this.type = {
+    this._renderAllRays = enabled
+    this
+  }
+
 
   final def intersect(ray: Ray): Seq[Intersection] = {
     val localRay = ray.transform(transform.inverse)

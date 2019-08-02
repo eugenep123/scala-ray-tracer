@@ -36,4 +36,7 @@ object Point3D {
   @inline def max(a: Point3D, b: Point3D): Point3D =
     Point3D(math.max(a.x, b.x), math.max(a.y, b.y), math.max(a.z, b.z))
 
+  @inline def center(a: Point3D, b: Point3D): Point3D =
+    Point3D((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2)
+
 }

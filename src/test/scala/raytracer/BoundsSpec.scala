@@ -147,6 +147,20 @@ class BoundsSpec extends BaseSpec {
 
       }
     }
+
+    scenario("Convert a bounding box to a cube in object space") {
+      val box = boundingBox(Point3D(-8, -2, -0.5), Point3D(2, 4, 0.5))
+
+      assert(box.center == Point3D(-3.0, 1.0, 0.0))
+      assert(box.extents == Vector3D(5.0, 3.0, 0.5))
+
+      val cube = box.toCube
+      val m = cube.transform
+      val min = m * Point3D(-1, -1, -1)
+      val max = m * Point3D(1, 1, 1)
+      assert(min == box.minimum)
+      assert(max == box.maximum)
+    }
   }
 
 }

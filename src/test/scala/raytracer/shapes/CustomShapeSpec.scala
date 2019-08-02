@@ -1,4 +1,5 @@
 package raytracer
+package shapes
 
 import scala.collection.mutable
 

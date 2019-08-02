@@ -1,12 +1,16 @@
 package raytracer
 
 import Point3D._
+import raytracer.shapes.Cube
 import raytracer.shapes.Cube.checkAxis
 
 //http://www.raytracerchallenge.com/bonus/bounding-boxes.html
 final case class BoundingBox(
   minimum: Point3D,
   maximum: Point3D) {
+
+  def center: Point3D = Point3D.center(minimum, maximum)
+  def extents: Vector3D = (minimum - maximum).abs / 2.0
 
   def transform(m: Matrix): BoundingBox = {
     val points = Seq(
@@ -47,6 +51,15 @@ final case class BoundingBox(
 
   def add(box: BoundingBox): BoundingBox =
     BoundingBox(min(minimum, box.minimum), max(maximum, box.maximum))
+
+  def toCube: Cube = {
+    val toOrigin = Point3D.origin - this.center
+    val ext = this.extents
+    val scale = Vector3D(1.0 / ext.x, 1.0 / ext.y, 1.0 / ext.z)
+    val transform = Builder.translate(toOrigin).scale(scale).inverse
+    Cube(transform, Defaults.Materials.boundingBoxMaterial)
+  }
+
 }
 
 
@@ -63,6 +76,5 @@ object BoundingBox {
       shapes.foldLeft(Empty)((box, shape) => box.add(shape.bounds.transform(shape.transform)))
     }
   }
-
 
 }

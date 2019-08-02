@@ -12,6 +12,9 @@ class Group extends MutableShape {
   def isEmpty: Boolean = children.isEmpty
   def includes(s: Shape): Boolean = children.contains(s)
 
+  // Triangle children
+  def triangles: Seq[Triangle] = children.collect { case t: Triangle => t}
+
   def add(child: Shape): Group = {
     child.parent
       .collect { case g: Group => g }
@@ -41,9 +44,15 @@ class Group extends MutableShape {
     }
   }
 
+  private def calcBounds: BoundingBox = {
+    val box = BoundingBox(children.filter(_.renderAllRays))
+    // Add bounding box (no shadows or reflection/refraction)
+//    add(box.toCube.setRenderAllRays(false))
+    box
+  }
   // TODO: cache this value
 //  override def bounds: BoundingBox = BoundingBox(children)
-  override lazy val bounds: BoundingBox = BoundingBox(children)
+  override lazy val bounds: BoundingBox = calcBounds
 }
 
 object Group {

@@ -2,6 +2,7 @@ package raytracer.yaml
 import java.util
 
 import org.yaml.snakeyaml.Yaml
+import raytracer.files.FileIO
 
 import scala.collection.JavaConverters._
 
@@ -11,18 +12,8 @@ object YamlParser {
   import ValueReaders._
   import ast._
 
-
-  def getResourceString(name: String): String = {
-    val stream = this.getClass.getResourceAsStream(name)
-    scala.io.Source.fromInputStream(stream).getLines.mkString("\n")
-  }
-
   def readResource(name: String): ParseResult[SceneAst] = {
-    read(getResourceString(name))
-  }
-
-  def read(yaml: String): ParseResult[SceneAst] = {
-    parse(yaml)
+    parse(FileIO.getResourceString(name))
   }
 
   def parse(yamlString: String): ParseResult[SceneAst] = {

@@ -1,8 +1,8 @@
 package raytracer
 
-import raytracer.files.PpmWriter
+import raytracer.files.{ObjFileParser, PpmWriter}
 import raytracer.patterns.{CheckersPattern, GradientPattern, RingPattern, StripePattern}
-import raytracer.shapes.Group
+import raytracer.shapes.{Group, TestShape}
 
 trait TestHelpers extends Shapes {
   import Defaults.MaxRecursion
@@ -97,6 +97,8 @@ trait TestHelpers extends Shapes {
   def boundingBox(shapes: Seq[Shape] = Nil): BoundingBox = BoundingBox(shapes)
   def boundingBox(min: Point3D, max: Point3D): BoundingBox = new BoundingBox(min, max)
 
+
+  def parseObjFile(content: String): ObjFileParser.Result = ObjFileParser.parse(content)
 
   //Patterns
   def stripePattern(a: Color, b: Color): StripePattern =

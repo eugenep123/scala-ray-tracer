@@ -1,4 +1,5 @@
 package raytracer
+package shapes
 
 class GroupsSpec extends BaseSpec {
 

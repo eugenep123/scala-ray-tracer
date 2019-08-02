@@ -1,7 +1,5 @@
 package raytracer
-
-import raytracer.shapes.MutableShape
-
+package shapes
 
 class TestShape extends MutableShape {
 

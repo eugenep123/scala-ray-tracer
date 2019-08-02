@@ -1,6 +1,7 @@
 package raytracer
+package shapes
 
-import Math.sqrt
+import java.lang.Math.sqrt
 
 class SphereSpec extends BaseSpec {
 

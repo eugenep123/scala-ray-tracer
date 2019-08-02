@@ -1,4 +1,5 @@
 package raytracer
+package shapes
 
 class PlaneSpec extends BaseSpec {
   feature("Planes") {

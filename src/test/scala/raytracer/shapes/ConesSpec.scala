@@ -1,7 +1,9 @@
 package raytracer
+package shapes
 
-import math.sqrt
 import org.scalatest.prop.TableDrivenPropertyChecks._
+
+import scala.math.sqrt
 
 class ConesSpec extends BaseSpec {
 

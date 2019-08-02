@@ -23,6 +23,7 @@ final case class Vector3D(x: Double, y: Double, z: Double) {
       this.x * other.y - this.y * other.x
     )
   }
+  def abs: Vector3D = Vector3D(math.abs(x), math.abs(y), math.abs(z))
 
   override def equals(obj: Any): Boolean = {
     obj match {
@@ -35,7 +36,6 @@ final case class Vector3D(x: Double, y: Double, z: Double) {
   override def toString: String =  mkString("vector", x, y, z, w)
 
   def asTuple: Tuple4 = Tuple4(x, y, z, w)
-
 }
 
 object Vector3D {

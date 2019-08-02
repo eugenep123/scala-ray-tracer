@@ -3,10 +3,17 @@ package raytracer
 
 trait Shape {
 
+  // Ignore bounds, shadows, reflection on debug shapes
+  def renderAllRays: Boolean
   def parent: Option[Shape]
-
   def transform: Matrix
   def material: Material
+
+  //Helpers
+  def setTransform(t: Matrix): this.type
+  def setMaterial(m: Material): this.type
+  def setParent(p: Option[Shape]): this.type
+  def setRenderAllRays(enabled: Boolean): this.type
 
   def intersect(ray: Ray): Seq[Intersection]
   def normalAt(point: Point3D): Vector3D
@@ -22,10 +29,7 @@ trait Shape {
 
 //  def worldToObjectTransform: Matrix
 
-  //Helpers
-  def setTransform(t: Matrix): this.type
-  def setMaterial(m: Material): this.type
-  def setParent(p: Option[Shape]): this.type
+
 
   // Helpers
   final def updateMaterial(f: Material => Material): this.type = setMaterial(f(material))
