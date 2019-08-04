@@ -3,7 +3,6 @@ package yaml
 
 import raytracer.files.ResourceLoader
 import raytracer.patterns.{CheckersPattern, GradientPattern, StripePattern}
-import raytracer.shapes.Group
 
 package object ast {
 

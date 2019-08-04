@@ -6,34 +6,36 @@ import NoWhitespace._
 // https://en.wikipedia.org/wiki/Wavefront_.obj_file
 object ObjGrammar {
 
-  def spaces[_: P] = P(CharsWhileIn(" \t", 0))
-  def newLine[_: P] = P(spaces ~ CharsWhileIn("\n\r", 1) ~ spaces)
-  def spaceOrNewlines[_: P] = P(CharsWhileIn(" \r\n", 0))
-  def digits[_: P] = P(CharsWhileIn("0-9"))
-  def exponent[_: P] = P(CharIn("eE") ~ CharIn("+\\-").? ~ digits)
-  def fractional[_: P] = P("." ~ digits)
-  def integral[_: P] = P("0" | CharIn("1-9") ~ digits.?)
+  def spaces[_: P]: P[Unit] = P(CharsWhileIn(" \t", 0))
+  def newLine[_: P]: P[Unit] = P(spaces ~ CharsWhileIn("\n\r", 1) ~ spaces)
+  def spaceOrNewlines[_: P]: P[Unit] = P(CharsWhileIn(" \r\n", 0))
+  def digits[_: P]: P[Unit] = P(CharsWhileIn("0-9"))
+  def exponent[_: P]: P[Unit] = P(CharIn("eE") ~ CharIn("+\\-").? ~ digits)
+  def fractional[_: P]: P[Unit] = P("." ~ digits)
+  def integral[_: P]: P[Unit] = P("0" | CharIn("1-9") ~ digits.?)
 
-  def decimal[_: P] =
+  def decimal[_: P]: P[Double] =
     P(CharIn("+\\-").? ~ integral ~ fractional.? ~ exponent.?).!.map(
       x => x.toDouble
     )
 
-  def index[_: P] =
-    integral.!.map(_.toInt) // P( CharIn("1-9") ~ digits.? ).!.map(_.toInt)
-  def name[_: P]: P[String] = P(CharsWhileIn("_()0-9a-zA-Z\\-", 1).!)
-  def spaceDouble[_:P] = P((spaces ~ decimal))
+  def index[_: P]: P[Int] = integral.!.map(_.toInt)
+  def name[_: P]: P[String] = P(CharsWhileIn("_()0-9a-zA-Z\\-.", 1).!)
+  def spaceDouble[_:P]: P[Double] = P((spaces ~ decimal))
 
   // Group: g {name}
   // g FirstGroup
   def group[_: P]: P[String] = P("g " ~/ spaces ~ name ~ &(spaceOrNewlines))
+  def namedObject[_: P]: P[String] = P("o " ~/ spaces ~ name ~ &(spaceOrNewlines))
 
-  def useMaterial[_:P] = P("usemtl " ~/ spaces ~ name ~ &(spaceOrNewlines))
+  //mtllib [external .mtl file name]
+  def useMaterialLib[_:P]: P[String] = P("mtllib " ~/ spaces ~ name ~ &(spaceOrNewlines))
+  def useMaterial[_:P]: P[String] = P("usemtl " ~/ spaces ~ name ~ &(spaceOrNewlines))
   // # until \n
   def comment[_: P]: P[Unit] = P(spaces.? ~ "#" ~/ CharsWhile(_ != '\n').?)
 
 
-  def setSmoothShading[_:P] = P("s " ~/ spaces ~ ("1" | "off"))
+  def smoothingGroup[_:P] = P("s " ~/ spaces ~ (index | "off"))
 
   // Vector: (x, y, z [,w]) coordinates, w is optional and defaults to 1.0.
   // v 0.123 0.234 0.345 1.0
@@ -69,18 +71,20 @@ object ObjGrammar {
       vertexTextureNormalIndices.map(builder.addFace3(_))
     ))
 
-  def itemBuilder[_:P](builder: ObjBuilder) = P(
+  def lineBuilder[_:P](builder: ObjBuilder) = P(
     vector.map((builder.addVector _).tupled) |
     vertexNormal.map((builder.addVertexNormal _).tupled) |
     faceBuilder(builder) |
     group.map(builder.addGroup) |
+    namedObject.map(builder.addObject) |
     useMaterial.map(builder.useMaterial) |
+    useMaterialLib.map(builder.useMaterialLib) |
     textureCoordinates.map((builder.textureCoordinates _).tupled) |
-    setSmoothShading //ignore
+    smoothingGroup //ignore
   )
 
   def builderParser[_:P](builder: ObjBuilder): P[Unit] = P(
-    spaceOrNewlines ~ (comment | itemBuilder(builder)).rep(1, newLine) ~ spaceOrNewlines ~ End
+    spaceOrNewlines ~ (comment | lineBuilder(builder)).rep(1, newLine) ~ spaceOrNewlines ~ End
   )
 
 
