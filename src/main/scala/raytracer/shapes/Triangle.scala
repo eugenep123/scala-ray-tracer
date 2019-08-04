@@ -3,16 +3,19 @@ package shapes
 
 import math.abs
 
-//https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+class Triangle(
+  val p1: Point3D,
+  val p2: Point3D,
+  val p3: Point3D) extends MutableShape {
 
-class Triangle(val p1: Point3D, val p2: Point3D, val p3: Point3D) extends MutableShape {
   val e1 = p2 - p1
   val e2 = p3 - p1
-  val normal = e2.cross(e1).normalize
+  val normal: Vector3D = e2.cross(e1).normalize
 
   override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D = normal
 
-  override def localIntersect(ray: Ray): Seq[Intersection] = {
+  final override def localIntersect(ray: Ray): Seq[Intersection] = {
+    // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
     val dirCrossE2 = ray.direction.cross(e2)
     val det = e1.dot(dirCrossE2)
     if (abs(det) < EPSILON) Nil
@@ -29,7 +32,7 @@ class Triangle(val p1: Point3D, val p2: Point3D, val p3: Point3D) extends Mutabl
       if (v < 0 || (u + v) > 1) return Nil
 
       val t = f * e2.dot(originCrossE1)
-      Seq(Intersection(t, this))
+      Seq(Intersection(t, this, u, v))
     }
   }
   override val bounds: BoundingBox = BoundingBox(p1, p2, p3)

@@ -11,7 +11,8 @@ object ResourceLoader {
   implicit def default: ResourceLoader = new ResourceLoader {
     override def loadObject(filename: String): Shape = {
       //TODO: inject path via implicit
-      val name = s"/examples/triangles/$filename"
+//      val name = s"/examples/triangles/$filename"
+      val name = s"/examples/triangles/cube.obj"
       val content = FileIO.getResourceString(name)
       ObjFileParser.parseGroup(content)
     }

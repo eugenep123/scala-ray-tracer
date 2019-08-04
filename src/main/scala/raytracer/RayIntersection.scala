@@ -20,9 +20,9 @@ case class RayIntersection(
   val underPoint: Point3D = point - normal * EPSILON
 
   // After negating the normal, if necessary
-  def reflectV = Vector3D.reflect(ray.direction, normal)
-  lazy val reflectiveRay: Ray = Ray(overPoint, reflectV)
+  def reflectV: Vector3D = Vector3D.reflect(ray.direction, normal)
 
+  lazy val reflectiveRay: Ray = Ray(overPoint, reflectV)
   lazy val reflectance: Double = schlick()
 
   def schlick(): Double = {

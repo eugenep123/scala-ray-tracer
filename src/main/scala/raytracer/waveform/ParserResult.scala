@@ -26,14 +26,8 @@ class ParserResult extends ObjBuilder {
   def defaultGroup: Group = _groups.head
 
   def toGroup: Group = {
-    _groups.size match {
-      case 0 => Group()
-      case 1 => _groups.head
-      case n =>
-        val g = Group()
-        _groups.foreach(g add _)
-        g
-    }
+    val nonEmpty = _groups.filterNot(_.isEmpty)
+    Group.create(nonEmpty)
   }
 
   private def newGroup(): Group = {
@@ -98,8 +92,17 @@ class ParserResult extends ObjBuilder {
     println(s"Ignoring: use material:  $material") //TODO
   }
 
+
+  override def useMaterialLib(materialLibFile: String): Unit = {
+    println(s"Ignoring: use material Lib:  $materialLibFile") //TODO
+  }
+
   override def addGroup(name: String): Unit = {
     newGroup()
     //TODO: model group names
+  }
+
+  override def addObject(name: String): Unit = {
+    println(s"Ignoring add object: $name") //todo
   }
 }

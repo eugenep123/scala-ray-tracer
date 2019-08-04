@@ -64,5 +64,22 @@ object Group {
     new Group().setTransform(transform).setParent(parent)
   }
 
+  def create(xs: Seq[Shape]): Group = {
+    xs.size match {
+      case 0 => Group()
+      case 1 =>
+        xs.head match {
+          case g: Group => g
+          case other =>
+            val g = new Group()
+            g.add(other)
+            g
+        }
+      case _ =>
+        val g = new Group()
+        xs.foreach(g add _)
+        g
+    }
+  }
 
 }
