@@ -2,6 +2,7 @@ package chapters
 
 import raytracer._
 import raytracer.files.PpmWriter
+import raytracer.shapes.Shape
 
 object Chapter5 extends App {
 

@@ -1,7 +1,7 @@
 package raytracer
+package shapes
 
-import Point3D._
-import raytracer.shapes.Cube
+import raytracer.Point3D.{max, min}
 import raytracer.shapes.Cube.checkAxis
 
 //http://www.raytracerchallenge.com/bonus/bounding-boxes.html

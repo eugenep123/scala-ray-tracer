@@ -1,7 +1,7 @@
 package raytracer
 package waveform
 
-import raytracer.shapes.{Group, SmoothTriangle, Triangle}
+import raytracer.shapes.{Group, Shape, SmoothTriangle, Triangle}
 
 import scala.collection.mutable.ArrayBuffer
 

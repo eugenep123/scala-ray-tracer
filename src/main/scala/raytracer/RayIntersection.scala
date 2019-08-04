@@ -1,5 +1,7 @@
 package raytracer
 
+import raytracer.shapes.Shape
+
 import scala.math.pow
 
 
@@ -14,7 +16,7 @@ case class RayIntersection(
   inside: Boolean,
   n1: Double, n2: Double) {
 
-  val renderAllRays: Boolean = obj.renderAllRays
+  val renderAllRays: Boolean = true //obj.renderAllRays
 
   val overPoint: Point3D = point + normal * EPSILON
   val underPoint: Point3D = point - normal * EPSILON

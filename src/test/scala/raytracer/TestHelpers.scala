@@ -2,7 +2,7 @@ package raytracer
 
 import raytracer.files.PpmWriter
 import raytracer.patterns.{CheckersPattern, GradientPattern, RingPattern, StripePattern}
-import raytracer.shapes.{Group, MutableShape, TestShape}
+import raytracer.shapes.{BoundingBox, Group, MutableShape, Shape, TestShape}
 import raytracer.waveform.{ObjFileParser, ParserResult}
 
 trait TestHelpers extends Shapes {

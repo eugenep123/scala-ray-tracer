@@ -6,7 +6,9 @@ import math.abs
 class Triangle(
   val p1: Point3D,
   val p2: Point3D,
-  val p3: Point3D) extends MutableShape {
+  val p3: Point3D,
+  transform: Matrix,
+  material: Option[Material]) extends Shape(transform, material){
 
   val e1 = p2 - p1
   val e2 = p3 - p1
@@ -35,7 +37,14 @@ class Triangle(
       Seq(Intersection(t, this, u, v))
     }
   }
-  override val bounds: BoundingBox = BoundingBox(p1, p2, p3)
+
+  override protected def calculateBounds: BoundingBox = BoundingBox(p1, p2, p3)
+
+  override def canEqual(other: Any): Boolean = other.asInstanceOf[Triangle]
+
+  override def hashCode: Int = {
+    (super.hashCode, p1, p2, p3).hashCode()
+  }
 }
 
 object Triangle {
@@ -45,9 +54,8 @@ object Triangle {
     p2: Point3D,
     p3: Point3D,
     transform: Matrix = Matrix.identity,
-    material: Material = Material(),
-    parent: Option[Shape] = None): Triangle = {
-    new Triangle(p1, p2, p3).setTransform(transform).setMaterial(material).setParent(parent)
+    material: Option[Material] = None): Triangle = {
+    new Triangle(p1, p2, p3, transform, material)
   }
 
   def fanTriangulation(vertices: Seq[Point3D]): Seq[Triangle] = {

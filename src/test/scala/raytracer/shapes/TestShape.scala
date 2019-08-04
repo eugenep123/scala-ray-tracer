@@ -1,6 +1,8 @@
 package raytracer
 package shapes
 
+import raytracer.shapes
+
 class TestShape extends MutableShape {
 
   private var _savedRay = Option.empty[Ray]
@@ -15,7 +17,7 @@ class TestShape extends MutableShape {
   }
 
   override def bounds: BoundingBox =
-    BoundingBox(Point3D(-1, -1, -1), Point3D(1, 1, 1))
+    shapes.BoundingBox(Point3D(-1, -1, -1), Point3D(1, 1, 1))
 
   def savedRay: Option[Ray] = _savedRay
 }

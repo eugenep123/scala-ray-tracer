@@ -2,6 +2,7 @@ package chapters
 
 import raytracer.Operations._
 import raytracer._
+import raytracer.shapes.Shape
 
 abstract class RenderApp {
 

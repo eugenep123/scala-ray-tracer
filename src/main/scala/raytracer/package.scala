@@ -40,6 +40,9 @@ package object raytracer {
   implicit def transformationsToMatrix(t: TransformBuilder): Matrix = t.build()
   implicit def operationToMatrix(o: Operation): Matrix = o.matrix
 
+  implicit def matrixToOptionMatrix(m: Matrix): Option[Matrix] = Some(m)
+  implicit def materialToOptionMatrix(m: Material): Option[Material] = Some(m)
+
   def mkString(name: String, xs: Double*): String = {
     xs.map(doubleToString).mkString(s"$name(", ", ", ")")
   }

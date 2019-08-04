@@ -1,6 +1,7 @@
 package raytracer
 
 import raytracer.Defaults.MaxRecursion
+import raytracer.shapes.Shape
 
 import scala.math.sqrt
 

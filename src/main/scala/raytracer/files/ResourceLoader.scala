@@ -1,6 +1,6 @@
 package raytracer.files
 
-import raytracer.Shape
+import raytracer.shapes.Shape
 import raytracer.waveform.ObjFileParser
 
 trait ResourceLoader {

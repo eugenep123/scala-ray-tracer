@@ -5,9 +5,11 @@ import raytracer._
 import raytracer.patterns._
 import Color._
 import Shapes._
+import raytracer.shapes.Shape
 
 object Chapter10 extends RenderApp {
   override def objects: Seq[Shape] = {
+
 
     val floor = plane()
       .setPattern(StripePattern(Red, Blue, scaling(2, 2, 2)))

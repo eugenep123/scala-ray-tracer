@@ -2,16 +2,18 @@ package raytracer
 package shapes
 
 import java.lang.Math.{abs, pow, sqrt}
+
 import scala.collection.mutable.ListBuffer
 
 /**
   * A cylinder along the y axis, with radius on 1
   */
-class Cylinder extends MutableShape {
-
-  private var _minimum: Double = -INFINITY
-  private var _maximum: Double = INFINITY
-  private var _closed: Boolean = false
+final class Cylinder(
+  minimum: Double,
+  maximum: Double,
+  closed: Boolean,
+  transform: Matrix,
+  material: Option[Material]) extends Shape(transform, material) {
 
   override def localIntersect(ray: Ray): Seq[Intersection] = {
     val xs = ListBuffer.empty[Intersection]
@@ -49,7 +51,7 @@ class Cylinder extends MutableShape {
   }
 
   @inline private final def isInRange(t: Double): Boolean =
-    _minimum < t && t < _maximum
+    minimum < t && t < maximum
 
   /**
     * Check if the intersection at 't' is within a radius of 1. (the radius of the cylinder) from the y axis
@@ -63,20 +65,20 @@ class Cylinder extends MutableShape {
 
   @inline private final def intersectCaps(ray: Ray, xs: ListBuffer[Intersection]): Unit = {
     // Caps only matter if the cylinder is close, and might possible be intersected by the ray
-    if (!_closed || abs(ray.direction.y) < EPSILON) {
+    if (!closed || abs(ray.direction.y) < EPSILON) {
       return
     }
 
     // check for n intersection with the lower end cap by intersecting
     // the ray with the plane at y = cyl.minimum
-    val t1 = (_minimum - ray.origin.y) / ray.direction.y
+    val t1 = (minimum - ray.origin.y) / ray.direction.y
     if (checkCap(ray, t1)) {
       xs.append(Intersection(t1, this))
     }
 
     // Check the intersection with the upper end cape by intersecting
     // the ray with the plane at y = cyl.maximum
-    val t2 = (_maximum - ray.origin.y) / ray.direction.y
+    val t2 = (maximum - ray.origin.y) / ray.direction.y
     if (checkCap(ray, t2)) {
       xs.append(Intersection(t2, this))
     }
@@ -84,50 +86,31 @@ class Cylinder extends MutableShape {
 
   override def localNormalAt(point: Point3D, i: Intersection): Vector3D = {
     val dist = pow(point.x, 2) + pow(point.z, 2)
-    if (dist < 1.0 && point.y >= (_maximum - EPSILON)) Vector3D(0, 1, 0)
-    else if (dist < 1.0 && point.y <= (_minimum + EPSILON)) Vector3D(0, -1, 0)
+    if (dist < 1.0 && point.y >= (maximum - EPSILON)) Vector3D(0, 1, 0)
+    else if (dist < 1.0 && point.y <= (minimum + EPSILON)) Vector3D(0, -1, 0)
     else Vector3D(point.x, 0, point.z)
   }
 
-  override def bounds: BoundingBox =
-    BoundingBox(Point3D(-1, _minimum, -1), Point3D(1, _maximum, 1))
+  override protected def calculateBounds: BoundingBox =
+    BoundingBox(Point3D(-1, minimum, -1), Point3D(1, maximum, 1))
 
-  def minimum: Double = this._minimum
-  def maximum: Double = this._maximum
-  def closed: Boolean = this._closed
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Cylinder]
 
-  def setMinimum(min: Double): Cylinder = {
-    this._minimum = min
-    this
-  }
-
-  def setMaximum(max: Double): Cylinder = {
-    this._maximum = max
-    this
-  }
-
-  def setClosed(b: Boolean): Cylinder = {
-    this._closed = b
-    this
+  override def hashCode:Int = {
+    val hash1 = super.hashCode() * 41 + maximum.hashCode()
+    val hash2 = hash1 * 41 + minimum.hashCode()
+    hash2 * 41 + closed.hashCode()
   }
 }
 
 object Cylinder {
   def apply(
-    transform: Matrix = Matrix.identity,
-    material: Material = Material(),
-    minimum: Double = -INFINITY,
-    maximum: Double = INFINITY,
-    closed: Boolean = false,
-    parent: Option[Shape] = None): Cylinder = {
-
-    new Cylinder()
-      .setTransform(transform)
-      .setMaterial(material)
-      .setMinimum(minimum)
-      .setMaximum(maximum)
-      .setClosed(closed)
-      .setParent(parent)
+   minimum: Double = -INFINITY,
+   maximum: Double = INFINITY,
+   closed: Boolean = false,
+   transform: Matrix = Matrix.identity,
+   material: Option[Material] = None): Cylinder = {
+    new Cylinder(minimum, maximum, closed, transform, material)
   }
 
 

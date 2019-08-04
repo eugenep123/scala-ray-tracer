@@ -5,7 +5,10 @@ import javax.naming.OperationNotSupportedException
 
 import scala.collection.mutable.ListBuffer
 
-class Group extends MutableShape {
+
+final class Group(
+  transform: Matrix,
+  material: Option[Material]) extends Shape(transform, material) {
 
   private val children: ListBuffer[Shape] = ListBuffer.empty
 
@@ -45,41 +48,48 @@ class Group extends MutableShape {
     }
   }
 
-  private def calcBounds: BoundingBox = {
-    val box = BoundingBox(children.filter(_.renderAllRays))
+
+  override protected def calculateBounds: BoundingBox = {
+//    val box = BoundingBox(children.filter(_.renderAllRays))
     // Add bounding box (no shadows or reflection/refraction)
 //    add(box.toCube.setRenderAllRays(false))
-    box
+//    box
+    BoundingBox(children)
   }
-  // TODO: cache this value
-//  override def bounds: BoundingBox = BoundingBox(children)
-  override lazy val bounds: BoundingBox = calcBounds
+
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Group]
+
+  override def hashCode:Int = {
+    val ourHash = children.map(_.hashCode).sum
+    super.hashCode + ourHash + ourHash
+  }
 }
 
 object Group {
 
   def apply(
     transform: Matrix = Matrix.identity,
-    parent: Option[Shape] = None): Group = {
-    new Group().setTransform(transform).setParent(parent)
+    material: Option[Material] = None): Group = {
+    new Group(transform, material)
   }
 
   def create(xs: Seq[Shape]): Group = {
-    xs.size match {
-      case 0 => Group()
-      case 1 =>
-        xs.head match {
-          case g: Group => g
-          case other =>
-            val g = new Group()
-            g.add(other)
-            g
-        }
-      case _ =>
-        val g = new Group()
-        xs.foreach(g add _)
-        g
-    }
+//    xs.size match {
+//      case 0 => Group()
+//      case 1 =>
+//        xs.head match {
+//          case g: Group => g
+//          case other =>
+//            val g = new Group()
+//            g.add(other)
+//            g
+//        }
+//      case _ =>
+//        val g = new Group()
+//        xs.foreach(g add _)
+//        g
+//    }
+    ???
   }
 
 }

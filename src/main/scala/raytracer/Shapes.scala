@@ -8,53 +8,53 @@ trait Shapes {
   private val Transform = Matrix.identity
   private val Material = Defaults.material
 
-  final def sphere(
+  def sphere(
     transform: Matrix = Transform,
-    material: Material = Material,
-    parent: Option[Shape] = None): Sphere = Sphere(transform, material, parent)
+    material: Option[Material] = None): Sphere = Sphere(transform, material)
 
-  final def glassSphere(): Sphere = sphere(material = Materials.glass)
-
+  def glassSphere(transform: Matrix = Transform): Sphere = sphere(transform, Some(Materials.glass))
 
   def plane(
     transform: Matrix = Transform,
-    material: Material = Material,
-    parent: Option[Shape] = None): Plane = Plane(transform, material, parent)
+    material: Option[Material] = None): Plane = Plane(transform, material)
 
   def cube(
     transform: Matrix = Transform,
-    material: Material = Material,
-    parent: Option[Shape] = None): Cube = Cube(transform, material, parent)
+    material: Option[Material] = None): Cube = Cube(transform, material)
 
   def cylinder(
-    transform: Matrix = Transform,
-    material: Material = Material,
     minimum: Double = -INFINITY,
     maximum: Double = INFINITY,
     closed: Boolean = false,
-    parent: Option[Shape] = None): Cylinder =
-    Cylinder(transform, material, minimum, maximum, closed, parent)
+    transform: Matrix = Transform,
+    material: Option[Material] = None): Cylinder =
+    Cylinder(minimum, maximum, closed, transform, material)
 
   def cone(
-    transform: Matrix = Transform,
-    material: Material = Material,
     minimum: Double = -INFINITY,
     maximum: Double = INFINITY,
     closed: Boolean = false,
-    parent: Option[Shape] = None): Cone =
-    Cone(transform, material, minimum, maximum, closed, parent)
+    transform: Matrix = Transform,
+    material: Option[Material] = None): Cone =
+    Cone(minimum, maximum, closed, transform, material)
 
   def group(
-    transform: Matrix = Transform,
-    parent: Option[Shape] = None): Group = Group(transform, parent)
+    transform: Matrix = Transform): Group = Group(transform)
 
   def triangle(
     p1: Point3D,
     p2: Point3D,
     p3: Point3D,
     transform: Matrix = Transform,
-    material: Material = Material,
-    parent: Option[Shape] = None): Triangle = Triangle(p1, p2, p3, transform, material, parent)
+    material: Option[Material] = None): Triangle = Triangle(p1, p2, p3, transform, material)
+
+  def smoothTriangle(
+    p1: Point3D, p2: Point3D, p3: Point3D,
+    n1: Vector3D, n2: Vector3D, n3: Vector3D,
+    transform: Matrix = Matrix.identity,
+    material: Option[Material] = None): SmoothTriangle = {
+    SmoothTriangle(p1, p2, p3, n1, n2, n3, transform, material)
+  }
 
 }
 

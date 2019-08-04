@@ -1,0 +1,76 @@
+package raytracer
+package shapes
+
+// parent: can only be mutable
+// rest if all immutable
+
+abstract class Shape(
+  val transform: Matrix,
+  materialOpt: Option[Material]) {
+
+  private var _parent = Option.empty[Shape]
+  @volatile private var _bounds = Option.empty[BoundingBox]
+  //private val transform = transformOpt.getOrElse(Matrix.identity)
+
+  final def material: Material = {
+    materialOpt orElse(parent.map(_.material)) getOrElse Material.Default
+  }
+
+  final def parent: Option[Shape] = _parent
+  final def parent_=(opt: Option[Shape]): Unit = {
+    this._parent = opt
+    this._bounds = None
+  }
+  final def setParent(p: Option[Shape]): this.type = {
+    this.parent = p
+    this
+  }
+
+  final def bounds: BoundingBox = {
+    _bounds.getOrElse {
+      val b = calculateBounds
+      _bounds = Some(b)
+      b
+    }
+  }
+  protected def calculateBounds: BoundingBox
+
+  final def intersect(ray: Ray): Seq[Intersection] = {
+    val localRay = ray.transform(transform.inverse)
+    localIntersect(localRay)
+  }
+
+  final def normalAt(point: Point3D, hit: Intersection): Vector3D = {
+    val localPoint = worldToObject(point)
+    val localNormal = localNormalAt(localPoint, hit)
+    normalToWorld(localNormal)
+  }
+
+  def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D
+  def localIntersect(ray: Ray): Seq[Intersection]
+
+
+  final def worldToObject(point: Point3D): Point3D = {
+    val p = parent.fold(point)(_.worldToObject(point))
+    transform.inverse * p
+  }
+
+  final def normalToWorld(normal: Vector3D): Vector3D = {
+    val n = (transform.inverse.transpose * normal).normalize
+    parent.fold(n)(_.normalToWorld(n))
+  }
+
+  def canEqual(other: Any): Boolean
+
+  final override def equals(other: Any): Boolean = {
+    other match {
+      case shape: Shape =>
+        shape.canEqual(this) && this.hashCode == shape.hashCode
+      case _ => false
+    }
+  }
+
+  override def hashCode: Int = {
+    31 + transform.hashCode() + materialOpt.hashCode()
+  }
+}

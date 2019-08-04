@@ -1,5 +1,7 @@
 package raytracer
 
+import raytracer.shapes.Shape
+
 trait Pattern {
   type PatternType <: Pattern
 

@@ -3,6 +3,7 @@ package chapters
 import raytracer.Operations._
 import raytracer._
 import Shapes._
+import raytracer.shapes.Shape
 
 object Chapter9 extends RenderApp {
   //  val width = 1920

@@ -5,7 +5,7 @@ yaml reader
     clean up ast
     check in reader when unknown keys are found
 
-
+Matrix => Matrix4
 
 move to better packages
 
@@ -22,6 +22,13 @@ update setters
 
 consider to move children to shape
 
+
+
+create new shape builder
+    val floor = MakeShape
+      .setPattern(StripePattern(Red, Blue, scaling(2, 2, 2)))
+      .setTransform(rotationY(PI/2))
+      .plane()
 
 Matrix optimizations:
 

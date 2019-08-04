@@ -1,6 +1,6 @@
 package raytracer.shapes
-
-import raytracer.{Intersection, Material, Matrix, Point3D, Ray, Shape, Vector3D}
+/*
+import raytracer.{Intersection, Material, Matrix, Point3D, Ray, Vector3D}
 
 abstract class MutableShape extends Shape {
   protected var _material: Material = Material.Default
@@ -77,3 +77,4 @@ abstract class MutableShape extends Shape {
 }
 
 
+*/

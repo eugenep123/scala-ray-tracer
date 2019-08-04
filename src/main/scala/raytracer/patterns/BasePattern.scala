@@ -1,6 +1,8 @@
 package raytracer
 package patterns
 
+import raytracer.shapes.Shape
+
 abstract class BasePattern extends Pattern {
 
   final def colorAt(worldPoint: Point3D, obj: Shape): Color = {

@@ -1,5 +1,7 @@
 package raytracer
 
+import raytracer.shapes.Shape
+
 // u/v is only used for smooth triangles
 case class Intersection(
   t: Double,
@@ -51,7 +53,8 @@ object Intersection {
   // Always make sure the hit is optimized
   def sort(xs: Seq[Intersection]): Seq[Intersection] = xs.sortBy(_.t)
   def hit(xs: Seq[Intersection], allShapes: Boolean = true): Option[Intersection] = {
-    val ys = if (allShapes) xs else xs.filter(_.obj.renderAllRays)
-    ys.find(_.t > 0)
+//    val ys = if (allShapes) xs else xs.filter(_.obj.renderAllRays)
+//    ys.find(_.t > 0)
+    xs.find(_.t > 0)
   }
 }

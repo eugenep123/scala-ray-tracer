@@ -3,7 +3,9 @@ package shapes
 
 import java.lang.Math.{pow, sqrt}
 
-class Sphere extends MutableShape {
+final class Sphere(
+  transform: Matrix,
+  material: Option[Material]) extends Shape(transform, material) {
 
   override def localIntersect(ray: Ray): Seq[Intersection] = {
     // vector from the sphere's center, to the ray origin
@@ -29,19 +31,16 @@ class Sphere extends MutableShape {
     localPoint - Point3D.origin
   }
 
-  override def bounds: BoundingBox = Sphere.Bounds
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Sphere]
+  override protected def calculateBounds: BoundingBox = Sphere.Bounds
 }
 
 object Sphere {
   def apply(
     transform: Matrix = Matrix.identity,
-    material: Material = Material(),
-    parent: Option[Shape] = None): Sphere = {
-    new Sphere()
-      .setTransform(transform)
-      .setMaterial(material)
-      .setParent(parent)
+    material: Option[Material] = None): Sphere = {
+    new Sphere(transform.getOrElse(Matrix.identity), material)
   }
 
-  val Bounds = BoundingBox(Point3D(-1, -1, -1), Point3D(1, 1, 1))
+  val Bounds = shapes.BoundingBox(Point3D(-1, -1, -1), Point3D(1, 1, 1))
 }
