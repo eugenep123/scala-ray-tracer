@@ -8,6 +8,7 @@ import raytracer.yaml.ast._
 class YamlParserSpec extends WordSpec with Matchers with TestHelpers {
 
   val resourceName = "/cover.yaml"
+
   "The yaml parser" should {
     "parse add camera" in {
       val yaml =
@@ -58,6 +59,13 @@ class YamlParserSpec extends WordSpec with Matchers with TestHelpers {
 
     "support cones and groups" in {
       val result = YamlParser.readResource("/examples/group.yaml")
+      println(result.get)
+      val scene = result.get.build
+      println(scene)
+    }
+
+    "support obj files" in {
+      val result = YamlParser.readResource("/examples/triangles/teapot.yaml")
       println(result.get)
       val scene = result.get.build
       println(scene)

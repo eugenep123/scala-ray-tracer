@@ -103,31 +103,23 @@ class TriangleSpec extends BaseSpec {
       assert(xs.size == 1)
       assert(xs.head.t == 2)
     }
+
+    scenario("A triangle has a bounding box") {
+      Given("p1 ← point(-3, 7, 2)")
+        And("p2 ← point(6, 2, -4)")
+        And("p3 ← point(2, -1, -1)")
+        And("shape ← triangle(p1, p2, p3)")
+       When("box ← bounds_of(shape)")
+       Then("box.min = point(-3, -1, -4)")
+        And("box.max = point(6, 7, 2)")
+
+      val p1 = point(-3, 7, 2)
+      val p2 = point(6, 2, -4)
+      val p3 = point(2, -1, -1)
+      val shape = triangle(p1, p2, p3)
+      val box = shape.bounds
+      assert(box.minimum == point(-3, -1, -4))
+      assert(box.maximum == point(6, 7, 2))
+    }
   }
 }
-/*
-
-
-Scenario:
-
-
-Scenario:
-
-
-Scenario:
-
-
-Scenario:
-
-
-
-
-Scenario: A triangle has a bounding box
-  Given p1 ← point(-3, 7, 2)
-    And p2 ← point(6, 2, -4)
-    And p3 ← point(2, -1, -1)
-    And shape ← triangle(p1, p2, p3)
-  When box ← bounds_of(shape)
-  Then box.min = point(-3, -1, -4)
-    And box.max = point(6, 7, 2)
- */

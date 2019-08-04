@@ -1,7 +1,9 @@
 package raytracer
 package yaml
 
+import raytracer.files.ResourceLoader
 import raytracer.patterns.{CheckersPattern, GradientPattern, StripePattern}
+import raytracer.shapes.Group
 
 package object ast {
 
@@ -235,12 +237,28 @@ package object ast {
     }
   }
 
+  case class ObjFileShape(
+    material: Option[MaterialObject],
+    transform: TransformList,
+    filename: String) extends ShapeObject {
+    def build(
+      parentMaterial: Option[MaterialObject],
+      parentTransform: Option[TransformList])(implicit lookup: DefineLookup): Shape = {
+
+      val transformMatrix = buildTransform(parentTransform)
+      val mat = buildMaterial(parentMaterial)
+      lookup.loader.loadObject(filename)
+          .setMaterial(mat)
+          .setTransform(transformMatrix)
+    }
+  }
+
   case class SceneAst(items: Seq[YamlItem]) {
     def adds: Seq[AddObject] = items.collect { case x: AddObject => x }
     def shapes: Seq[ShapeObject] = adds.collect { case x: ShapeObject => x }
     def lights: Seq[LightObject] = adds.collect { case x: LightObject => x }
     def cameras: Seq[CameraObject] = adds.collect { case x: CameraObject => x }
-    def build: Scene = {
+    def build(implicit resourceLoader: ResourceLoader): Scene = {
       implicit val lookup: DefineLookup = DefineLookup(items)
       val camera = cameras.headOption.map(_.build).getOrElse(Defaults.camera)
       val Point3DLights = lights.map(_.build)
@@ -252,21 +270,23 @@ package object ast {
   case class DefineLookup(
     materials: Map[String, DefineMaterial],
     transforms: Map[String, DefineTransform],
-    shapes: Map[String, DefineShape])
+    shapes: Map[String, DefineShape],
+    loader: ResourceLoader)
 
   object DefineLookup {
     private def makeLookup[A <: DefineObject](xs: Seq[A]) = xs.map(x => x.key -> x).toMap
 
-    def apply(items: Seq[YamlItem]): DefineLookup = {
+    def apply(items: Seq[YamlItem])(implicit loader: ResourceLoader): DefineLookup = {
       val defines: Seq[DefineObject] = items.collect { case x: DefineObject => x }
       val materials = makeLookup(defines.collect { case m: DefineMaterial => m })
       val transforms = makeLookup(defines.collect { case m: DefineTransform => m })
       val shapes = makeLookup(defines.collect { case m: DefineShape => m })
-      new DefineLookup(materials, transforms, shapes)
+      new DefineLookup(materials, transforms, shapes, loader)
     }
 
-    def empty: DefineLookup = DefineLookup(Nil)
+    def empty(implicit loader: ResourceLoader): DefineLookup = DefineLookup(Nil)
   }
+
 
 
 

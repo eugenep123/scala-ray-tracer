@@ -11,7 +11,7 @@ class Plane extends MutableShape {
   //every single Point3D on plane has normal of (0, 1, 0)
   val constantNormal = Vector3D(0, 1, 0)
 
-  override def localNormalAt(localPoint: Point3D): Vector3D = constantNormal
+  override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D = constantNormal
 
   override def localIntersect(ray: Ray): Seq[Intersection] = {
     if (abs(ray.direction.y) < EPSILON) Nil

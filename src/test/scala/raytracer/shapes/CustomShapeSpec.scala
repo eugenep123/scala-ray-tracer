@@ -28,7 +28,7 @@ class CustomShapeSpec extends BaseSpec {
 
       val m = s.path.reverse.map(_.transform.inverse).reduce(_ * _)
       val localPoint = m * p
-      val localNormal = s.localNormalAt(localPoint)
+      val localNormal = s.localNormalAt(localPoint, null)
       val n2 = s.normalToWorld(localNormal)
       assert(n2 == expected)
       // If we can cache this reliably per shape, we dont need to multiply all the way fro every shape and point
@@ -49,7 +49,7 @@ class CustomShapeSpec extends BaseSpec {
       assert(cache.contains(s.path))
       assert(cache.get(s.path) == m2)
       val localPoint2 = m2 * p
-      val localNormal2 = s.localNormalAt(localPoint2)
+      val localNormal2 = s.localNormalAt(localPoint2, null)
       val n3 = s.normalToWorld(localNormal2)
       assert(n3 == expected)
 

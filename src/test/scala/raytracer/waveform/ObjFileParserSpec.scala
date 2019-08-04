@@ -1,11 +1,10 @@
-package raytracer
-package files
+package raytracer.waveform
 
+import raytracer.BaseSpec
+import raytracer.files.FileIO
 import raytracer.shapes.Triangle
 
 class ObjFileParserSpec extends BaseSpec {
-
-  import java.util
 
 
   def trianglesFileContent = FileIO.getResourceString("/triangles.obj")
@@ -59,7 +58,7 @@ class ObjFileParserSpec extends BaseSpec {
       assert(result.vertices(4) == point(1, 1, 0))
     }
 
-    feature("Parsing triangle faces") {
+    scenario("Parsing triangle faces") {
       val content =
         """
           |v -1 1 0
@@ -85,8 +84,8 @@ class ObjFileParserSpec extends BaseSpec {
 
       val result = parseObjFile(content)
       val g = result.defaultGroup
-      val t1 = g.triangles.head.asInstanceOf[Triangle]
-      val t2 = g.triangles(2).asInstanceOf[Triangle]
+      val t1 = g.triangles(0)
+      val t2 = g.triangles(1)
 
       assert(t1.p1 == result.vertices(1))
       assert(t1.p2 == result.vertices(2))
@@ -183,9 +182,9 @@ class ObjFileParserSpec extends BaseSpec {
     scenario("Vertex normal records") {
       val content =
         """
-          | vn 0 0 1
-          |    vn 0.707 0 -0.707
-          |    vn 1 2 3
+          |vn 0 0 1
+          |vn 0.707 0 -0.707
+          |vn 1 2 3
           |""".stripMargin
       Given(s"file ← a file containing: \n$content")
       When("parser ← parse_obj_file(file)")
@@ -219,26 +218,25 @@ class ObjFileParserSpec extends BaseSpec {
       And("t1 ← first child of g")
       And("t2 ← second child of g")
       Then("t1.p1 = parser.vertices[1]")
-      And("t1.p2 = parser.vertices[2]")
-      And("t1.p3 = parser.vertices[3]")
-      And("t1.n1 = parser.normals[3]")
-      And("t1.n2 = parser.normals[1]")
-      And("t1.n3 = parser.normals[2]")
+       And("t1.p2 = parser.vertices[2]")
+       And("t1.p3 = parser.vertices[3]")
+       And("t1.n1 = parser.normals[3]")
+       And("t1.n2 = parser.normals[1]")
+       And("t1.n3 = parser.normals[2]")
       And("t2 = t1")
 
 
       val result = parseObjFile(content)
 
       val g = result.defaultGroup
-      val t1 = g.triangles(1)
-      val t2 = g.triangles(1)
+      val t1 = g.smoothTriangles(1)
+      val t2 = g.smoothTriangles(1)
       assert(t1.p1 == result.vertices(1))
       assert(t1.p2 == result.vertices(2))
       assert(t1.p3 == result.vertices(3))
-      //    assert(t1.n1 == result.normals(3))
-      //    assert(t1.n2 == result.normals(1))
-      //    assert(t1.n3 == result.normals(2))
-      ???
+      assert(t1.n1 == result.normals(3))
+      assert(t1.n2 == result.normals(1))
+      assert(t1.n3 == result.normals(2))
       assert(t2 == t1)
     }
   }

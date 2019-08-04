@@ -77,4 +77,8 @@ object BoundingBox {
     }
   }
 
+  @inline def apply(p1: Point3D, p2: Point3D, p3: Point3D): BoundingBox = {
+    Empty.add(p1).add(p2).add(p3)
+  }
+
 }

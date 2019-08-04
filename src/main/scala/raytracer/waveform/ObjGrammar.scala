@@ -2,13 +2,9 @@ package raytracer.waveform
 
 import fastparse._
 import NoWhitespace._
-import ObjAst._
 
 // https://en.wikipedia.org/wiki/Wavefront_.obj_file
 object ObjGrammar {
-
-  type Double3 = (Double, Double, Double)
-  type Double4 = (Double, Double, Double, Double)
 
   def spaces[_: P] = P(CharsWhileIn(" \t", 0))
   def newLine[_: P] = P(spaces ~ CharsWhileIn("\n\r", 1) ~ spaces)
@@ -21,67 +17,71 @@ object ObjGrammar {
   def decimal[_: P] =
     P(CharIn("+\\-").? ~ integral ~ fractional.? ~ exponent.?).!.map(
       x => x.toDouble
-    ).log
+    )
 
   def index[_: P] =
     integral.!.map(_.toInt) // P( CharIn("1-9") ~ digits.? ).!.map(_.toInt)
   def name[_: P]: P[String] = P(CharsWhileIn("_()0-9a-zA-Z\\-", 1).!)
-
-  def doubleValue[_: P] = (spaces ~ decimal ~ &(spaceOrNewlines))
-
-  // Vector: (x, y, z [,w]) coordinates, w is optional and defaults to 1.0.
-  // v 0.123 0.234 0.345 1.0
-  def vector[_: P]: P[Double4] = P(
-    "v " ~/ (spaces ~ decimal) ~ (spaces ~ decimal) ~ (spaces ~ decimal) ~ (spaces ~ decimal).?.map(
-      _.getOrElse(1.0))
-  )
-
-  //  # List of vertex normals in (x,y,z) form; normals might not be unit vectors.
-  //  vn 0.707 0.000 0.707
-  def vertexNormal[_: P]: P[Double3] =
-    P("vn " ~/ (spaces ~ decimal) ~ (spaces ~ decimal) ~ (spaces ~ decimal))
-
-  // # Polygonal face element (see below)
-  //f 1 2 3
-  def faceVertex[_: P]: P[Seq[Int]] = P("f " ~ (spaces ~ index).rep(1))
-
-  // #Face with vertex normals: f v1/vt1 v2/vt2 v3/vt3 ...
-  //  1//3 2//1 3//2
-  def faceVertexNormal[_: P]: P[Seq[(Int, Int)]] =
-    P("f " ~ (spaces ~ index ~ "//" ~ index).rep(1))
-
-  // f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 ...
-  def faceVertexTextureNormal[_: P]: P[Seq[(Int, Int, Int)]] =
-    P("f " ~ spaces ~ (index ~ "/" ~ index ~ "/" ~ index).rep(1, spaces)).log
+  def spaceDouble[_:P] = P((spaces ~ decimal))
 
   // Group: g {name}
   // g FirstGroup
-  def group[_: P]: P[String] = P("g " ~/ spaces ~ name ~ &(spaceOrNewlines)).log
+  def group[_: P]: P[String] = P("g " ~/ spaces ~ name ~ &(spaceOrNewlines))
 
-  def comment[_: P]: P[Unit] = P(spaces.? ~ "#" ~/ CharsWhile(_ != '\n'))
+  def useMaterial[_:P] = P("usemtl " ~/ spaces ~ name ~ &(spaceOrNewlines))
+  // # until \n
+  def comment[_: P]: P[Unit] = P(spaces.? ~ "#" ~/ CharsWhile(_ != '\n').?)
 
-  // Model mapping
-  def face[_: P]: P[Face] = P(
-    faceVertex.map(FaceVertex.apply) |
-      faceVertexNormal.map(FaceVertexNormal.apply) |
-      faceVertexTextureNormal.map(FaceVertexTextureNormal.apply)
+
+  def setSmoothShading[_:P] = P("s " ~/ spaces ~ ("1" | "off"))
+
+  // Vector: (x, y, z [,w]) coordinates, w is optional and defaults to 1.0.
+  // v 0.123 0.234 0.345 1.0
+  def vector[_: P]: P[(Double, Double, Double, Double)] =
+    P("v " ~/ spaceDouble ~ spaceDouble ~ spaceDouble ~ spaceDouble.?.map(_.getOrElse(1.0)))
+
+  //  # List of vertex normals in (x,y,z) form; normals might not be unit vectors.
+  //  vn 0.707 0.000 0.707
+  def vertexNormal[_: P]: P[(Double, Double, Double)] =
+    P("vn " ~/ spaceDouble ~ spaceDouble ~ spaceDouble)
+
+  //  # List of texture coordinates, in (u, [v ,w]) coordinates, these will vary between 0 and 1, v and w are optional and default to 0.
+  //  vt 0.500 1 [0]
+  def textureCoordinates[_:P]: P[(Double, Option[Double], Option[Double])] =
+    P("vt " ~/ spaceDouble ~ spaceDouble.? ~ spaceDouble.?)
+
+  // # Polygonal face element (see below)
+  def vertexIndices[_:P]: P[Seq[Int]] = (spaces ~ index).rep(3)
+  //  1//3 2//1 3//2
+  def vertexNormalIndices[_: P]: P[Seq[(Int, Int)]] = (spaces ~ index ~ "//" ~ index).rep(3)
+  //v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 ...
+  def vertexTextureNormalIndices[_:P]: P[Seq[(Int, Int, Int)]] = (index ~ "/" ~ index ~ "/" ~ index).rep(3, spaces)
+
+  def face[_:P] = P("f " ~/ (
+    vertexIndices |
+    vertexNormalIndices |
+    vertexTextureNormalIndices
+  ))
+
+  def faceBuilder[_:P](builder: ObjBuilder) = P("f " ~/ (
+    vertexIndices.map(builder.addFace(_)) |
+      vertexNormalIndices.map(builder.addFace2(_)) |
+      vertexTextureNormalIndices.map(builder.addFace3(_))
+    ))
+
+  def itemBuilder[_:P](builder: ObjBuilder) = P(
+    vector.map((builder.addVector _).tupled) |
+    vertexNormal.map((builder.addVertexNormal _).tupled) |
+    faceBuilder(builder) |
+    group.map(builder.addGroup) |
+    useMaterial.map(builder.useMaterial) |
+    textureCoordinates.map((builder.textureCoordinates _).tupled) |
+    setSmoothShading //ignore
   )
 
-  def model[_: P]: P[ObjAst] =
-    P(
-      vector.map((Vertex.apply _).tupled) |
-        vertexNormal.map((VertexNormal.apply _).tupled) |
-        face |
-        group.map(GroupName.apply)
-    ).log
-
-  def line[_: P]: P[Option[ObjAst]] = P(
-    spaces ~ (model.map(Option.apply) | comment.map(_ => Option.empty[ObjAst]))
+  def builderParser[_:P](builder: ObjBuilder): P[Unit] = P(
+    spaceOrNewlines ~ (comment | itemBuilder(builder)).rep(1, newLine) ~ spaceOrNewlines ~ End
   )
 
-  def lines[_: P] =
-    P(
-      spaceOrNewlines ~ line.rep(1, newLine) ~ spaceOrNewlines ~ End
-    ).map(xs => xs.flatten)
 
 }

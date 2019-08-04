@@ -8,7 +8,7 @@ import scala.math.{abs, max, min}
   */
 class Cube extends MutableShape {
 
-  override def localNormalAt(point: Point3D): Vector3D = {
+  override def localNormalAt(point: Point3D, i: Intersection): Vector3D = {
     val maxC = max(max(abs(point.x), abs(point.y)), abs(point.z))
     if (maxC == abs(point.x))
       Vector3D(point.x, 0, 0)

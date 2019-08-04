@@ -13,7 +13,8 @@ class Group extends MutableShape {
   def includes(s: Shape): Boolean = children.contains(s)
 
   // Triangle children
-  def triangles: Seq[Triangle] = children.collect { case t: Triangle => t}
+  def triangles: Seq[Triangle] = children.collect { case t: Triangle => t }
+  def smoothTriangles: Seq[SmoothTriangle] = children.collect { case t: SmoothTriangle => t }
 
   def add(child: Shape): Group = {
     child.parent
@@ -32,7 +33,7 @@ class Group extends MutableShape {
     }
   }
 
-  override def localNormalAt(localPoint: Point3D): Vector3D = {
+  override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D = {
     throw new OperationNotSupportedException("group does not support localNormalAt")
   }
 

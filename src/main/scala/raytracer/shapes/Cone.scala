@@ -87,7 +87,7 @@ class Cone extends MutableShape {
     }
   }
 
-  override def localNormalAt(point: Point3D): Vector3D = {
+  override def localNormalAt(point: Point3D, i: Intersection): Vector3D = {
     val dist = (point.x * point.x) + (point.z * point.z)
 
     if (dist < 1.0 && point.y >= (_maximum - EPSILON)) Vector3D(0, 1, 0)

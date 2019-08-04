@@ -1,8 +1,9 @@
 package raytracer
 
-import raytracer.files.{ObjFileParser, PpmWriter}
+import raytracer.files.PpmWriter
 import raytracer.patterns.{CheckersPattern, GradientPattern, RingPattern, StripePattern}
-import raytracer.shapes.{Group, TestShape}
+import raytracer.shapes.{Group, MutableShape, TestShape}
+import raytracer.waveform.{ObjFileParser, ParserResult}
 
 trait TestHelpers extends Shapes {
   import Defaults.MaxRecursion
@@ -37,14 +38,17 @@ trait TestHelpers extends Shapes {
   // Rendering
   def intersect(s: Shape, r: Ray): Seq[Intersection] = s.intersect(r)
   def intersection(t: Double, s: Shape): Intersection = Intersection(t, s)
+  def intersectionWithUv(t: Double, s: Shape, u: Double, v: Radians) = Intersection(t, s, u, v)
   def intersectionPairs(xs: (Double, Shape)*): Seq[Intersection] =
     xs.map { case (t, shape) => Intersection(t, shape) }
   def intersections(xs: Intersection*): Seq[Intersection] = Intersection.sort(xs)
   def hit(xs: Seq[Intersection]): Option[Intersection] = Intersection.hit(xs)
   def setTransform[S <: Shape](s: S, t: Matrix): S = s.setTransform(t).asInstanceOf[S]
-  def normalAt(s: Shape, p: Point3D): Vector3D = s.normalAt(p)
-  def localNormalAt(s: Shape, p: Point3D): Vector3D = s.localNormalAt(p)
-  def localIntersect(s: Shape, r: Ray): Seq[Intersection] = s.localIntersect(r)
+  def normalAt(s: Shape, p: Point3D): Vector3D = s.normalAt(p, Intersection(0, s, 0, 0))
+  def normalAt(s: Shape, p: Point3D, i: Intersection): Vector3D = s.normalAt(p, i)
+
+  def localNormalAt(s: MutableShape, p: Point3D): Vector3D = s.localNormalAt(p, null)
+  def localIntersect(s: MutableShape, r: Ray): Seq[Intersection] = s.localIntersect(r)
   def pointLight(position: Point3D, intensity: Color): PointLight = PointLight(position, intensity)
   def material(): Material = Material()
 
@@ -98,7 +102,7 @@ trait TestHelpers extends Shapes {
   def boundingBox(min: Point3D, max: Point3D): BoundingBox = new BoundingBox(min, max)
 
 
-  def parseObjFile(content: String): ObjFileParser.Result = ObjFileParser.parse(content)
+  def parseObjFile(content: String): ParserResult = ObjFileParser.parseContent(content)
 
   //Patterns
   def stripePattern(a: Color, b: Color): StripePattern =

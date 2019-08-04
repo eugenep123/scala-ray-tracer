@@ -10,7 +10,7 @@ class TestShape extends MutableShape {
     Nil
   }
 
-  override def localNormalAt(p: Point3D): Vector3D = {
+  override def localNormalAt(p: Point3D, i: Intersection): Vector3D = {
     Vector3D(p.x, p.y, p.z)
   }
 

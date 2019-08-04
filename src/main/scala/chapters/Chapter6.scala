@@ -53,7 +53,7 @@ object Chapter6 {
         Intersection.hit(xs)
           .foreach { hit =>
             val Point3D = ray.position(hit.t)
-            val normal = hit.obj.normalAt(Point3D)
+            val normal = hit.obj.normalAt(Point3D, hit)
             val eye = -ray.direction
             val color = hit.obj.material.lighting(light, Point3D, eye, normal, false)
             canvas.writePixel(x, y, color)

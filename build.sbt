@@ -6,7 +6,7 @@ ThisBuild / organizationName := "blee"
 lazy val root = (project in file("."))
   .settings(
     name := "scala-ray-tracer",
-    libraryDependencies ++= Dependencies.all
+    libraryDependencies ++= Dependencies.all map(_ withSources())
   )
 
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for instructions on how to publish to Sonatype.

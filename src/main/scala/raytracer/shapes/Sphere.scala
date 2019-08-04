@@ -25,7 +25,7 @@ class Sphere extends MutableShape {
     }
   }
 
-  override def localNormalAt(localPoint: Point3D): Vector3D = {
+  override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D = {
     localPoint - Point3D.origin
   }
 

@@ -45,9 +45,9 @@ abstract class MutableShape extends Shape {
 //    parent.fold(transform.inverse)(p => transform.inverse * p.worldToObjectTransform)
 //  }
 
-  final override def normalAt(point: Point3D): Vector3D = {
+  final override def normalAt(point: Point3D, hit: Intersection): Vector3D = {
     val localPoint = worldToObject(point)
-    val localNormal = localNormalAt(localPoint)
+    val localNormal = localNormalAt(localPoint, hit)
     normalToWorld(localNormal)
   }
 
@@ -61,7 +61,7 @@ abstract class MutableShape extends Shape {
     parent.fold(n)(_.normalToWorld(n))
   }
 
-  def localNormalAt(localPoint: Point3D): Vector3D
+  def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D
   def localIntersect(ray: Ray): Seq[Intersection]
 
   override def equals(obj: Any): Boolean = {

@@ -237,6 +237,10 @@ object ValueReaders {
           for {
             children <- map.read[Seq[ShapeObject]]("children")(shapeListReader)
           } yield ShapesGroup(material, transform, children)
+        case "obj" =>
+          for {
+            filename <- map.readString("file")
+          } yield ObjFileShape(material, transform, filename)
         case reference =>
           val ref = ShapeReference(reference, material, transform)
           success(ref)

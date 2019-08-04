@@ -16,10 +16,7 @@ trait Shape {
   def setRenderAllRays(enabled: Boolean): this.type
 
   def intersect(ray: Ray): Seq[Intersection]
-  def normalAt(point: Point3D): Vector3D
-
-  def localNormalAt(localPoint: Point3D): Vector3D
-  def localIntersect(ray: Ray): Seq[Intersection]
+  def normalAt(point: Point3D, hit: Intersection): Vector3D
 
   def worldToObject(point: Point3D): Point3D
   def normalToWorld(normal: Vector3D): Vector3D

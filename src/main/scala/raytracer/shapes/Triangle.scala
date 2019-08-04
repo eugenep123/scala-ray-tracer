@@ -10,7 +10,7 @@ class Triangle(val p1: Point3D, val p2: Point3D, val p3: Point3D) extends Mutabl
   val e2 = p3 - p1
   val normal = e2.cross(e1).normalize
 
-  override def localNormalAt(localPoint: Point3D): Vector3D = normal
+  override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D = normal
 
   override def localIntersect(ray: Ray): Seq[Intersection] = {
     val dirCrossE2 = ray.direction.cross(e2)
@@ -32,10 +32,11 @@ class Triangle(val p1: Point3D, val p2: Point3D, val p3: Point3D) extends Mutabl
       Seq(Intersection(t, this))
     }
   }
-  override def bounds: BoundingBox = ???
+  override val bounds: BoundingBox = BoundingBox(p1, p2, p3)
 }
 
 object Triangle {
+
   def apply(
     p1: Point3D,
     p2: Point3D,
@@ -45,4 +46,10 @@ object Triangle {
     parent: Option[Shape] = None): Triangle = {
     new Triangle(p1, p2, p3).setTransform(transform).setMaterial(material).setParent(parent)
   }
+
+  def fanTriangulation(vertices: Seq[Point3D]): Seq[Triangle] = {
+    (1 until vertices.size - 1).map(index => Triangle(vertices(0), vertices(index), vertices(index + 1)))
+  }
+
+
 }

@@ -82,7 +82,7 @@ class Cylinder extends MutableShape {
     }
   }
 
-  override def localNormalAt(point: Point3D): Vector3D = {
+  override def localNormalAt(point: Point3D, i: Intersection): Vector3D = {
     val dist = pow(point.x, 2) + pow(point.z, 2)
     if (dist < 1.0 && point.y >= (_maximum - EPSILON)) Vector3D(0, 1, 0)
     else if (dist < 1.0 && point.y <= (_minimum + EPSILON)) Vector3D(0, -1, 0)
