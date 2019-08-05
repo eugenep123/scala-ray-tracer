@@ -1,9 +1,9 @@
 package raytracer
 
-import raytracer.files.PpmWriter
-import raytracer.patterns.{CheckersPattern, GradientPattern, RingPattern, StripePattern}
-import raytracer.shapes.{BoundingBox, Group, MutableShape, Shape, TestShape}
-import raytracer.waveform.{ObjFileParser, ParserResult}
+import raytracer.math.{Intersection, Matrix, Operation, Point3D, Ray, RayIntersection, Vector3D}
+import raytracer.patterns._
+import raytracer.resource.waveform.{ObjFileParser, ParserResult}
+import raytracer.shapes.{BoundingBox, Group, Shape, Shapes}
 
 trait TestHelpers extends Shapes {
   import Defaults.MaxRecursion
@@ -12,9 +12,9 @@ trait TestHelpers extends Shapes {
   def canvas(width: Int, height: Int): Canvas = Canvas(width, height)
   def writePixel(c: Canvas, x: Int, y: Int, color: Color): Unit = c.writePixel(x, y, color)
   def pixelAt(c: Canvas, x: Int, y: Int): Color = c(x, y)
-  def canvasToPpm(c: Canvas): Seq[String] = PpmWriter(c)
+  def canvasToPpm(c: Canvas): Seq[String] = resource.PpmWriter(c)
 
-  def tuple(x: Double, y: Double, z: Double, w: Double): Tuple4 = Tuple4(x, y, z, w)
+  def tuple(x: Double, y: Double, z: Double, w: Double): math.Tuple4 = math.Tuple4(x, y, z, w)
   def point(x: Double, y: Double, z: Double): Point3D = Point3D(x, y, z)
   def vector(x: Double, y: Double, z: Double): Vector3D = Vector3D(x, y, z)
   def color(red: Double, green: Double, blue: Double): Color = Color(red, green, blue)
@@ -38,17 +38,17 @@ trait TestHelpers extends Shapes {
   // Rendering
   def intersect(s: Shape, r: Ray): Seq[Intersection] = s.intersect(r)
   def intersection(t: Double, s: Shape): Intersection = Intersection(t, s)
-  def intersectionWithUv(t: Double, s: Shape, u: Double, v: Radians) = Intersection(t, s, u, v)
+  def intersectionWithUv(t: Double, s: Shape, u: Double, v: Double) = Intersection(t, s, u, v)
   def intersectionPairs(xs: (Double, Shape)*): Seq[Intersection] =
     xs.map { case (t, shape) => Intersection(t, shape) }
   def intersections(xs: Intersection*): Seq[Intersection] = Intersection.sort(xs)
   def hit(xs: Seq[Intersection]): Option[Intersection] = Intersection.hit(xs)
-  def setTransform[S <: Shape](s: S, t: Matrix): S = s.setTransform(t).asInstanceOf[S]
+//  def setTransform[S <: Shape](s: S, t: Matrix): S = s.setTransform(t).asInstanceOf[S]
   def normalAt(s: Shape, p: Point3D): Vector3D = s.normalAt(p, Intersection(0, s, 0, 0))
   def normalAt(s: Shape, p: Point3D, i: Intersection): Vector3D = s.normalAt(p, i)
 
-  def localNormalAt(s: MutableShape, p: Point3D): Vector3D = s.localNormalAt(p, null)
-  def localIntersect(s: MutableShape, r: Ray): Seq[Intersection] = s.localIntersect(r)
+  def localNormalAt(s: Shape, p: Point3D): Vector3D = s.localNormalAt(p, null)
+  def localIntersect(s: Shape, r: Ray): Seq[Intersection] = s.localIntersect(r)
   def pointLight(position: Point3D, intensity: Color): PointLight = PointLight(position, intensity)
   def material(): Material = Material()
 
@@ -93,8 +93,6 @@ trait TestHelpers extends Shapes {
 
   def worldToObject(s: Shape, point: Point3D): Point3D = s.worldToObject(point)
   def normalToWorld(s: Shape, normal: Vector3D): Vector3D = s.normalToWorld(normal)
-
-  def testShape(): TestShape = TestShape(identityMatrix, material())
 
   def addChild(g: Group, child: Shape): Group = g.add(child)
 

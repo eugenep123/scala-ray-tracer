@@ -2,6 +2,7 @@ package raytracer
 package shapes
 
 import org.scalatest.prop.TableDrivenPropertyChecks._
+import raytracer.math._
 
 class CylindersSpec extends BaseSpec {
 
@@ -120,7 +121,7 @@ class CylindersSpec extends BaseSpec {
       Then("box.min = point(-1, -5, -1)")
       And("box.max = point(1, 3, 1)")
 
-      val box = cylinder().setMinimum(-5).setMaximum(3).bounds
+      val box = cylinder(-5, 3).bounds
       assert(box.minimum == point(-1, -5, -1))
       assert(box.maximum == point(1, 3, 1))
     }
@@ -149,9 +150,7 @@ class CylindersSpec extends BaseSpec {
         When("xs ← local_intersect(cyl, r)")
         Then(s"xs.count = $count")
 
-        val cyl = cylinder()
-            .setMinimum(1)
-            .setMaximum(2)
+        val cyl = cylinder(1, 2)
         val directionNormal = normalize(direction)
         val r = ray(point, directionNormal)
         val xs = localIntersect(cyl, r)
@@ -183,10 +182,7 @@ class CylindersSpec extends BaseSpec {
         When("xs ← local_intersect(cyl, r)")
         Then("xs.count = <count>")
 
-        val cyl = cylinder()
-          .setMinimum(1)
-          .setMaximum(2)
-          .setClosed(true)
+        val cyl = cylinder( 1, 2, true)
         val directionNormal = normalize(direction)
         val r = ray(point, directionNormal)
         assert(cyl.closed)
@@ -217,10 +213,7 @@ class CylindersSpec extends BaseSpec {
         When(s"n ← local_normal_at(cyl, $point)")
         Then("n = <normal>")
 
-        val cyl = cylinder()
-          .setMinimum(1)
-          .setMaximum(2)
-          .setClosed(true)
+        val cyl = cylinder(1, 2, true)
         val n = localNormalAt(cyl, point)
         assert(n == normal)
       }

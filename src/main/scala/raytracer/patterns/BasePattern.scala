@@ -1,7 +1,8 @@
-package raytracer
-package patterns
+package raytracer.patterns
 
-import raytracer.shapes.Shape
+import raytracer._
+import math._
+import shapes._
 
 abstract class BasePattern extends Pattern {
 

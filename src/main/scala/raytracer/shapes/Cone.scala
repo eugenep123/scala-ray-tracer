@@ -2,8 +2,7 @@ package raytracer
 package shapes
 
 import java.lang.Math.{abs, max, pow, sqrt}
-
-import raytracer.shapes
+import math._
 
 import scala.collection.mutable.ListBuffer
 
@@ -11,9 +10,9 @@ import scala.collection.mutable.ListBuffer
   * A Cone along the y axis, with radius on 1
   */
 final class Cone(
-  minimum: Double,
-  maximum: Double,
-  closed: Boolean,
+  val minimum: Double,
+  val maximum: Double,
+  val closed: Boolean,
   transform: Matrix,
   material: Option[Material]) extends Shape(transform, material) {
 

@@ -1,6 +1,8 @@
 package raytracer
-import raytracer.Operations._
 
+import math._
+import Operations._
+import shapes._
 
 object Defaults {
 
@@ -29,7 +31,6 @@ object Defaults {
     refractiveIndex = 1.0,
     pattern = None
   )
-
 
   def world: World = {
     val light = PointLight(Point3D(-10, 10, -10), Color(1, 1, 1))

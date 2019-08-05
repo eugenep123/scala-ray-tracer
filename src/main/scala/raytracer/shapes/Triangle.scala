@@ -1,7 +1,8 @@
 package raytracer
 package shapes
 
-import math.abs
+import scala.math.abs
+import math._
 
 class Triangle(
   val p1: Point3D,
@@ -40,7 +41,7 @@ class Triangle(
 
   override protected def calculateBounds: BoundingBox = BoundingBox(p1, p2, p3)
 
-  override def canEqual(other: Any): Boolean = other.asInstanceOf[Triangle]
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Triangle]
 
   override def hashCode: Int = {
     (super.hashCode, p1, p2, p3).hashCode()
@@ -61,6 +62,4 @@ object Triangle {
   def fanTriangulation(vertices: Seq[Point3D]): Seq[Triangle] = {
     (1 until vertices.size - 1).map(index => Triangle(vertices(0), vertices(index), vertices(index + 1)))
   }
-
-
 }

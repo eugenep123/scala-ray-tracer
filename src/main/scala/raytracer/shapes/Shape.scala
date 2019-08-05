@@ -1,52 +1,89 @@
-//package raytracer.shapes
-//
-//import raytracer.{BoundingBox, Builder, Color, Intersection, Material, Matrix, Pattern, Point3D, Ray, TransformBuilder, Vector3D}
-//
-//trait Shape {
-//
-//  // Ignore bounds, shadows, reflection on debug shapes
-//  def renderAllRays: Boolean
-//  def parent: Option[Shape]
-//  def transform: Matrix
-//  def material: Material
-//
-//  //Helpers
-//  def setTransform(t: Matrix): this.type
-//  def setMaterial(m: Material): this.type
-//  def setParent(p: Option[Shape]): this.type
-//  def setRenderAllRays(enabled: Boolean): this.type
-//
-//  def intersect(ray: Ray): Seq[Intersection]
-//  def normalAt(point: Point3D, hit: Intersection): Vector3D
-//
-//  def worldToObject(point: Point3D): Point3D
-//  def normalToWorld(normal: Vector3D): Vector3D
-//
-//  // returns a bounding box in object space
-//  def bounds: BoundingBox
-//
-////  def worldToObjectTransform: Matrix
-//
-//
-//
-//  // Helpers
-//  final def updateMaterial(f: Material => Material): this.type = setMaterial(f(material))
-//  final def setPattern(p: Pattern): this.type = updateMaterial(_.setPattern(p))
-//  final def setReflective(r: Double): this.type = updateMaterial(_.setReflective(r))
-//  final def setRefractiveIndex(i: Double): this.type = updateMaterial(_.setRefractiveIndex(i))
-//  final def setTransparency(t: Double): this.type = updateMaterial(_.setTransparency(t))
-//  final def setAmbient(a: Double): this.type = updateMaterial(_.setAmbient(a))
-//  final def setColor(c: Color): this.type = updateMaterial(_.setColor(c))
-//  final def setColor(r: Double, g: Double, b: Double): this.type = setColor(Color(r, g, b))
-//
-//  final def builtTransform(f: TransformBuilder => TransformBuilder): this.type =
-//    setTransform(f(Builder))
-//
-//  final def path: List[Shape] = Shape.mkPath(this, Nil)
-//}
-//
-//object Shape {
-//  def mkPath(s: Shape, acc: List[Shape]): List[Shape] = {
-//    s.parent.fold(s :: acc)(p => mkPath(p, s :: acc))
-//  }
-//}
+package raytracer
+package shapes
+
+import math._
+
+/**
+  * Shape is mostly immutable (except parent). You also cannot share shapes between groups
+  *
+  * @param transform
+  * @param materialOpt
+  */
+abstract class Shape(
+  val transform: Matrix,
+  val materialOpt: Option[Material]) {
+
+  private var _parent = Option.empty[Shape]
+  @volatile private var _bounds = Option.empty[BoundingBox]
+
+  final def material: Material = {
+    materialOpt orElse(parent.map(_.material)) getOrElse Material.Default
+  }
+
+  final def parent: Option[Shape] = _parent
+  final def parent_=(opt: Option[Shape]): Unit = {
+    this._parent = opt
+    this._bounds = None
+  }
+  final def setParent(p: Option[Shape]): this.type = {
+    this.parent = p
+    this
+  }
+
+  final def bounds: BoundingBox = {
+    _bounds.getOrElse {
+      val b = calculateBounds
+      _bounds = Some(b)
+      b
+    }
+  }
+  protected def calculateBounds: BoundingBox
+
+  final def intersect(ray: Ray): Seq[Intersection] = {
+    val localRay = ray.transform(transform.inverse)
+    localIntersect(localRay)
+  }
+
+  final def normalAt(point: Point3D, hit: Intersection): Vector3D = {
+    val localPoint = worldToObject(point)
+    val localNormal = localNormalAt(localPoint, hit)
+    normalToWorld(localNormal)
+  }
+
+  def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D
+  def localIntersect(ray: Ray): Seq[Intersection]
+
+
+  final def worldToObject(point: Point3D): Point3D = {
+    val p = parent.fold(point)(_.worldToObject(point))
+    transform.inverse * p
+  }
+
+  final def normalToWorld(normal: Vector3D): Vector3D = {
+    val n = (transform.inverse.transpose * normal).normalize
+    parent.fold(n)(_.normalToWorld(n))
+  }
+
+  def canEqual(other: Any): Boolean
+
+  final override def equals(other: Any): Boolean = {
+    other match {
+      case shape: Shape =>
+        shape.canEqual(this) && this.hashCode == shape.hashCode
+      case _ => false
+    }
+  }
+
+  override def hashCode: Int = {
+    31 + transform.hashCode() + materialOpt.hashCode()
+  }
+
+  final def cloneWith(f: ShapeBuilder => ShapeBuilder): Shape = {
+    f(Shape.from(this)).buildOfType(this)
+  }
+}
+
+object Shape {
+  def apply(): ShapeBuilder = new ShapeBuilder()
+  def from(s: Shape): ShapeBuilder = new ShapeBuilder(s.transform, s.materialOpt)
+}

@@ -1,6 +1,7 @@
 package raytracer
 
 import java.lang.Math.ceil
+import math._
 
 case class Color(red: Double, green: Double, blue: Double) {
 

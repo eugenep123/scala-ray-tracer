@@ -1,6 +1,7 @@
 package raytracer
 
-import math.sqrt
+import scala.math.sqrt
+import raytracer.math._
 
 class CameraSpec extends BaseSpec {
 

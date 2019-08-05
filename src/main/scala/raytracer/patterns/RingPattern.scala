@@ -1,5 +1,7 @@
-package raytracer
-package patterns
+package raytracer.patterns
+
+import raytracer.math.{Matrix, Point3D}
+import raytracer.Color
 import math.{floor, pow, sqrt}
 
 case class RingPattern(a: Color, b: Color, transform: Matrix) extends BasePattern {

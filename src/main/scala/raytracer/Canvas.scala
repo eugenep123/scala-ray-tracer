@@ -1,6 +1,6 @@
 package raytracer
 
-import raytracer.files.PpmWriter
+import resource.PpmWriter
 
 case class Canvas(width: Int, height: Int) {
   private val array = Array.fill[Color](width * height)(Color.Black)

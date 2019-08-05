@@ -1,6 +1,7 @@
 package raytracer.patterns
 
-import raytracer.{Color, Matrix, Point3D}
+import raytracer.math.{Matrix, Point3D}
+import raytracer.Color
 
 case class StripePattern(a: Color, b: Color, transform: Matrix) extends BasePattern {
   override def colorAt(point: Point3D): Color = {

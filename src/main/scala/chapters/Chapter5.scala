@@ -1,8 +1,10 @@
 package chapters
 
 import raytracer._
-import raytracer.files.PpmWriter
-import raytracer.shapes.Shape
+import shapes._
+import math._
+import Operations._
+import resource.PpmWriter
 
 object Chapter5 extends App {
 
@@ -49,7 +51,6 @@ object Chapter5 extends App {
 
 
   private def mkFunSphere(opt: Int): Shape = {
-    import Operations._
     opt match {
       // borin sphere
       case 0 => Shapes.sphere()

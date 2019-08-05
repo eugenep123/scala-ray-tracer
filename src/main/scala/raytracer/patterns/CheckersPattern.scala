@@ -1,7 +1,8 @@
-package raytracer
-package patterns
+package raytracer.patterns
 
 import math.floor
+import raytracer.math.{Matrix, Point3D}
+import raytracer.Color
 
 case class CheckersPattern(a: Color, b: Color, transform: Matrix) extends BasePattern {
   override def colorAt(point: Point3D): Color = {

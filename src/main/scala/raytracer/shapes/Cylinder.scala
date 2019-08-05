@@ -3,15 +3,16 @@ package shapes
 
 import java.lang.Math.{abs, pow, sqrt}
 
+import math._
 import scala.collection.mutable.ListBuffer
 
 /**
   * A cylinder along the y axis, with radius on 1
   */
 final class Cylinder(
-  minimum: Double,
-  maximum: Double,
-  closed: Boolean,
+  val minimum: Double,
+  val maximum: Double,
+  val closed: Boolean,
   transform: Matrix,
   material: Option[Material]) extends Shape(transform, material) {
 
@@ -112,7 +113,4 @@ object Cylinder {
    material: Option[Material] = None): Cylinder = {
     new Cylinder(minimum, maximum, closed, transform, material)
   }
-
-
-
 }

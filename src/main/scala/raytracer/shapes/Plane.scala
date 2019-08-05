@@ -1,6 +1,8 @@
 package raytracer
 package shapes
 
+import math._
+
 import scala.math.abs
 
 /**
@@ -26,7 +28,6 @@ final class Plane(
   override protected def calculateBounds: BoundingBox = Plane.Bounds
 
   override def canEqual(other: Any): Boolean = other.isInstanceOf[Plane]
-
 }
 
 object Plane {

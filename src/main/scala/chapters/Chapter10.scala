@@ -1,19 +1,21 @@
 package chapters
 
-import raytracer.Operations._
 import raytracer._
-import raytracer.patterns._
+import patterns._
+import shapes._
 import Color._
 import Shapes._
-import raytracer.shapes.Shape
+import math._
+import Operations._
 
 object Chapter10 extends RenderApp {
   override def objects: Seq[Shape] = {
 
 
-    val floor = plane()
-      .setPattern(StripePattern(Red, Blue, scaling(2, 2, 2)))
-      .setTransform(rotationY(PI/2))
+    val floor = plane(
+      rotationY(PI/2),
+      Material().setPattern(StripePattern(Red, Blue, scaling(2, 2, 2)))
+    )
 
     val middle = sphere(
       translation(-0.5, 1, 0.5),

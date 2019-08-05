@@ -1,7 +1,7 @@
 package raytracer
 package shapes
 
-import scala.math.abs
+import math._
 
 class SmoothTriangle(
   p1: Point3D, p2: Point3D, p3: Point3D,
@@ -12,7 +12,6 @@ class SmoothTriangle(
   override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D = {
     n2 * hit.u + n3 * hit.v + n1 * (1 - hit.u - hit.v)
   }
-
   override def canEqual(other: Any): Boolean = other.isInstanceOf[SmoothTriangle]
 
   override def hashCode: Int = {

@@ -2,6 +2,9 @@ package raytracer
 
 import Math.pow
 
+import math.{Point3D, Vector3D}
+import patterns.Pattern
+
 case class Material(
   color: Color,
   ambient: Double,
@@ -94,4 +97,7 @@ object Material {
       reflective, transparency, refractiveIndex,
       pattern)
   }
+
+  implicit def materialToOptionMatrix(m: Material): Option[Material] = Some(m)
+
 }

@@ -3,6 +3,8 @@ package shapes
 
 import java.lang.Math.{pow, sqrt}
 
+import math.{Intersection, Matrix, Point3D, Ray, Vector3D}
+
 final class Sphere(
   transform: Matrix,
   material: Option[Material]) extends Shape(transform, material) {
@@ -21,8 +23,8 @@ final class Sphere(
       val t1 = (-b - sqrt(discriminant)) / (2 * a)
       val t2 = (-b + sqrt(discriminant)) / (2 * a)
       Seq(
-        raytracer.Intersection(t1, this),
-        raytracer.Intersection(t2, this)
+        Intersection(t1, this),
+        math.Intersection(t2, this)
       )
     }
   }
@@ -33,13 +35,14 @@ final class Sphere(
 
   override def canEqual(other: Any): Boolean = other.isInstanceOf[Sphere]
   override protected def calculateBounds: BoundingBox = Sphere.Bounds
+
 }
 
 object Sphere {
   def apply(
     transform: Matrix = Matrix.identity,
     material: Option[Material] = None): Sphere = {
-    new Sphere(transform.getOrElse(Matrix.identity), material)
+    new Sphere(transform, material)
   }
 
   val Bounds = shapes.BoundingBox(Point3D(-1, -1, -1), Point3D(1, 1, 1))

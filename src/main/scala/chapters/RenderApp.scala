@@ -1,8 +1,9 @@
 package chapters
 
-import raytracer.Operations._
 import raytracer._
-import raytracer.shapes.Shape
+import shapes._
+import math._
+import Operations._
 
 abstract class RenderApp {
 

@@ -1,8 +1,9 @@
-package raytracer
-package shapes
+package raytracer.shapes
 
-import raytracer.Point3D.{max, min}
-import raytracer.shapes.Cube.checkAxis
+import raytracer.math._
+import Cube.checkAxis
+import Point3D._
+import raytracer.Defaults
 
 //http://www.raytracerchallenge.com/bonus/bounding-boxes.html
 final case class BoundingBox(

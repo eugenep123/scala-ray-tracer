@@ -1,9 +1,9 @@
 package chapters
 
 import raytracer._
+import shapes._
+import math._
 import Operations._
-import raytracer.shapes.Shape
-
 
 object Chapter7 extends RenderApp {
   import Shapes._

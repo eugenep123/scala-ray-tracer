@@ -2,9 +2,8 @@ package raytracer
 package shapes
 
 import javax.naming.OperationNotSupportedException
-
+import math._
 import scala.collection.mutable.ListBuffer
-
 
 final class Group(
   transform: Matrix,
@@ -74,22 +73,21 @@ object Group {
   }
 
   def create(xs: Seq[Shape]): Group = {
-//    xs.size match {
-//      case 0 => Group()
-//      case 1 =>
-//        xs.head match {
-//          case g: Group => g
-//          case other =>
-//            val g = new Group()
-//            g.add(other)
-//            g
-//        }
-//      case _ =>
-//        val g = new Group()
-//        xs.foreach(g add _)
-//        g
-//    }
-    ???
+    xs.size match {
+      case 0 => Group()
+      case 1 =>
+        xs.head match {
+          case g: Group => g
+          case other =>
+            val g = Group()
+            g.add(other)
+            g
+        }
+      case _ =>
+        val g = Group()
+        xs.foreach(g add _)
+        g
+    }
   }
 
 }

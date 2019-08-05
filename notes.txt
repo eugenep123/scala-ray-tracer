@@ -10,6 +10,9 @@ Matrix => Matrix4
 move to better packages
 
 
+Issues:
+    clone existing object with some modifications
+
 add name to shape
     load name in yaml
     load name in obj
@@ -22,13 +25,6 @@ update setters
 
 consider to move children to shape
 
-
-
-create new shape builder
-    val floor = MakeShape
-      .setPattern(StripePattern(Red, Blue, scaling(2, 2, 2)))
-      .setTransform(rotationY(PI/2))
-      .plane()
 
 Matrix optimizations:
 

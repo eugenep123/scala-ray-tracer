@@ -1,6 +1,7 @@
 package raytracer
 package shapes
 
+import math._
 import scala.math.{abs, max, min}
 
 /**
@@ -42,16 +43,27 @@ object Cube {
   val Bounds = shapes.BoundingBox(Point3D(-1, -1, -1), Point3D(1, 1, 1))
 
   def apply(
-    transform: Option[Matrix] = None,
+    transform: Matrix = Matrix.identity,
     material: Option[Material] = None): Cube = {
-    new Cube(transform.getOrElse(Matrix.identity), material)
+    new Cube(transform, material)
   }
 
   @inline final def checkAxis(origin: Double, direction: Double, min: Double, max: Double): (Double, Double) = {
-    val positiveDirection =
-      if (abs(direction) >= EPSILON) direction else INFINITY
-    val tmin = (min - origin) / positiveDirection
-    val tmax = (max - origin) / positiveDirection
+    val tminNumerator = min - origin
+    val tmaxNumerator = max - origin
+
+    if (abs(direction) >= EPSILON) {
+      val tmin = tminNumerator / direction
+      val tmax = tmaxNumerator / direction
+      inOrder(tmin, tmax)
+    } else {
+      val tmin = tminNumerator * INFINITY
+      val tmax = tmaxNumerator * INFINITY
+      inOrder(tmin, tmax)
+    }
+  }
+
+  @inline private final def inOrder(tmin: Double, tmax: Double): (Double, Double) = {
     if (tmin > tmax) (tmax, tmin)
     else (tmin, tmax)
   }

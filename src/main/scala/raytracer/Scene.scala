@@ -1,6 +1,6 @@
 package raytracer
 
-import raytracer.yaml.YamlParser
+import resource.yaml.YamlParser
 import org.scalameter.measure
 
 case class Scene(world: World, camera: Camera) {

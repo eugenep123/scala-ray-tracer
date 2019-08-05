@@ -66,11 +66,8 @@ class GroupsSpec extends BaseSpec {
 
       val g = group()
       val s1 = sphere()
-      val s2 = sphere()
-      setTransform(s2, translation(0, 0, -3))
-
-      val s3 = sphere()
-      setTransform(s3, translation(5, 0, 0))
+      val s2 = sphere(translation(0, 0, -3))
+      val s3 = sphere(translation(5, 0, 0))
 
       addChild(g, s1)
       addChild(g, s2)
@@ -94,10 +91,9 @@ class GroupsSpec extends BaseSpec {
       And("xs ← intersect(g, r)")
       Then("xs.count = 2")
 
-      val g = group()
-      setTransform(g, scaling(2, 2, 2))
-      val s = sphere()
-      setTransform(s, translation(5, 0, 0))
+      val g = group(scaling(2, 2, 2))
+
+      val s = sphere(translation(5, 0, 0))
       addChild(g, s)
       val r = ray(point(10, 0, -10), vector(0, 0, 1))
       val xs = intersect(g, r)
