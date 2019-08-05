@@ -1,4 +1,4 @@
-package raytracer
+package raytracer.math
 
 import java.lang.Math.abs
 
@@ -11,8 +11,12 @@ final case class Point3D(x: Double, y: Double, z: Double) {
   def unary_- = Point3D(-x, -y, -z)
 
   override def equals(other: Any): Boolean = other match {
-    case rhs: Point3D => Point3D.isEquals(this, rhs)
-    case rhs: Tuple4 => Tuple4.isEquals(this.asTuple, rhs)
+    case rhs: Point3D =>
+      abs(x - rhs.x) < EPSILON_TEST &&
+      abs(y - rhs.y) < EPSILON_TEST &&
+      abs(z - rhs.z) < EPSILON_TEST
+    case rhs: Tuple4 =>
+      asTuple.equals(rhs)
     case _ => false
   }
 
@@ -23,12 +27,6 @@ final case class Point3D(x: Double, y: Double, z: Double) {
 
 object Point3D {
   val origin = Point3D(0, 0, 0)
-
-  @inline final def isEquals(lhs: Point3D, rhs: Point3D): Boolean = {
-    abs(lhs.x - rhs.x) < EPSILON_TEST &&
-    abs(lhs.y - rhs.y) < EPSILON_TEST &&
-    abs(lhs.z - rhs.z) < EPSILON_TEST
-  }
 
   @inline def min(a: Point3D, b: Point3D): Point3D =
     Point3D(math.min(a.x, b.x), math.min(a.y, b.y), math.min(a.z, b.z))

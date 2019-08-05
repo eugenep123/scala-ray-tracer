@@ -1,8 +1,8 @@
-package raytracer
-package yaml
+package raytracer.resource.yaml
 
-import raytracer.math.{Matrix, Operation, Operations, Point3D, Vector3D}
-import raytracer.patterns.{CheckersPattern, GradientPattern, Pattern, StripePattern}
+import raytracer.{Camera, Color, Defaults, Material, PointLight, Scene, World}
+import raytracer.math._
+import raytracer.patterns._
 import raytracer.resource.ResourceLoader
 import raytracer.shapes._
 

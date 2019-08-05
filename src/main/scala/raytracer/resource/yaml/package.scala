@@ -1,4 +1,4 @@
-package raytracer
+package raytracer.resource
 
 package object yaml {
 

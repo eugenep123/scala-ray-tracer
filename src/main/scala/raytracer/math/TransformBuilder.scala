@@ -1,6 +1,5 @@
-package raytracer
-
-import raytracer.Operation._
+package raytracer.math
+import Operation._
 
 case class TransformBuilder private(operations: List[Operation]) {
 

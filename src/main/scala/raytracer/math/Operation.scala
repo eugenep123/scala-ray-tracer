@@ -1,4 +1,5 @@
 package raytracer
+package math
 
 sealed abstract class Operation extends Product with Serializable {
   def matrix: Matrix

@@ -1,6 +1,6 @@
-package raytracer
+package raytracer.math
 
-import raytracer.math.Ray
+import raytracer.math
 import raytracer.shapes.Shape
 
 // u/v is only used for smooth triangles
@@ -11,15 +11,15 @@ case class Intersection(
   v: Double = 0.0) {
 
   def prepare(ray: Ray, xs: Seq[Intersection]): RayIntersection = {
-    val Point3D = ray.position(t)
+    val point = ray.position(t)
     val eye = -ray.direction
-    val normal = obj.normalAt(Point3D, this)
+    val normal = obj.normalAt(point, this)
     val (n1, n2) = calculateRefractive(xs)
 
     if (normal.dot(eye) < 0)
-      RayIntersection(ray, t, obj, Point3D, eye, -normal, inside = true, n1, n2)
+      math.RayIntersection(ray, t, obj, point, eye, -normal, inside = true, n1, n2)
     else
-      RayIntersection(ray, t, obj, Point3D, eye, normal, inside = false, n1, n2)
+      math.RayIntersection(ray, t, obj, point, eye, normal, inside = false, n1, n2)
   }
 
   @inline private final def calculateRefractive(xs: Seq[Intersection]): (Double, Double) = {

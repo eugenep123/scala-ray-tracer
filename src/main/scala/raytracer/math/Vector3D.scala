@@ -1,6 +1,6 @@
-package raytracer
+package raytracer.math
 
-import java.lang.Math.{abs, pow, sqrt}
+import java.lang.Math.{pow, sqrt}
 
 final case class Vector3D(x: Double, y: Double, z: Double) {
   def w: Double = 0.0
@@ -27,8 +27,11 @@ final case class Vector3D(x: Double, y: Double, z: Double) {
 
   override def equals(obj: Any): Boolean = {
     obj match {
-      case rhs: Vector3D => Vector3D.isEquals(this, rhs)
-      case rhs: Tuple4 => Tuple4.isEquals(this.asTuple, rhs)
+      case rhs: Vector3D =>
+        math.abs(x - rhs.x) < EPSILON_TEST &&
+        math.abs(y - rhs.y) < EPSILON_TEST &&
+        math.abs(z - rhs.z) < EPSILON_TEST
+      case rhs: Tuple4 => rhs.equals(this.asTuple)
       case _ => false
     }
   }
@@ -39,11 +42,6 @@ final case class Vector3D(x: Double, y: Double, z: Double) {
 }
 
 object Vector3D {
-  @inline final def isEquals(lhs: Vector3D, rhs: Vector3D): Boolean = {
-    abs(lhs.x - rhs.x) < EPSILON_TEST &&
-    abs(lhs.y - rhs.y) < EPSILON_TEST &&
-    abs(lhs.z - rhs.z) < EPSILON_TEST
-  }
 
   @inline final def reflect(in: Vector3D, normal: Vector3D): Vector3D = {
     in - normal * 2 * in.dot(normal)

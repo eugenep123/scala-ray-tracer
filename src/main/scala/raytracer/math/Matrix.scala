@@ -1,4 +1,4 @@
-package raytracer
+package raytracer.math
 
 import scala.math.abs
 

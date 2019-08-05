@@ -1,6 +1,4 @@
-package raytracer
-
-import raytracer.Tuple4._
+package raytracer.math
 
 import scala.math.abs
 
@@ -17,18 +15,14 @@ final case class Tuple4(
 
   override def equals(obj: Any): Boolean = {
     obj match {
-      case rhs: Tuple4 => isEquals(this, rhs)
-      case rhs: Vector3D => isEquals(this, rhs.asTuple)
-      case rhs: Point3D => isEquals(this, rhs.asTuple)
+      case rhs: Tuple4 => tupleEquals(rhs)
+      case rhs: Vector3D => tupleEquals(rhs.asTuple)
+      case rhs: Point3D => tupleEquals(rhs.asTuple)
       case _ => false
     }
   }
-}
 
-object Tuple4 {
-  @inline final def isEquals(lhs: Tuple4, rhs: Tuple4): Boolean = {
-    abs(lhs.x - rhs.x) < EPSILON_TEST &&
-    abs(lhs.y - rhs.y) < EPSILON_TEST &&
-    abs(lhs.z - rhs.z) < EPSILON_TEST
+  @inline protected def tupleEquals(rhs: Tuple4): Boolean = {
+    abs(x - rhs.x) < EPSILON_TEST && abs(y - rhs.y) < EPSILON_TEST && abs(z - rhs.z) < EPSILON_TEST
   }
 }
