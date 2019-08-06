@@ -8,22 +8,33 @@ class ModelSpec extends WordSpec with Matchers with TestHelpers {
 
   "The model" should {
 
-    "2 matrices should be equal and have the same hash code" in {
-      val m1: Matrix = translation(0, -1, 0).matrix
-      val m2: Matrix = TransformBuilder().translate(0, -1, 0).build()
-      m1 shouldEqual m2
-      m1.hashCode() shouldEqual m2.hashCode()
+    "equality checks" should {
 
-    }
-    "any 2 object should be equal if all their ars match (except parent)" in {
+      def assertEquals(a: Shape, b: Shape): Unit = {
+        a.transform shouldEqual b.transform
+        a.material shouldEqual b.material
+        a.hashCode shouldEqual b.hashCode
+        a shouldEqual b
+      }
 
-      val p1 = plane(translation(0, -1, 0))
-      val p2 = Shape().translate(0, -1, 0).plane
+      "support Matrices" in {
+        val m1: Matrix = translation(0, -1, 0).matrix
+        val m2: Matrix = TransformBuilder().translate(0, -1, 0).build()
+        m1 shouldEqual m2
+        m1.hashCode() shouldEqual m2.hashCode()
+      }
 
-      p1.transform shouldEqual p2.transform
-      p1.material shouldEqual p2.material
-      p1.hashCode shouldEqual p2.hashCode
-      p1 shouldEqual p2
+      "support plans" in {
+        val a = plane(translation(0, -1, 0))
+        val b = Shape().translate(0, -1, 0).plane
+        assertEquals(a, b)
+      }
+
+      "support cubes" in {
+        val a = cube(translation(0, -1, 0))
+        val b = Shape().translate(0, -1, 0).cube
+        assertEquals(a, b)
+      }
     }
 
     "create objects correctly" in {

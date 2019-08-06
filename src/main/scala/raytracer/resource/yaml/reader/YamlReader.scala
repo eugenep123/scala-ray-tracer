@@ -1,38 +1,35 @@
-package raytracer.resource.yaml
-
+package raytracer.resource.yaml.reader
 
 import raytracer.Color
 import raytracer.math.{Operation, Point3D, Vector3D}
+import raytracer.resource.yaml.AST._
 
 // Used to read YamlMaps
 object YamlReader {
-  import AST._
-  import Converters._
   import ParseResult._
-  import Readers._
+  import raytracer.resource.yaml.reader.Converters._
+  import raytracer.resource.yaml.reader.Readers._
 
-  implicit val ColorReader: ValueReader[Color] = (value: Any) => fromTuple3(Color.apply)(value)
-  implicit val Point3DReader: ValueReader[Point3D] = (value: Any) => fromTuple3(Point3D.apply)(value)
-  implicit val Vector3DReader: ValueReader[Vector3D] = (value: Any) => fromTuple3(Vector3D.apply)(value)
 
-  def readYamlValue(m: YamlMap): ParseResult[YamlValue] = {
-    val result =
-      if (m.contains("add")) AddValueReader.readMap(m)
-      else if (m.contains("define")) DefineValueReader.readMap(m)
-      else fail("Unsupported type")
-    result.withDetail(m)
+  // Top level reader
+  implicit object YamlValueReader extends MapReader[YamlValue] {
+    override def readMap(map: YamlMap): ParseResult[YamlValue] = {
+      val result =
+        if (map.contains("add")) AddValueReader.readMap(map)
+        else if (map.contains("define")) DefineValueReader.readMap(map)
+        else fail("Unsupported type")
+      result.withDetail(map)
+    }
   }
 
-  implicit object TransformTransformValue extends ListReader[TransformValue] {
-    override def readSeq(xs: Vector[Any]): ParseResult[TransformValue] = {
-      ParseResult.sequence(xs, readTransformItem).map(TransformValue.apply)
+  implicit object TransformListReader extends ListReader[TransformList] {
+    override def readSeq(xs: Vector[Any]): ParseResult[TransformList] = {
+      ParseResult.sequence(xs, readTransformItem).map(TransformList.apply)
     }
     def readTransformItem(value: Any): ParseResult[TransformItem] = {
       value match {
         case ref: String => success(TransformReference(ref))
-        case other =>
-          // Read operation (list)
-          toVectorAny(value).flatMap(readTransformOperation)
+        case _ => toVectorAny(value).flatMap(readTransformOperation)
       }
     }
 
@@ -63,13 +60,12 @@ object YamlReader {
     override def readMap(map: YamlMap): ParseResult[PatternValue] = {
       for {
         patternType <- map.readString("type")
-        transformOpt <- map.readOpt[TransformValue]("transform")
-        transform = transformOpt getOrElse TransformValue(Nil)
+        transform <- map.readOpt[TransformList]("transform")
         pattern <- readPattern(map, patternType, transform)
       } yield pattern
     }
 
-    def readPattern(map: YamlMap, patternType: String, transform: TransformValue): ParseResult[PatternValue] = {
+    def readPattern(map: YamlMap, patternType: String, transform: TransformOption): ParseResult[PatternValue] = {
       patternType match {
         case "checkers" => readColor2Pattern(map, transform, CheckersPatternValue.apply)
         case "stripes" => readColor2Pattern(map, transform, StripePatternValue.apply)
@@ -81,8 +77,8 @@ object YamlReader {
 
     def readColor2Pattern(
       map: YamlMap,
-      transform: TransformValue,
-      f: (Color, Color, TransformValue) => PatternValue): ParseResult[PatternValue] = {
+      transform: TransformOption,
+      f: (Color, Color, TransformOption) => PatternValue): ParseResult[PatternValue] = {
       readColorPair(map) map { pair =>
         val (a, b) = pair
         f(a, b, transform)
@@ -102,14 +98,13 @@ object YamlReader {
     override def read(value: Any): ParseResult[MaterialValue] = {
       value match {
         case ref: String => success(MaterialReference(ref))
-        case _ => readMaterialObject(value)
+        case _ => MaterialObjectReader.read(value)
       }
     }
+  }
 
-    def readMaterialObject(value: Any): ParseResult[MaterialValue] =
-      toMap(value).flatMap(readMaterialObjectMap)
-
-    def readMaterialObjectMap(map: YamlMap): ParseResult[MaterialValue] = {
+  implicit object MaterialObjectReader extends MapReader[MaterialObject] {
+    override def readMap(map: YamlMap): ParseResult[MaterialObject] = {
       for {
         color <- map.readOpt[Color]("color")
         diffuse <- map.readDoubleOpt("diffuse")
@@ -133,11 +128,10 @@ object YamlReader {
 
     def readAdd(map: YamlMap, addType: String): ParseResult[A]
 
-    def readBaseShape(map: YamlMap)(f: (TransformValue, Option[MaterialValue]) => ParseResult[A]): ParseResult[A] = {
+    def readBaseShape(map: YamlMap)(f: (TransformOption, MaterialOption) => ParseResult[A]): ParseResult[A] = {
       for {
         material <- map.readOpt[MaterialValue]("material")
-        transformOpt <- map.readOpt[TransformValue]("transform")
-        transform = transformOpt getOrElse TransformValue(Nil)
+        transform <- map.readOpt[TransformList]("transform")
         result <- f(transform, material)
       } yield result
     }
@@ -191,31 +185,30 @@ object YamlReader {
     def readShape(
       map: YamlMap,
       shapeType: String,
-      transform: TransformValue,
-      material: Option[MaterialValue]): ParseResult[ShapeValue] = {
+      transform: TransformOption,
+      material: MaterialOption): ParseResult[ShapeValue] = {
       shapeType match {
-        case "sphere" => success(SphereValue(transform, material))
-        case "cube" => success(CubeValue(transform, material))
-        case "plane" => success(PlaneValue(transform, material))
+        case "sphere" => success(AddSphere(transform, material))
+        case "cube" => success(AddCube(transform, material))
+        case "plane" => success(AddPlane(transform, material))
         case "cylinder" | "cone" =>
           for {
             minimum <- map.readDouble("min")
             maximum <- map.readDouble("max")
             closed <- map.readBool("closed")
           } yield {
-            if (shapeType == "cone") ConeValue(minimum, maximum, closed, transform, material)
-            else CylinderValue(minimum, maximum, closed, transform, material)
+            if (shapeType == "cone") AddCone(minimum, maximum, closed, transform, material)
+            else AddCylinder(minimum, maximum, closed, transform, material)
           }
         case "obj" =>
           for {
             filename <- map.readString("filename")
-          } yield ObjFileValue(filename, transform, material)
+          } yield AddObjFile(filename, transform, material)
         case "group" =>
           for {
             children <- map.read[Seq[AddShape]]("children")
-          } yield GroupValue(children, transform, material)
+          } yield AddGroup(children, transform, material)
       }
-
     }
 
   }
@@ -230,7 +223,7 @@ object YamlReader {
       } yield define
     }
 
-    def typeOfKey(key: String) =
+    def typeOfKey(key: String): String =
       types.find(t => key.endsWith(s"-$t")).getOrElse(key)
 
     def readDefine(map: YamlMap, key: String): ParseResult[DefineValue] = {
@@ -239,19 +232,21 @@ object YamlReader {
         case "material" =>
           for {
             extend <- map.readStringOpt("extend")
-            value <- map.read[MaterialValue]("value")
+            value <- map.read[MaterialObject]("value")
           } yield DefineMaterial(key, extend, value)
-
         case "transform" | "object" =>
           for {
-            value <- map.read[TransformValue]("value")
+            value <- map.read[TransformList]("value")
           } yield DefineTransform(key, value)
         case "shape" =>
           for {
             value <- map.read[ShapeValue]("value")
           } yield DefineShape(key, value)
         case _ =>
-          fail(s"Invalid define type: '$defineType'")
+          // shape
+          for {
+            value <- map.read[ShapeValue]("value")
+          } yield DefineShape(key, value)
       }
     }
   }

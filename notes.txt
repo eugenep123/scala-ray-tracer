@@ -1,23 +1,18 @@
+TODO:
+    yaml reader
+        - finish new Yaml Reader (add serializer) that supports resources
+        - check in reader when unknown keys are found
 
-yaml reader
-    clean up reader
-    move build out of ast
-    clean up ast
-    check in reader when unknown keys are found
+    shapes
+        - add heagon
+    Matrix
+        rename to Matrix4
+        think about dropping the array(m)
 
-Matrix
-    rename to Matrix4
-    think about dropping the array(m)
+    add name to shape
+        load name in yaml
+        load name in obj
 
-add name to shape
-    load name in yaml
-    load name in obj
-
-update setters
-    on transform change =>
-        calc reverse transform
-    make material optional
-        return self or parent material or default
 
 consider to move children to shape
 

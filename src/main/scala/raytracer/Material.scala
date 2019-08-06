@@ -67,6 +67,8 @@ case class Material(
   def setRefractiveIndex(i: Double): Material = this.copy(refractiveIndex = i)
   def setTransparency(t: Double): Material = this.copy(transparency = t)
   def setAmbient(a: Double): Material = this.copy(ambient = a)
+  def setDiffuse(a: Double): Material = this.copy(diffuse = a)
+  def setSpecular(a: Double): Material = this.copy(specular = a)
   def setColor(c: Color): Material = this.copy(color = c)
   def setColor(r: Double, g: Double, b: Double): Material = setColor(Color(r, g, b))
 

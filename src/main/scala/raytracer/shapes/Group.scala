@@ -6,6 +6,7 @@ import math._
 import scala.collection.mutable.ListBuffer
 
 final class Group(
+                 //TODO: add name
   transform: Matrix,
   material: Option[Material]) extends Shape(transform, material) {
 

@@ -1,4 +1,4 @@
-package raytracer.resource.yaml
+package raytracer.resource.yaml.reader
 
 // Used to read.convert a java Yaml (Any) value to some type A
 trait ValueReader[A] {

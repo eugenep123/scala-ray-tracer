@@ -1,6 +1,6 @@
 package raytracer
 
-import resource.yaml.YamlParser
+import resource.yaml.Yaml
 import org.scalameter.measure
 
 case class Scene(world: World, camera: Camera) {
@@ -24,8 +24,6 @@ case class Scene(world: World, camera: Camera) {
 
 object Scene {
   def fromResourceYaml(resourceName: String): Scene = {
-    val result = YamlParser.readResource(resourceName).get
-    println(result)
-    result.build
+    Yaml.readFromResource(resourceName)
   }
 }

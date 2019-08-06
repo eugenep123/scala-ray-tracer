@@ -1,7 +1,8 @@
-package raytracer.resource.yaml
+package raytracer.resource.yaml.reader
+
+import raytracer.resource.yaml.reader.ParseResult._
 
 import scala.util.control.NonFatal
-import ParseResult._
 
 sealed abstract class ParseResult[+A] {
   def map[B](f: A => B): ParseResult[B]

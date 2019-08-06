@@ -1,7 +1,6 @@
-package raytracer.resource.yaml
+package raytracer.resource.yaml.reader
 
 import java.util.{ArrayList => JavaArrayList}
-
 import scala.collection.JavaConverters._
 
 object Converters {
@@ -59,42 +58,4 @@ object Converters {
     else fail(s"Expected list of 2, found: $xs")
   }
 
-  implicit class YamlMapOps(val map: YamlMap) extends AnyVal {
-
-    def readWith[A](key: String, convert: Any => ParseResult[A]): ParseResult[A] = {
-      val result = for {
-        any <- wrap(map(key)).withMessage(s"Failed to read key: '$key'")
-        value <- convert(any)
-      } yield value
-      result.withDetail(map)
-    }
-
-    def readOptWith[A](key: String, convert: Any => ParseResult[A]): ParseResult[Option[A]] = {
-      map.get(key) match {
-        case None => success(None)
-        case Some(value) =>
-          convert(value).withDetail(map).map(Option.apply)
-      }
-    }
-
-    def read[A](key: String)(implicit reader: ValueReader[A]): ParseResult[A] =
-      readWith(key, reader.read)
-
-    def readOpt[A](key: String)(implicit reader: ValueReader[A]): ParseResult[Option[A]] =
-      readOptWith(key, reader.read)
-
-    def readDouble(key: String): ParseResult[Double] = readWith(key, toDouble)
-    def readDoubleOpt(key: String): ParseResult[Option[Double]] = readOptWith(key, toDouble)
-    def readBool(key: String): ParseResult[Boolean] = readWith(key, toBoolean)
-    def readInt(key: String): ParseResult[Int] = readWith(key, toInt)
-    def readString(key: String): ParseResult[String] = readWith(key, toStr)
-    def readStringOpt(key: String): ParseResult[Option[String]] = readOptWith(key, toStr)
-    def convertTo[A](implicit reader: ValueReader[A]): ParseResult[A] = {
-      reader.read(map).withDetail(map)
-    }
-    def readMap(key: String): ParseResult[YamlMap] = readWith(key, toMap)
-
-
-
-  }
 }
