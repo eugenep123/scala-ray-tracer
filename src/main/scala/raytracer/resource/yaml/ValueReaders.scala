@@ -30,29 +30,31 @@ object ValueReaders {
 
   abstract class BaseMapReader[A](what: String) extends ValueReader[A] {
     final override def read(value: Any): ParseResult[A] = {
-      value match {
-        case m: java.util.Map[String, Any] =>
-          readMap(m.asScala.toMap)
-        case m: Map[String, Any] =>
-          readMap(m)
-        case other =>
-          fail(s"Failed to read $what, expected map, found: '$other'")
-      }
+      Converters.toMap(value).flatMap(readMap)
+//      value match {
+//        case m: java.util.Map[String, Any] =>
+//          readMap(m.asScala.toMap)
+//        case m: Map[String, Any] =>
+//          readMap(m)
+//        case other =>
+//          fail(s"Failed to read $what, expected map, found: '$other'")
+//      }
     }
     def readMap(map: YamlMap): ParseResult[A]
   }
 
   abstract class BaseListReader[A](what: String) extends ValueReader[A] {
-    override def read(value: Any): ParseResult[A] = {
-      value match {
-        case a: JavaArrayList[Double] =>
-          readSeq(a.asScala.toVector)
-        case v: Seq[Any] =>
-          readSeq(v.toVector)
-        case other =>
-          fail(s"Failed to read $what, expected array, found: '$other'")
-      }
-    }
+    override def read(value: Any): ParseResult[A] =
+      Converters.toVectorAny(value).flatMap(readSeq)
+//      value match {
+//        case a: JavaArrayList[Any] =>
+//          readSeq(a.asScala.toVector)
+//        case v: Seq[Any] =>
+//          readSeq(v.toVector)
+//        case other =>
+//          fail(s"Failed to read $what, expected array, found: '$other'")
+//      }
+//    }
     def readSeq(xs: Vector[Any]): ParseResult[A]
   }
 

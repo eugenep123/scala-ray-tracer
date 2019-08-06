@@ -34,6 +34,11 @@ object Converters {
     case s: String => s
   }
 
+  def toMap(value: Any): ParseResult[YamlMap] = convertPf(value, "map") {
+    case m: java.util.Map[String, Any] => m.asScala.toMap
+    case m: Map[String, Any] => m
+  }
+
   def toVectorAny(value: Any): ParseResult[Vector[Any]] = convertPf(value, "Vector[Any]") {
     case a: JavaArrayList[_] => a.asScala.toVector
     case v: Seq[Any] => v.toVector
@@ -79,12 +84,17 @@ object Converters {
       readOptWith(key, reader.read)
 
     def readDouble(key: String): ParseResult[Double] = readWith(key, toDouble)
-    def readBool(key: String): ParseResult[Boolean] = readWith(key, toBoolean)
     def readDoubleOpt(key: String): ParseResult[Option[Double]] = readOptWith(key, toDouble)
+    def readBool(key: String): ParseResult[Boolean] = readWith(key, toBoolean)
     def readInt(key: String): ParseResult[Int] = readWith(key, toInt)
     def readString(key: String): ParseResult[String] = readWith(key, toStr)
+    def readStringOpt(key: String): ParseResult[Option[String]] = readOptWith(key, toStr)
     def convertTo[A](implicit reader: ValueReader[A]): ParseResult[A] = {
       reader.read(map).withDetail(map)
     }
+    def readMap(key: String): ParseResult[YamlMap] = readWith(key, toMap)
+
+
+
   }
 }

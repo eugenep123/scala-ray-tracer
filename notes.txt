@@ -5,13 +5,9 @@ yaml reader
     clean up ast
     check in reader when unknown keys are found
 
-Matrix => Matrix4
-
-move to better packages
-
-
-Issues:
-    clone existing object with some modifications
+Matrix
+    rename to Matrix4
+    think about dropping the array(m)
 
 add name to shape
     load name in yaml
@@ -24,6 +20,9 @@ update setters
         return self or parent material or default
 
 consider to move children to shape
+
+
+
 
 
 Matrix optimizations:

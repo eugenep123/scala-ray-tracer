@@ -47,11 +47,9 @@ object ParseResult {
     message: String,
     detail: Option[YamlMap],
     cause: Option[Throwable]) extends ParseResult[A] {
-
     override def map[B](f: A => B): ParseResult[B] = this.asInstanceOf[ParseResult[B]]
     override def flatMap[B](f: A => ParseResult[B]): ParseResult[B] = this.asInstanceOf[ParseResult[B]]
     override def isSuccess: Boolean = false
-
   }
 
   case class ParseException(msg: String) extends RuntimeException(msg)

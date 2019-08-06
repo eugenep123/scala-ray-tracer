@@ -32,5 +32,10 @@ object YamlParser {
     }.toList
   }
 
-
+  def parse2(yamlString: String): ParseResult[Seq[AST.YamlValue]] = {
+    for {
+      maps <- wrap(parseYamlMaps(yamlString)).withMessage("Failed to parse yaml string")
+      items <- sequence[YamlMap, AST.YamlValue](maps, YamlReader.readYamlValue)
+    } yield items
+  }
 }
