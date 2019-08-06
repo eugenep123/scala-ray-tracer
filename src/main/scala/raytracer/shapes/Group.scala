@@ -21,10 +21,9 @@ final class Group(
   def smoothTriangles: Seq[SmoothTriangle] = children.collect { case t: SmoothTriangle => t }
 
   def add(child: Shape): Group = {
-    child.parent
-      .collect { case g: Group => g }
-      .foreach(_.remove(child))
-
+    child.parent.foreach {
+      case g: Group => g.remove(child)
+    }
     child.setParent(Some(this))
     this.children.append(child)
     this

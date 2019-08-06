@@ -1,10 +1,10 @@
 TODO:
-    yaml reader
-        - finish new Yaml Reader (add serializer) that supports resources
-        - check in reader when unknown keys are found
 
-    shapes
-        - add heagon
+    - fix shadow/reflection rendering
+
+    - fix teapot
+
+
     Matrix
         rename to Matrix4
         think about dropping the array(m)
@@ -14,7 +14,6 @@ TODO:
         load name in obj
 
 
-consider to move children to shape
 
 
 
