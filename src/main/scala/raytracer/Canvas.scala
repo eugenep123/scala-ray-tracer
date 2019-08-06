@@ -1,5 +1,7 @@
 package raytracer
 
+import java.io.File
+
 import resource.PpmWriter
 
 case class Canvas(width: Int, height: Int) {
@@ -24,6 +26,6 @@ case class Canvas(width: Int, height: Int) {
     }
   }
 
-  def save(folder: String): Unit = PpmWriter.save(this, folder)
+  def save(folder: String): File = PpmWriter.save(this, folder)
 }
 

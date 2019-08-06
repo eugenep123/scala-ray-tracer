@@ -13,18 +13,21 @@ case class ShapeBuilder(
 
   def setTransform(m: Matrix): ShapeBuilder =
     new ShapeBuilder(m, materialOpt)
-
   def transform(f: TransformBuilder => TransformBuilder): ShapeBuilder = {
     setTransform(f(TransformBuilder.from(transform)).build())
   }
-
   def translate(x: Double, y: Double, z: Double): ShapeBuilder =
     transform(tb => tb.translate(x, y, z))
   def scale(n: Double): ShapeBuilder =
     transform(tb => tb.scale(n))
   def scale(x: Double, y: Double, z: Double): ShapeBuilder =
-    transform(tb => tb.scale(x, y, z))
-
+    transform(_.scale(x, y, z))
+  def rotateX(radians: Radians): ShapeBuilder =
+    transform(_.rotateX(radians))
+  def rotateY(radians: Radians): ShapeBuilder =
+    transform(_.rotateY(radians))
+  def rotateZ(radians: Radians): ShapeBuilder =
+    transform(_.rotateZ(radians))
 
   def setMaterial(m: Material): ShapeBuilder =
     new ShapeBuilder(transform, Some(m))
@@ -52,7 +55,7 @@ case class ShapeBuilder(
     new Cylinder(minimum, maximum, closed, transform, materialOpt)
 
   def cube: Cube = new Cube(transform, materialOpt)
-  def group: Group = new Group(transform, materialOpt)
+
   def smoothTriangle(
     p1: Point3D, p2: Point3D, p3: Point3D,
     n1: Vector3D, n2: Vector3D, n3: Vector3D): SmoothTriangle =
@@ -63,6 +66,21 @@ case class ShapeBuilder(
   def plane: Plane = new Plane(transform, materialOpt)
   def sphere: Sphere = new Sphere(transform, materialOpt)
   def testShape: TestShape = new TestShape(transform, materialOpt)
+
+  def group: Group = new Group(transform, materialOpt)
+  def group(child: Shape, more: Shape*): Group = {
+    group(Seq(child) ++ more)
+  }
+
+  def group(children: Seq[Shape]): Group = {
+    val g = group
+    children foreach g.add
+    g
+  }
+
+  def groupFill(n: Int)(f: Int => Shape): Group = {
+    group((0 until n).map(f))
+  }
 
   def buildOfType(shape: Shape): Shape = shape match {
     case _: Cube => cube

@@ -1,5 +1,7 @@
 package raytracer.resource
 
+import java.io.File
+
 import raytracer.Canvas
 
 object PpmWriter {
@@ -33,7 +35,7 @@ object PpmWriter {
   }
 
 
-  def save(c: Canvas, folder: String): Unit = {
+  def save(c: Canvas, folder: String): File = {
     import java.io.{File, PrintWriter}
     val name = s"canvas_${System.currentTimeMillis}.ppm"
     val outputFile = new File(s"$folder/$name")
@@ -46,5 +48,6 @@ object PpmWriter {
     }
     writer.close()
     println(s"File written to : $outputFile")
+    outputFile
   }
 }

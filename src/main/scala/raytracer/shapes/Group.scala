@@ -14,6 +14,7 @@ final class Group(
 
   def isEmpty: Boolean = children.isEmpty
   def includes(s: Shape): Boolean = children.contains(s)
+  def size: Int = children.size
 
   // Triangle children
   def triangles: Seq[Triangle] = children.collect { case t: Triangle => t }

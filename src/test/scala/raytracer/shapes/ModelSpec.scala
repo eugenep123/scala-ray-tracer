@@ -2,7 +2,7 @@ package raytracer
 package shapes
 
 import org.scalatest.{Matchers, WordSpec}
-import raytracer.math.{Matrix, TransformBuilder}
+import raytracer.math.{Matrix, TransformBuilder, π}
 
 class ModelSpec extends WordSpec with Matchers with TestHelpers {
 
@@ -35,6 +35,17 @@ class ModelSpec extends WordSpec with Matchers with TestHelpers {
         val b = Shape().translate(0, -1, 0).cube
         assertEquals(a, b)
       }
+    }
+
+    "create cylinders" in {
+      val c = Shape()
+        .translate(0, 0, -1)
+        .rotateY(-π/6)
+        .rotateZ(-π/2)
+        .scale(0.25, 1, 0.25)
+        .cylinder(0, 1)
+      assert(c.minimum == 0)
+      assert(c.maximum == 1)
     }
 
     "create objects correctly" in {

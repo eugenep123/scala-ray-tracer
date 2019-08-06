@@ -30,6 +30,6 @@ abstract class RenderApp {
   }
 
   def main(args: Array[String]): Unit = {
-    scene.saveTo(Settings.folder)
+    scene.saveToAndOpen(Settings.folder)
   }
 }
