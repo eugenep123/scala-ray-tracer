@@ -231,20 +231,17 @@ class WorldSpec extends BaseSpec {
           |   transform           | translation(0, -1, 0) |""".stripMargin)
       And("shape is added to w")
       And("r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2)) ")
+      And("i ← intersection(√2, shape)")
+      When("comps ← prepareComputations(i, r)")
+      And("color ← reflected_color(w, comps)")
+      Then("color = color(0.19032, 0.2379, 0.14274)")
 
-      val shape = plane(
-        translation(0, -1, 0), Material(reflective = 0.5)
-      )
-
+      val shape = Shape().translate(0, -1, 0)  .setReflective(0.5).plane
       val w = defaultWorld().add(shape)
       val r = ray(point(0, 0, -3), vector(0, -sqrt(2)/2, sqrt(2)/2))
-      And("i ← intersection(√2, shape)")
       val i = intersection(sqrt(2), shape)
-      When("comps ← prepareComputations(i, r)")
       val comps = prepareComputations(i, r)
-      And("color ← reflected_color(w, comps)")
       val c = reflectedColor(w, comps)
-      Then("color = color(0.19032, 0.2379, 0.14274)")
       assert(c == color(0.19032, 0.2379, 0.14274))
     }
 

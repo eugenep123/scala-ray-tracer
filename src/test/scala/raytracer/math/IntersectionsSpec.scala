@@ -114,7 +114,7 @@ class IntersectionsSpec extends BaseSpec {
       Then("comps.t = i.t")
       assert(comps.t == i.t)
       And("comps.obj == i.object")
-      assert(comps.obj == i.obj)
+      assert(comps.shape == i.obj)
       And("comps.point = point(0, 0, -1)")
       assert(comps.point == point(0, 0, -1))
       And("comps.eyev = vector(0, 0, -1)")

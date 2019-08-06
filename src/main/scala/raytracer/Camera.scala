@@ -48,7 +48,7 @@ case class Camera(
   }
 
   def renderPar(world: World): ParSeq[(Int, Int, Color)] = {
-    rays.par.map { case (x,y, ray) => (x, y, world.colorAtOrBlack(ray)) }
+    rays.par.map { case (x,y, ray) => (x, y, world.colorAt(ray)) }
   }
 
   def render(world: World)(f: (Int, Int, Color) => Unit): Unit = {

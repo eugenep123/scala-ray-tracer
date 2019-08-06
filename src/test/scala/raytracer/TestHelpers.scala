@@ -71,14 +71,15 @@ trait TestHelpers extends Shapes {
     i.prepare(r, nonEmpty)
   }
   def shadeHit(world: World, comps: RayIntersection, remaining: Int = MaxRecursion): Color =
-    world.shadeHit(comps, remaining).getOrElse(Color.Black)
-  def colorAt(w: World, r: Ray, remaining: Int = MaxRecursion): Color = w.colorAtOrBlack(r, remaining)
+    world.shadeHit(comps, remaining)
+
+  def colorAt(w: World, r: Ray, remaining: Int = MaxRecursion): Color = w.colorAt(r, remaining)
 
   def reflectedColor(world: World, hit: RayIntersection, remaining: Int = MaxRecursion): Color =
-    world.reflectedColor(hit, remaining).getOrElse(Color.Black)
+    world.reflectedColor(hit, remaining)
 
   def refractedColor(world: World, hit: RayIntersection, remaining: Int = MaxRecursion): Color =
-    world.refractedColor(hit, remaining).getOrElse(Color.Black)
+    world.refractedColor(hit, remaining)
 
   def defaultWorld(): World = Defaults.world
   def testPattern(): Pattern = new TestPattern()

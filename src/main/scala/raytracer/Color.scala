@@ -5,7 +5,11 @@ import math._
 
 case class Color(red: Double, green: Double, blue: Double) {
 
-  def +(c: Color): Color = Color(red + c.red, green + c.green, blue + c.blue)
+  def +(c: Color): Color = {
+    // + (x + black) is always x,  (avoid allocation)
+    if (c eq Color.Black) this
+    else Color(red + c.red, green + c.green, blue + c.blue)
+  }
   def -(c: Color): Color = Color(red - c.red, green - c.green, blue - c.blue)
   def *(c: Color): Color = Color(red * c.red, green * c.green, blue * c.blue)
 

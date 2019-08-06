@@ -36,6 +36,10 @@ final case class Vector3D(x: Double, y: Double, z: Double) {
     }
   }
 
+  @inline def reflected(normal: Vector3D): Vector3D = {
+    this - normal * 2 * this.dot(normal)
+  }
+
   override def toString: String =  mkString("vector", x, y, z, w)
 
   def asTuple: Tuple4 = Tuple4(x, y, z, w)
