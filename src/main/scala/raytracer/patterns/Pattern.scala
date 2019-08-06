@@ -4,7 +4,7 @@ import raytracer.Color
 import raytracer.math.{Matrix, Point3D}
 import raytracer.shapes.Shape
 
-abstract class Pattern extends Pattern {
+abstract class Pattern {
 
   final def colorAt(worldPoint: Point3D, obj: Shape): Color = {
     val objectPoint = obj.transform.inverse * worldPoint

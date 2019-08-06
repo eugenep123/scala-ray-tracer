@@ -1,8 +1,15 @@
 TODO:
 
-    - fix shadow/reflection rendering
 
-    - fix teapot
+Issues:
+    - shape transform/material is immutable
+        hard to set later on, especially if in a group
+        how to deal with equals (all fields, or without group, or without transforms)
+
+    - Failing tests:
+        - shadeHit() with a reflective, transparent material
+
+    - fix teapot: scene does not render
 
 
     Matrix

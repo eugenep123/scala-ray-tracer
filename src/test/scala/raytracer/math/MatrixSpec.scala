@@ -134,7 +134,7 @@ class MatrixSpec extends BaseSpec {
         """.matrix
       Given(s"the following matrix A:$m")
 
-      val numRows = m.rows
+      val numRows = m.col(0).length
       Then(s"m.numRows = $numRows")
 
       val row0 = Vector[Double](1, 2, 3, 4)

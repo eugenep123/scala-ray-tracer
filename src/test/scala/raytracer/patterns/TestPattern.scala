@@ -3,7 +3,7 @@ package raytracer.patterns
 import raytracer.Color
 import raytracer.math.{Matrix, Point3D}
 
-case class TestPattern(transform: Matrix = Matrix.identity) extends BasePattern {
+case class TestPattern(transform: Matrix = Matrix.identity) extends Pattern {
 
   override def colorAt(point: Point3D): Color = {
     Color(point.x, point.y, point.z)
