@@ -1,5 +1,8 @@
 package raytracer
 
+import math._
+
+import scala.math.tan
 import scala.collection.parallel.ParSeq
 
 case class Camera(
@@ -8,7 +11,7 @@ case class Camera(
   fieldOfView: Double,
   transform: Matrix) {
 
-  val halfView = math.tan(fieldOfView / 2)
+  val halfView = tan(fieldOfView / 2)
   val aspect = width.toDouble / height.toDouble
   val (halfWidth, halfHeight) =
     if (aspect >= 1) (halfView, halfView / aspect)

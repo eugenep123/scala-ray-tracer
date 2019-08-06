@@ -2,6 +2,7 @@ package raytracer
 package shapes
 
 import java.lang.Math.sqrt
+import raytracer.math._
 
 class SphereSpec extends BaseSpec {
 
@@ -101,15 +102,14 @@ class SphereSpec extends BaseSpec {
 
     scenario("Changing a sphere's transformation") {
       Given("s ← sphere()")
-      val s = sphere()
-      val t = translation(2, 3, 4)
-      And(s"t ← $t")
+      And(s"t ← translation(2, 3, 4)")
       When("set_transform(s, t)")
-      val s2 = setTransform(s, t)
       Then("s.transform = t")
-      assert(s2.transform == t.matrix)
+      val t = translation(2, 3, 4)
+      val s = sphere(t)
+      assert(s.transform == t.matrix)
     }
-    
+
     scenario("Intersecting a scaled sphere with a ray") {
       val r = ray(point(0, 0, -5), vector(0, 0, 1))
       Given("r ← ray(point(0, 0, -5), vector(0, 0, 1))")
@@ -125,7 +125,7 @@ class SphereSpec extends BaseSpec {
       And("xs(1).t = 7")
       assert(xs(1).t == 7)
     }
-    
+
     scenario("Intersecting a translated sphere with a ray") {
       val r = ray(point(0, 0, -5), vector(0, 0, 1))
       Given(s"r ← $r")
@@ -218,11 +218,11 @@ class SphereSpec extends BaseSpec {
       Given("s ← sphere()")
       And("m ← material()")
       And("m.ambient ← 1")
+      When("s.material ← m")
+      Then("s.material = m")
       val m = material().copy(ambient = 1)
       assert(m.ambient == 1d)
-      When("s.material ← m")
-      val s = sphere().setMaterial(m)
-      Then("s.material = m")
+      val s = sphere(material = m)
       assert(s.material == m)
     }
 

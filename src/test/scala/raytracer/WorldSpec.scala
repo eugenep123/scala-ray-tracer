@@ -1,6 +1,7 @@
 package raytracer
+import raytracer.shapes.Shape
 
-import math.sqrt
+import scala.math.sqrt
 
 class WorldSpec extends BaseSpec {
 
@@ -101,21 +102,20 @@ class WorldSpec extends BaseSpec {
 
     scenario("The color with an intersection behind the ray") {
       Given("w ← default_world()")
+        And("outer ← the first object in w")
+        And("outer.material.ambient ← 1")
+        And("inner ← the second object in w")
+        And("inner.material.ambient ← 1")
+        And("r ← ray(point(0, 0, 0.75), vector(0, 0, -1))")
+       When("c ← color_at(w, r)")
+       Then("c = inner.material.color")
+
       val w = defaultWorld()
-      And("outer ← the first object in w")
-      val outer = w.objects.head
-      And("outer.material.ambient ← 1")
-      val outer2 = outer.setMaterial(outer.material.copy(ambient = 1))
-      And("inner ← the second object in w")
-      val inner = w.objects(1)
-      And("inner.material.ambient ← 1")
-      val inner2 = inner.setMaterial(inner.material.copy(ambient = 1))
-      And("r ← ray(point(0, 0, 0.75), vector(0, 0, -1))")
+      val outer = w.objects.head.cloneWith(_.setAmbient(1))
+      val inner = w.objects(1).cloneWith(_.setAmbient(1))
       val r = ray(point(0, 0, 0.75), vector(0, 0, -1))
-      val w2 = w.copy(objects = Seq(outer2, inner2))
-      When("c ← color_at(w, r)")
+      val w2 = w.copy(objects = Seq(outer, inner))
       val c = colorAt(w2, r)
-      Then("c = inner.material.color")
       assert(c == inner.material.color)
     }
 
@@ -203,21 +203,22 @@ class WorldSpec extends BaseSpec {
 
     scenario("The reflected color for a non-reflective material") {
       Given("w ← default_world()")
-      val w = defaultWorld()
       And("r ← ray(point(0, 0, 0), vector(0, 0, 1))")
-      val r = ray(point(0, 0, 0), vector(0, 0, 1))
       And(" shape ← the second object in w")
       And("shape.material.ambient ← 1")
-      val shape = w
-        .objects(1)
-        .updateMaterial(_.copy(ambient = 1))
       And("i ← intersection(1, shape)")
-      val i = intersection(1, shape)
       When("comps ← prepareComputations(i, r)")
-      val comps = prepareComputations(i, r)
       And("color ← reflected_color(w, comps)")
-      val color = reflectedColor(w, comps)
       Then("color = color(0, 0, 0)")
+      val r = ray(point(0, 0, 0), vector(0, 0, 1))
+      val w = defaultWorld()
+        .updateObject(1)(
+          _.cloneWith(_.setAmbient(1))
+        )
+      val shape = w.objects(1)
+      val i = intersection(1, shape)
+      val comps = prepareComputations(i, r)
+      val color = reflectedColor(w, comps)
       assert(color == Color.Black)
     }
 
@@ -231,9 +232,10 @@ class WorldSpec extends BaseSpec {
       And("shape is added to w")
       And("r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2)) ")
 
-      val shape = plane()
-        .setMaterial(Material(reflective = 0.5))
-        .setTransform(translation(0, -1, 0))
+      val shape = plane(
+        translation(0, -1, 0), Material(reflective = 0.5)
+      )
+
       val w = defaultWorld().add(shape)
       val r = ray(point(0, 0, -3), vector(0, -sqrt(2)/2, sqrt(2)/2))
       And("i ← intersection(√2, shape)")
@@ -255,9 +257,7 @@ class WorldSpec extends BaseSpec {
       And("shape is added to w")
       And("r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2)) ")
 
-      val shape = plane()
-        .setMaterial(Material(reflective = 0.5))
-        .setTransform(translation(0, -1, 0))
+      val shape = plane(translation(0, -1, 0), Material(reflective = 0.5))
       val w = defaultWorld().add(shape)
       val r = ray(point(0, 0, -3), vector(0, -sqrt(2)/2, sqrt(2)/2))
 
@@ -288,14 +288,8 @@ class WorldSpec extends BaseSpec {
 
       val w = World.empty
         .setLight(pointLight(point(0, 0, 0), color(1, 1, 1)))
-        .add(plane()
-          .updateMaterial(_.setReflective(1))
-          .setTransform(translation(0, -1, 0))
-        )
-        .add(plane()
-          .updateMaterial(_.setReflective(1))
-          .setTransform(translation(0, 1, 0))
-        )
+        .add(plane(translation(0, -1, 0), Material().setReflective(1)))
+        .add(plane(translation(0, 1, 0), Material().setReflective(1)))
 
       val r = ray(point(0, 0, 0), vector(0, 1, 0))
 
@@ -317,9 +311,7 @@ class WorldSpec extends BaseSpec {
       And("color ← reflected_color(w, comps, 0)")
       Then(" color = color(0, 0, 0)")
 
-      val shape = plane()
-        .updateMaterial(_.setReflective(0.5))
-        .setTransform(translation(0, -1, 0))
+      val shape = plane(translation(0, -1, 0), Material().setReflective(0.5))
       val w = defaultWorld()
         .add(shape)
       val r =  ray(point(0, 0, -3), vector(0, -sqrt(2)/2, sqrt(2)/2))
@@ -358,11 +350,9 @@ class WorldSpec extends BaseSpec {
       And("c ← refracted_color(w, comps, 0)")
       Then("c = color(0, 0, 0)")
 
-      val shape = defaultWorld().objects.head
-        .updateMaterial(
-          _.setTransparency(1.0)
-          .setRefractiveIndex(1.5)
-        )
+      val shape =  defaultWorld()
+        .objects.head
+        .cloneWith(_.setTransparency(1.0).setReflective(1.5))
       val w = defaultWorld().setObjectAt(0, shape)
 
       val r = ray(point(0, 0, -5), vector(0, 0, 1))
@@ -386,10 +376,9 @@ class WorldSpec extends BaseSpec {
       And("c ← refracted_color(w, comps, 5)")
       Then("c = color(0, 0, 0)")
 
-
-      val shape = defaultWorld().objects.head
-        .updateMaterial(_.setTransparency(1.0).setRefractiveIndex(1.5))
-
+      val shape = defaultWorld()
+        .objects.head
+        .cloneWith(_.setTransparency(1.0).setRefractiveIndex(1.5))
       val w = defaultWorld().setObjectAt(0, shape)
 
       val r = ray(point(0, 0, sqrt(2)/2), vector(0, 1, 0))
@@ -416,15 +405,12 @@ class WorldSpec extends BaseSpec {
       And("c ← refracted_color(w, comps, 5)")
       Then("c = color(0, 0.99888, 0.04725)")
 
-      val w = defaultWorld()
-      val A = w.first
-      A.setAmbient(1.0).setPattern(testPattern())
-
-      val B = w.second
-      B.setTransparency(1.0).setRefractiveIndex(1.5)
+      val A = defaultWorld().first.cloneWith(_.setAmbient(1.0).setPattern(testPattern()))
+      val B = defaultWorld().second.cloneWith(_.setTransparency(1.0).setRefractiveIndex(1.5))
+      val w = defaultWorld().copy(objects = List(A, B))
 
       assert(w.objects(0).material.ambient == 1.0)
-      assert(w.objects(0).material.pattern == Some(testPattern()))
+      assert(w.objects(0).material.pattern.contains(testPattern()))
 
       assert(w.objects(1).material.refractiveIndex == 1.5)
       assert(w.objects(1).material.transparency == 1.0)
@@ -437,30 +423,7 @@ class WorldSpec extends BaseSpec {
       assert(w.objects(1).material.transparency == 1.0)
       assert(w.objects(1).material.color == Color(1, 1, 1))
       assert(c == color(0, 0.99888, 0.04725))
-//      val A = defaultWorld().objects.head
-//        .updateMaterial(
-//          _.setAmbient(1.0)
-//            .setPattern(testPattern())
-//        )
-//      val B = defaultWorld().objects(1)
-//        .updateMaterial(
-//          _.setTransparency(1.0)
-//            .setRefractiveIndex(1.5)
-//        )
-//      val w = defaultWorld()
-//        .setObjectAt(0, A)
-//        .setObjectAt(1, B)
-//      val r = ray(point(0, 0, 0.1), vector(0, 1, 0))
-//      val xs = intersectionPairs((-0.9899, A), (-0.4899, B), (0.4899, B), (0.9899, A))
-//      val comps = prepareComputations(xs(2), r, xs)
-//      val c = refractedColor(w, comps, 5)
-//
-//      assert(w.objects(1).material.transparency == 1.0)
-//      assert(w.objects(1).material.color == Color(1, 1, 1))
-//      assert(c == color(0, 0.99888, 0.04725))
     }
-
-
 
     scenario("shadeHit() with a transparent material") {
       Given("w ← default_world()")
@@ -480,18 +443,15 @@ class WorldSpec extends BaseSpec {
       And("color ← shadeHit(w, comps, 5)")
       Then("color = color(0.93642, 0.68642, 0.68642)")
 
-      val floor = plane()
-        .setTransform(translation(0, -1, 0))
-        .updateMaterial(
-          _.setTransparency(0.5)
+      val floor = plane(
+        translation(0, -1, 0),
+        Material()
+          .setTransparency(0.5)
           .setRefractiveIndex(1.5)
-        )
-      val ball = sphere()
-        .updateMaterial(
-          _.setColor(1, 0, 0)
-          .setAmbient(0.5)
-        )
-        .setTransform(translation(0, -3.5, -0.5))
+      )
+      val ball = sphere(
+        translation(0, -3.5, -0.5),
+        Material().setColor(1, 0, 0).setAmbient(0.5))
       val w = defaultWorld() //.copy(objects = Seq(floor, ball))
         .add(floor)
         .add(ball)
@@ -501,39 +461,51 @@ class WorldSpec extends BaseSpec {
       val color = shadeHit(w, comps, 5)
       assert(color == Color(0.93642, 0.68642, 0.68642))
     }
+
+    scenario("shadeHit() with a reflective, transparent material") {
+      Given("w ← default_world()")
+        And("r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))")
+        And("""floor ← plane() with:
+            |          | transform                 | translation(0, -1, 0) |
+            |          | material.reflective       | 0.5                   |
+            |          | material.transparency     | 0.5                   |
+            |          | material.refractive_index | 1.5                   |""".stripMargin)
+        And("floor is added to w")
+        And("""ball ← sphere() with:
+              |          | material.color     | (1, 0, 0)                  |
+              |          | material.ambient   | 0.5                        |
+              |          | transform          | translation(0, -3.5, -0.5) |""".stripMargin)
+        And("ball is added to w")
+        And("xs ← intersections(√2:floor)")
+       When("comps ← prepareComputations(xs[0], r, xs)")
+        And("color ← shadeHit(w, comps, 5)")
+       Then("color = color(0.93391, 0.69643, 0.69243)")
+
+
+      val r = ray(point(0, 0, -3), vector(0, -sqrt(2.0)/2.0, sqrt(2.0)/2.0))
+
+      val floor = Shape()
+        .translate(0, -1, 0)
+        .setReflective(0.5)
+        .setTransparency(0.5)
+        .setRefractiveIndex(1.5)
+        .plane
+
+      val ball = Shape()
+        .setColor(1, 0, 0)
+        .setAmbient(0.5)
+        .translate(0, -3.5, -0.5)
+        .sphere
+      val w = defaultWorld()
+        .add(floor)
+        .add(ball)
+
+      val xs = intersectionPairs((sqrt(2), floor))
+      val comps = prepareComputations(xs.head, r, xs)
+      val color = shadeHit(w, comps, 5)
+      assert(color == Color(0.93391, 0.69643, 0.69243))
+
+    }
   }
+
 }
-/*
-
-
-
-
-Scenario:
-
-
-Scenario:
-
-
-Scenario:
-
-
-Scenario: shadeHit() with a reflective, transparent material
-  Given w ← default_world()
-    And r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))
-    And floor ← plane() with:
-      | transform                 | translation(0, -1, 0) |
-      | material.reflective       | 0.5                   |
-      | material.transparency     | 0.5                   |
-      | material.refractive_index | 1.5                   |
-    And floor is added to w
-    And ball ← sphere() with:
-      | material.color     | (1, 0, 0)                  |
-      | material.ambient   | 0.5                        |
-      | transform          | translation(0, -3.5, -0.5) |
-    And ball is added to w
-    And xs ← intersections(√2:floor)
-  When comps ← prepareComputations(xs[0], r, xs)
-    And color ← shadeHit(w, comps, 5)
-  Then color = color(0.93391, 0.69643, 0.69243)
-
- */

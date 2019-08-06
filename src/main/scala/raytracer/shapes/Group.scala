@@ -2,25 +2,28 @@ package raytracer
 package shapes
 
 import javax.naming.OperationNotSupportedException
-
+import math._
 import scala.collection.mutable.ListBuffer
 
-class Group extends MutableShape {
+final class Group(
+                 //TODO: add name
+  transform: Matrix,
+  material: Option[Material]) extends Shape(transform, material) {
 
   private val children: ListBuffer[Shape] = ListBuffer.empty
 
   def isEmpty: Boolean = children.isEmpty
   def includes(s: Shape): Boolean = children.contains(s)
+  def size: Int = children.size
 
   // Triangle children
   def triangles: Seq[Triangle] = children.collect { case t: Triangle => t }
   def smoothTriangles: Seq[SmoothTriangle] = children.collect { case t: SmoothTriangle => t }
 
   def add(child: Shape): Group = {
-    child.parent
-      .collect { case g: Group => g }
-      .foreach(_.remove(child))
-
+    child.parent.foreach {
+      case g: Group => g.remove(child)
+    }
     child.setParent(Some(this))
     this.children.append(child)
     this
@@ -45,23 +48,29 @@ class Group extends MutableShape {
     }
   }
 
-  private def calcBounds: BoundingBox = {
-    val box = BoundingBox(children.filter(_.renderAllRays))
+
+  override protected def calculateBounds: BoundingBox = {
+//    val box = BoundingBox(children.filter(_.renderAllRays))
     // Add bounding box (no shadows or reflection/refraction)
 //    add(box.toCube.setRenderAllRays(false))
-    box
+//    box
+    BoundingBox(children)
   }
-  // TODO: cache this value
-//  override def bounds: BoundingBox = BoundingBox(children)
-  override lazy val bounds: BoundingBox = calcBounds
+
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Group]
+
+  override def hashCode:Int = {
+    val ourHash = children.map(_.hashCode).sum
+    super.hashCode + ourHash + ourHash
+  }
 }
 
 object Group {
 
   def apply(
     transform: Matrix = Matrix.identity,
-    parent: Option[Shape] = None): Group = {
-    new Group().setTransform(transform).setParent(parent)
+    material: Option[Material] = None): Group = {
+    new Group(transform, material)
   }
 
   def create(xs: Seq[Shape]): Group = {
@@ -71,12 +80,12 @@ object Group {
         xs.head match {
           case g: Group => g
           case other =>
-            val g = new Group()
+            val g = Group()
             g.add(other)
             g
         }
       case _ =>
-        val g = new Group()
+        val g = Group()
         xs.foreach(g add _)
         g
     }

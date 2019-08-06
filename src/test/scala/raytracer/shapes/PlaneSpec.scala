@@ -1,6 +1,8 @@
 package raytracer
 package shapes
 
+import raytracer.math._
+
 class PlaneSpec extends BaseSpec {
   feature("Planes") {
 

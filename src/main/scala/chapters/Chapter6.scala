@@ -1,7 +1,8 @@
 package chapters
 
 import raytracer._
-
+import shapes._
+import math._
 
 object Chapter6 {
 

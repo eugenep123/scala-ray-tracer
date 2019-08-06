@@ -2,6 +2,7 @@ package raytracer
 package shapes
 
 import org.scalatest.prop.TableDrivenPropertyChecks._
+import raytracer.math._
 
 class CubeSpec extends BaseSpec {
 

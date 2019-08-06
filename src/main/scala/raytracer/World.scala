@@ -1,7 +1,8 @@
 package raytracer
 
-import raytracer.Defaults.MaxRecursion
-
+import math._
+import shapes.Shape
+import Defaults._
 import scala.math.sqrt
 
 final case class World(

@@ -1,7 +1,9 @@
 package chapters
 
-import raytracer.Operations._
 import raytracer._
+import shapes._
+import math._
+import Operations._
 
 abstract class RenderApp {
 
@@ -28,6 +30,6 @@ abstract class RenderApp {
   }
 
   def main(args: Array[String]): Unit = {
-    scene.saveTo(Settings.folder)
+    scene.saveToAndOpen(Settings.folder)
   }
 }

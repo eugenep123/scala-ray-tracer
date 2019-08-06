@@ -2,6 +2,7 @@ package raytracer
 package shapes
 
 import org.scalatest.prop.TableDrivenPropertyChecks._
+import raytracer.math._
 
 import scala.math.sqrt
 
@@ -54,10 +55,7 @@ class ConesSpec extends BaseSpec {
     }
 
     scenario("creating cones") {
-      val shape = cone()
-        .setMinimum(-0.5)
-        .setMaximum(0.5)
-        .setClosed(true)
+      val shape = cone(-0.5, 0.5, true)
       assert(shape.minimum == -0.5)
       assert(shape.maximum == 0.5)
       assert(shape.closed)
@@ -81,7 +79,7 @@ class ConesSpec extends BaseSpec {
       When("box ← bounds_of(shape)")
       Then("box.min = point(-5, -5, -5)")
       And("box.max = point(5, 3, 5)")
-      val box = cone().setMinimum(-5).setMaximum(3).bounds
+      val box = cone(-5, 3).bounds
       assert(box.minimum == point(-5, -5, -5))
       assert(box.maximum == point(5, 3, 5))
     }
@@ -108,10 +106,7 @@ class ConesSpec extends BaseSpec {
         When("xs ← local_intersect(shape, r)")
         Then("xs.count = <count>")
 
-        val shape = cone()
-          .setMinimum(-0.5)
-          .setMaximum(0.5)
-          .setClosed(true)
+        val shape = cone(-0.5, 0.5, true)
         val r = ray(origin, direction.normalize)
         val xs = localIntersect(shape, r)
         assert(xs.size == count)

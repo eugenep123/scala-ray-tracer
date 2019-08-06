@@ -1,6 +1,7 @@
 package raytracer
 
-import Math.sqrt
+import math._
+import scala.math.sqrt
 
 class MaterialSpec extends BaseSpec {
 

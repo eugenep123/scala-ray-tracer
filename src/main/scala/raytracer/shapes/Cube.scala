@@ -1,12 +1,15 @@
 package raytracer
 package shapes
 
+import math._
 import scala.math.{abs, max, min}
 
 /**
   * Play on the xz
   */
-class Cube extends MutableShape {
+final class Cube(
+  transform: Matrix,
+  material: Option[Material]) extends Shape(transform, material) {
 
   override def localNormalAt(point: Point3D, i: Intersection): Vector3D = {
     val maxC = max(max(abs(point.x), abs(point.y)), abs(point.z))
@@ -31,15 +34,18 @@ class Cube extends MutableShape {
     else Seq(Intersection(tmin, this), Intersection(tmax, this))
   }
 
-  override def bounds: BoundingBox = Cube.Bounds
+  override protected def calculateBounds: BoundingBox = Cube.Bounds
+
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Cube]
 }
 
 object Cube {
+  val Bounds = shapes.BoundingBox(Point3D(-1, -1, -1), Point3D(1, 1, 1))
+
   def apply(
     transform: Matrix = Matrix.identity,
-    material: Material = Material(),
-    parent: Option[Shape] = None): Cube = {
-    new Cube().setTransform(transform).setMaterial(material).setParent(parent)
+    material: Option[Material] = None): Cube = {
+    new Cube(transform, material)
   }
 
   @inline final def checkAxis(origin: Double, direction: Double, min: Double, max: Double): (Double, Double) = {
@@ -61,7 +67,5 @@ object Cube {
     if (tmin > tmax) (tmax, tmin)
     else (tmin, tmax)
   }
-
-  val Bounds = BoundingBox(Point3D(-1, -1, -1), Point3D(1, 1, 1))
 
 }

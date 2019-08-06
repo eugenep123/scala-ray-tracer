@@ -1,17 +1,21 @@
 package raytracer
 package shapes
 
-import java.lang.Math.{abs, pow, sqrt, max}
+import java.lang.Math.{abs, max, pow, sqrt}
+import math._
+
 import scala.collection.mutable.ListBuffer
 
 /**
   * A Cone along the y axis, with radius on 1
   */
-class Cone extends MutableShape {
+final class Cone(
+  val minimum: Double,
+  val maximum: Double,
+  val closed: Boolean,
+  transform: Matrix,
+  material: Option[Material]) extends Shape(transform, material) {
 
-  private var _minimum: Double = -INFINITY
-  private var _maximum: Double = INFINITY
-  private var _closed: Boolean = false
 
   override def localIntersect(ray: Ray): Seq[Intersection] = {
     val xs = ListBuffer.empty[Intersection]
@@ -56,7 +60,7 @@ class Cone extends MutableShape {
   }
 
   @inline private final def isInRange(t: Double): Boolean =
-    _minimum < t && t < _maximum
+    minimum < t && t < maximum
 
   /**
     * Check if the intersection at 't' is within a radius of 1. (the radius of the Cone) from the y axis
@@ -69,19 +73,19 @@ class Cone extends MutableShape {
 
   @inline private final def intersectCaps(ray: Ray, xs: ListBuffer[Intersection]): Unit = {
     // Caps only matter if the Cone is close, and might possible be intersected by the ray
-    if (_closed && abs(ray.direction.y) > 0) {
+    if (closed && abs(ray.direction.y) > 0) {
 
       // check for n intersection with the lower end cap by intersecting
       // the ray with the plane at y = cyl.minimum
-      val t1 = (_minimum - ray.origin.y) / ray.direction.y
-      if (checkCap(ray, t1, _minimum)) {
+      val t1 = (minimum - ray.origin.y) / ray.direction.y
+      if (checkCap(ray, t1, minimum)) {
         xs.append(Intersection(t1, this))
       }
 
       // Check the intersection with the upper end cape by intersecting
       // the ray with the plane at y = cyl.maximum
-      val t2 = (_maximum - ray.origin.y) / ray.direction.y
-      if (checkCap(ray, t2, _maximum)) {
+      val t2 = (maximum - ray.origin.y) / ray.direction.y
+      if (checkCap(ray, t2, maximum)) {
         xs.append(Intersection(t2, this))
       }
     }
@@ -90,8 +94,8 @@ class Cone extends MutableShape {
   override def localNormalAt(point: Point3D, i: Intersection): Vector3D = {
     val dist = (point.x * point.x) + (point.z * point.z)
 
-    if (dist < 1.0 && point.y >= (_maximum - EPSILON)) Vector3D(0, 1, 0)
-    else if (dist < 1.0 && point.y <= (_minimum + EPSILON)) Vector3D(0, -1, 0)
+    if (dist < 1.0 && point.y >= (maximum - EPSILON)) Vector3D(0, 1, 0)
+    else if (dist < 1.0 && point.y <= (minimum + EPSILON)) Vector3D(0, -1, 0)
     else {
       var y = sqrt(pow(point.x, 2) + pow(point.z, 2))
       if (point.y > 0) {
@@ -101,47 +105,31 @@ class Cone extends MutableShape {
     }
   }
 
-  override def bounds: BoundingBox = {
-    val a = abs(_minimum)
-    val b = abs(_maximum)
+  override protected def calculateBounds: BoundingBox = {
+    val a = abs(minimum)
+    val b = abs(maximum)
     val limit = max(a, b)
-    BoundingBox(Point3D(-limit, _minimum, -limit), Point3D(limit, _maximum, limit))
+    BoundingBox(Point3D(-limit, minimum, -limit), Point3D(limit, maximum, limit))
   }
 
-  def minimum: Double = this._minimum
-  def maximum: Double = this._maximum
-  def closed: Boolean = this._closed
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Cone]
 
-  def setMinimum(min: Double): Cone = {
-    this._minimum = min
-    this
+  override def hashCode:Int = {
+    val hash1 = super.hashCode() * 41 + maximum.hashCode()
+    val hash2 = hash1 * 41 + minimum.hashCode()
+    hash2 * 41 + closed.hashCode()
   }
 
-  def setMaximum(max: Double): Cone = {
-    this._maximum = max
-    this
-  }
 
-  def setClosed(b: Boolean): Cone = {
-    this._closed = b
-    this
-  }
 }
 
 object Cone {
   def apply(
-    transform: Matrix = Matrix.identity,
-    material: Material = Material(),
     minimum: Double = -INFINITY,
     maximum: Double = INFINITY,
     closed: Boolean = false,
-    parent: Option[Shape] = None): Cone = {
-    new Cone()
-      .setTransform(transform)
-      .setMaterial(material)
-      .setMinimum(minimum)
-      .setMaximum(maximum)
-      .setClosed(closed)
-      .setParent(parent)
+    transform: Matrix = Matrix.identity,
+    material: Option[Material] = None): Cone = {
+    new Cone(minimum, maximum, closed, transform, material)
   }
 }

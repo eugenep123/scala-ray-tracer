@@ -1,12 +1,16 @@
 package raytracer
 package shapes
 
+import math._
+
 import scala.math.abs
 
 /**
   * Play on the xz axis
   */
-class Plane extends MutableShape {
+final class Plane(
+  transform: Matrix,
+  material: Option[Material]) extends Shape(transform, material) {
 
   //every single Point3D on plane has normal of (0, 1, 0)
   val constantNormal = Vector3D(0, 1, 0)
@@ -21,19 +25,14 @@ class Plane extends MutableShape {
     }
   }
 
-  override def bounds: BoundingBox = Plane.Bounds
+  override protected def calculateBounds: BoundingBox = Plane.Bounds
+
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Plane]
 }
 
 object Plane {
-  def apply(
-    transform: Matrix = Matrix.identity,
-    material: Material = Material(),
-    parent: Option[Shape] = None): Plane = {
-    new Plane()
-      .setTransform(transform)
-      .setMaterial(material)
-      .setParent(parent)
-  }
+  def apply(transform: Matrix, material: Option[Material] = None): Plane =
+    new Plane(transform, material)
 
-  val Bounds = BoundingBox(Point3D(-INFINITY, 0, -INFINITY), Point3D(INFINITY, 0, INFINITY))
+  val Bounds = shapes.BoundingBox(Point3D(-INFINITY, 0, -INFINITY), Point3D(INFINITY, 0, INFINITY))
 }
