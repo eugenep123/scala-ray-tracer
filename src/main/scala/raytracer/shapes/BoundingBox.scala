@@ -2,7 +2,6 @@ package raytracer.shapes
 
 import raytracer.math._
 import Cube.checkAxis
-import Point3D._
 import raytracer.Defaults
 
 //http://www.raytracerchallenge.com/bonus/bounding-boxes.html
@@ -35,7 +34,7 @@ final case class BoundingBox(
 
     val tmin = math.max(math.max(xtmin, ytmin), ztmin)
     val tmax = math.min(math.min(xtmax, ytmax), ztmax)
-    (tmin <= tmax)
+    tmin <= tmax
   }
 
   def contains(point: Point3D): Boolean = {
@@ -48,10 +47,10 @@ final case class BoundingBox(
     contains(b.minimum) && contains(b.maximum)
 
   def add(point: Point3D): BoundingBox =
-    BoundingBox(min(minimum, point), max(maximum, point))
+    BoundingBox(Point3D.min(minimum, point), Point3D.max(maximum, point))
 
   def add(box: BoundingBox): BoundingBox =
-    BoundingBox(min(minimum, box.minimum), max(maximum, box.maximum))
+    BoundingBox(Point3D.min(minimum, box.minimum), Point3D.max(maximum, box.maximum))
 
   def toCube: Cube = {
     val toOrigin = Point3D.origin - this.center
@@ -61,6 +60,36 @@ final case class BoundingBox(
     Cube(transform, Defaults.Materials.boundingBoxMaterial)
   }
 
+  def split: (BoundingBox, BoundingBox) = {
+    // figure out the box's largest dimension
+    val dx = maximum.x - minimum.x
+    val dy = maximum.y - minimum.y
+    val dz = maximum.z - minimum.z
+
+    val greatest = max(dx, dy, dz)
+    var (x0, y0, z0) = (minimum.x, minimum.y, minimum.z)
+    var (x1, y1, z1) = (maximum.x, maximum.y, maximum.z)
+
+    // adjust the points so that they lie on the dividing plane
+    if (greatest == dx) {
+      x1 = x0 + dx / 2.0
+      x0 = x1
+    } else if (greatest == dy) {
+      y1 = y0 + dy / 2.0
+      y0 = y1
+    } else {
+      z1 = z0 + dz / 2.0
+      z0 = z1
+    }
+
+    val midMin = Point3D(x0, y0, z0)
+    val midMax = Point3D(x1, y1, z1)
+
+    // return the two halves of
+    val left = BoundingBox(minimum, midMax)
+    val right = BoundingBox(midMin, maximum)
+    (left, right)
+  }
 }
 
 
@@ -71,15 +100,9 @@ object BoundingBox {
     Point3D(-INFINITY, -INFINITY, -INFINITY)  // smallest point
   )
 
-  def apply(shapes: Seq[Shape]): BoundingBox = {
-    if (shapes.isEmpty) Empty
-    else {
-      shapes.foldLeft(Empty)((box, shape) => box.add(shape.bounds.transform(shape.transform)))
-    }
-  }
-
-  @inline def apply(p1: Point3D, p2: Point3D, p3: Point3D): BoundingBox = {
-    Empty.add(p1).add(p2).add(p3)
+  def of(shapes: Seq[Shape]): BoundingBox = {
+    if (shapes.isEmpty) BoundingBox.Empty
+    else shapes.foldLeft(Empty)((box, shape) => box.add(shape.boundsTransformed))
   }
 
 }

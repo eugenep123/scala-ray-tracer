@@ -9,7 +9,6 @@ class BoundsSpec extends BaseSpec {
   feature("Bounds") {
 
     scenario("Creating an empty bounding box") {
-
       Given("box ← bounding_box(empty)")
       Then("box.min = point(infinity, infinity, infinity)")
       And("box.max = point(-infinity, -infinity, -infinity)")
@@ -85,7 +84,6 @@ class BoundsSpec extends BaseSpec {
       }
     }
 
-
     val boxes = Table(
       ("min", "max", "result"),
       (point(5, -2, 0), point(11, 4, 7), true),
@@ -121,19 +119,19 @@ class BoundsSpec extends BaseSpec {
 
     val rays = Table(
       ("origin", "direction", "result"),
-      (point(5, 0.5, 0), vector(-1, 0, 0), true),
+      (point(5, 0.5, 0),  vector(-1, 0, 0), true),
       (point(-5, 0.5, 0), vector(1, 0, 0), true),
-      (point(0.5, 5, 0), vector(0, -1, 0), true),
+      (point(0.5, 5, 0),  vector(0, -1, 0), true),
       (point(0.5, -5, 0), vector(0, 1, 0), true),
-      (point(0.5, 0, 5), vector(0, 0, -1), true),
+      (point(0.5, 0, 5),  vector(0, 0, -1), true),
       (point(0.5, 0, -5), vector(0, 0, 1), true),
-      (point(0, 0.5, 0), vector(0, 0, 1), true),
-      (point(-2, 0, 0), vector(2, 4, 6), false),
-      (point(0, -2, 0), vector(6, 2, 4), false),
-      (point(0, 0, -2), vector(4, 6, 2), false),
-      (point(2, 0, 2), vector(0, 0, -1), false),
-      (point(0, 2, 2), vector(0, -1, 0), false),
-      (point(2, 2, 0), vector(-1, 0, 0), false)
+      (point(0, 0.5, 0),  vector(0, 0, 1), true),
+      (point(-2, 0, 0),   vector(2, 4, 6), false),
+      (point(0, -2, 0),   vector(6, 2, 4), false),
+      (point(0, 0, -2),   vector(4, 6, 2), false),
+      (point(2, 0, 2),    vector(0, 0, -1), false),
+      (point(0, 2, 2),    vector(0, -1, 0), false),
+      (point(2, 2, 0),    vector(-1, 0, 0), false)
     )
 
     forAll(rays) { (origin, dir, result) =>
@@ -163,96 +161,100 @@ class BoundsSpec extends BaseSpec {
       assert(min == box.minimum)
       assert(max == box.maximum)
     }
+
+
+    val nonCureRays = Table(
+      ("origin"         , "direction"      , "result" ),
+      (point(15, 1, 2)  , vector(-1, 0, 0) , true   ),
+      (point(-5, -1, 4) , vector(1, 0, 0)  , true   ),
+      (point(7, 6, 5)   , vector(0, -1, 0) , true   ),
+      (point(9, -5, 6)  , vector(0, 1, 0)  , true   ),
+      (point(8, 2, 12)  , vector(0, 0, -1) , true   ),
+      (point(6, 0, -5)  , vector(0, 0, 1)  , true   ),
+      (point(8, 1, 3.5) , vector(0, 0, 1)  , true   ),
+      (point(9, -1, -8) , vector(2, 4, 6)  , false  ),
+      (point(8, 3, -4)  , vector(6, 2, 4)  , false  ),
+      (point(9, -1, -2) , vector(4, 6, 2)  , false  ),
+      (point(4, 0, 9)   , vector(0, 0, -1) , false  ),
+      (point(8, 6, -1)  , vector(0, -1, 0) , false  ),
+      (point(12, 5, 4)  , vector(-1, 0, 0) , false  )
+    )
+    forAll(nonCureRays) { (origin, dir, result) =>
+      scenario(s"Intersecting a ray with a non-cubic bounding box: $origin, $dir") {
+        Given("box ← bounding_box(min=point(5, -2, 0) max=point(11, 4, 7))")
+          And(s"direction ← normalize($dir)")
+          And("r ← ray($origin, direction)")
+         Then(s"intersects(box, r) is $result")
+        val box = boundingBox(point(5, -2, 0), point(11, 4, 7))
+        val direction = normalize(dir)
+        val r = ray(origin, direction)
+        assert(box.intersects(r) == result)
+      }
+    }
+
+    scenario("Splitting a perfect cube") {
+      Given("box ← bounding_box(min=point(-1, -4, -5) max=point(9, 6, 5))")
+       When("(left, right) ← split_bounds(box)")
+       Then("left.min = point(-1, -4, -5)")
+        And("left.max = point(4, 6, 5)")
+        And("right.min = point(4, -4, -5)")
+        And("right.max = point(9, 6, 5)")
+
+      val box = boundingBox(point(-1, -4, -5), point(9, 6, 5))
+      val (left, right) = splitBounds(box)
+      assert(left.minimum == point(-1, -4, -5))
+      assert(left.maximum == point(4, 6, 5))
+      assert(right.minimum == point(4, -4, -5))
+      assert(right.maximum == point(9, 6, 5))
+    }
+
+    scenario("Splitting an x-wide box") {
+      Given("box ← bounding_box(min=point(-1, -2, -3) max=point(9, 5.5, 3))")
+       When("(left, right) ← split_bounds(box)")
+       Then("left.min = point(-1, -2, -3)")
+        And("left.max = point(4, 5.5, 3)")
+        And("right.min = point(4, -2, -3)")
+        And("right.max = point(9, 5.5, 3)")
+
+      val box = boundingBox(point(-1, -2, -3), point(9, 5.5, 3))
+      val (left, right) = splitBounds(box)
+      assert(left.minimum == point(-1, -2, -3))
+      assert(left.maximum == point(4, 5.5, 3))
+      assert(right.minimum == point(4, -2, -3))
+      assert(right.maximum == point(9, 5.5, 3))
+    }
+
+    scenario(" Splitting a y-wide box") {
+      Given("box ← bounding_box(min=point(-1, -2, -3) max=point(5, 8, 3))")
+       When("(left, right) ← split_bounds(box)")
+       Then("left.min = point(-1, -2, -3)")
+        And("left.max = point(5, 3, 3)")
+        And("right.min = point(-1, 3, -3)")
+        And("right.max = point(5, 8, 3)")
+
+      val box = boundingBox(point(-1, -2, -3), point(5, 8, 3))
+       val (left, right) = splitBounds(box)
+      assert(left.minimum == point(-1, -2, -3))
+      assert(left.maximum == point(5, 3, 3))
+      assert(right.minimum == point(-1, 3, -3))
+      assert(right.maximum == point(5, 8, 3))
+    }
+
+    scenario("Splitting a z-wide box") {
+      Given("box ← bounding_box(min=point(-1, -2, -3) max=point(5, 3, 7))")
+       When("(left, right) ← split_bounds(box)")
+       Then("left.min = point(-1, -2, -3)")
+        And("left.max = point(5, 3, 2)")
+        And("right.min = point(-1, -2, 2)")
+        And("right.max = point(5, 3, 7)")
+
+      val box = boundingBox(point(-1, -2, -3), point(5, 3, 7))
+      val (left, right) = splitBounds(box)
+      assert(left.minimum == point(-1, -2, -3))
+      assert(left.maximum == point(5, 3, 2))
+      assert(right.minimum == point(-1, -2, 2))
+      assert(right.maximum == point(5, 3, 7))
+    }
   }
 
 }
-
-/*
-
-
-
-Scenario Outline:
-
-
-
-Scenario:
-
-
-Scenario Outline:
-
-
-  Examples:
-    | origin            | direction        | result |
-    | point(5, 0.5, 0)  | vector(-1, 0, 0) | true   |
-    | point(-5, 0.5, 0) | vector(1, 0, 0)  | true   |
-    | point(0.5, 5, 0)  | vector(0, -1, 0) | true   |
-    | point(0.5, -5, 0) | vector(0, 1, 0)  | true   |
-    | point(0.5, 0, 5)  | vector(0, 0, -1) | true   |
-    | point(0.5, 0, -5) | vector(0, 0, 1)  | true   |
-    | point(0, 0.5, 0)  | vector(0, 0, 1)  | true   |
-    | point(-2, 0, 0)   | vector(2, 4, 6)  | false  |
-    | point(0, -2, 0)   | vector(6, 2, 4)  | false  |
-    | point(0, 0, -2)   | vector(4, 6, 2)  | false  |
-    | point(2, 0, 2)    | vector(0, 0, -1) | false  |
-    | point(0, 2, 2)    | vector(0, -1, 0) | false  |
-    | point(2, 2, 0)    | vector(-1, 0, 0) | false  |
-
-
-
-
-  Scenario Outline: Intersecting a ray with a non-cubic bounding box
-    Given box ← bounding_box(min=point(5, -2, 0) max=point(11, 4, 7))
-    And direction ← normalize(<direction>)
-    And r ← ray(<origin>, direction)
-    Then intersects(box, r) is <result>
-
-    Examples:
-      | origin           | direction        | result |
-      | point(15, 1, 2)  | vector(-1, 0, 0) | true   |
-      | point(-5, -1, 4) | vector(1, 0, 0)  | true   |
-      | point(7, 6, 5)   | vector(0, -1, 0) | true   |
-      | point(9, -5, 6)  | vector(0, 1, 0)  | true   |
-      | point(8, 2, 12)  | vector(0, 0, -1) | true   |
-      | point(6, 0, -5)  | vector(0, 0, 1)  | true   |
-      | point(8, 1, 3.5) | vector(0, 0, 1)  | true   |
-      | point(9, -1, -8) | vector(2, 4, 6)  | false  |
-      | point(8, 3, -4)  | vector(6, 2, 4)  | false  |
-      | point(9, -1, -2) | vector(4, 6, 2)  | false  |
-      | point(4, 0, 9)   | vector(0, 0, -1) | false  |
-      | point(8, 6, -1)  | vector(0, -1, 0) | false  |
-      | point(12, 5, 4)  | vector(-1, 0, 0) | false  |
-
-Scenario: Splitting a perfect cube
-  Given box ← bounding_box(min=point(-1, -4, -5) max=point(9, 6, 5))
-  When (left, right) ← split_bounds(box)
-  Then left.min = point(-1, -4, -5)
-  And left.max = point(4, 6, 5)
-  And right.min = point(4, -4, -5)
-  And right.max = point(9, 6, 5)
-
-Scenario: Splitting an x-wide box
-  Given box ← bounding_box(min=point(-1, -2, -3) max=point(9, 5.5, 3))
-  When (left, right) ← split_bounds(box)
-  Then left.min = point(-1, -2, -3)
-  And left.max = point(4, 5.5, 3)
-  And right.min = point(4, -2, -3)
-  And right.max = point(9, 5.5, 3)
-
-Scenario: Splitting a y-wide box
-  Given box ← bounding_box(min=point(-1, -2, -3) max=point(5, 8, 3))
-  When (left, right) ← split_bounds(box)
-  Then left.min = point(-1, -2, -3)
-  And left.max = point(5, 3, 3)
-  And right.min = point(-1, 3, -3)
-  And right.max = point(5, 8, 3)
-
-Scenario: Splitting a z-wide box
-  Given box ← bounding_box(min=point(-1, -2, -3) max=point(5, 3, 7))
-  When (left, right) ← split_bounds(box)
-  Then left.min = point(-1, -2, -3)
-  And left.max = point(5, 3, 2)
-  And right.min = point(-1, -2, 2)
-  And right.max = point(5, 3, 7)
-
-
- */

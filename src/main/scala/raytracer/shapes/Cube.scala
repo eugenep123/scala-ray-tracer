@@ -1,8 +1,8 @@
 package raytracer
 package shapes
 
-import math._
-import scala.math.{abs, max, min}
+import raytracer.math._
+import scala.math.abs
 
 /**
   * Play on the xz
@@ -12,7 +12,7 @@ final class Cube(
   material: Option[Material]) extends Shape(transform, material) {
 
   override def localNormalAt(point: Point3D, i: Intersection): Vector3D = {
-    val maxC = max(max(abs(point.x), abs(point.y)), abs(point.z))
+    val maxC = max(abs(point.x), abs(point.y), abs(point.z))
     if (maxC == abs(point.x))
       Vector3D(point.x, 0, 0)
     else if (maxC == abs(point.y))
@@ -27,8 +27,8 @@ final class Cube(
     val (ytmin, ytmax) = Cube.checkAxis(origin.y, direction.y, -1, 1)
     val (ztmin, ztmax) = Cube.checkAxis(origin.z, direction.z, -1, 1)
 
-    val tmin = max(max(xtmin, ytmin), ztmin)
-    val tmax = min(min(xtmax, ytmax), ztmax)
+    val tmin = max(xtmin, ytmin, ztmin)
+    val tmax = min(xtmax, ytmax, ztmax)
 
     if (tmin > tmax) Nil //miss
     else Seq(Intersection(tmin, this), Intersection(tmax, this))

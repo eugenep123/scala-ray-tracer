@@ -37,6 +37,9 @@ abstract class Shape(
       b
     }
   }
+
+  final def boundsTransformed: BoundingBox = bounds.transform(transform)
+
   protected def calculateBounds: BoundingBox
 
   final def intersect(ray: Ray): Seq[Intersection] = {

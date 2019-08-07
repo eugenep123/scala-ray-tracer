@@ -1,7 +1,8 @@
 package raytracer.resource
 package waveform
 
-import raytracer.BaseSpec
+import raytracer.{BaseSpec, shapes}
+import raytracer.shapes.{SmoothTriangle, Triangle}
 
 class ObjFileParserSpec extends BaseSpec {
 
@@ -83,8 +84,9 @@ class ObjFileParserSpec extends BaseSpec {
 
       val result = parseObjFile(content)
       val g = result.defaultGroup
-      val t1 = g.triangles(0)
-      val t2 = g.triangles(1)
+      val triangles = g.collectChildren[Triangle]
+      val t1 = triangles(0)
+      val t2 = triangles(1)
 
       assert(t1.p1 == result.vertices(1))
       assert(t1.p2 == result.vertices(2))
@@ -124,9 +126,10 @@ class ObjFileParserSpec extends BaseSpec {
 
       val result = parseObjFile(content)
       val g = result.defaultGroup
-      val t1 = g.triangles(0)
-      val t2 = g.triangles(1)
-      val t3 = g.triangles(2)
+      val triangles = g.collectChildren[Triangle]
+      val t1 = triangles(0)
+      val t2 = triangles(1)
+      val t3 = triangles(2)
       assert(t1.p1 == result.vertices(1))
       assert(t1.p2 == result.vertices(2))
       assert(t1.p3 == result.vertices(3))
@@ -155,8 +158,8 @@ class ObjFileParserSpec extends BaseSpec {
       val result = parseObjFile(trianglesFileContent)
       val g1 = result.groups(0)
       val g2 = result.groups(1)
-      val t1 = g1.triangles.head
-      val t2 = g2.triangles.head
+      val t1 = g1.collectChildren[shapes.Triangle].head
+      val t2 = g2.collectChildren[shapes.Triangle].head
       assert(t1.p1 == result.vertices(1))
       assert(t1.p2 == result.vertices(2))
       assert(t1.p3 == result.vertices(3))
@@ -228,8 +231,9 @@ class ObjFileParserSpec extends BaseSpec {
       val result = parseObjFile(content)
 
       val g = result.defaultGroup
-      val t1 = g.smoothTriangles(1)
-      val t2 = g.smoothTriangles(1)
+      val triangles = g.collectChildren[SmoothTriangle]
+      val t1 = triangles(0)
+      val t2 = triangles(1)
       assert(t1.p1 == result.vertices(1))
       assert(t1.p2 == result.vertices(2))
       assert(t1.p3 == result.vertices(3))

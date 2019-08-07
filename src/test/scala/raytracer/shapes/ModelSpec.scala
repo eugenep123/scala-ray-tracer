@@ -72,5 +72,17 @@ class ModelSpec extends WordSpec with Matchers with TestHelpers {
 
       w2 shouldEqual w
     }
+
+    "test translations" in {
+      val s1 = Shape()
+        .scale(2, 2, 2)
+        .translate(2, 5, -3)
+        .sphere
+
+      val s2 = Sphere(translation(2, 5, -3) * scaling(2, 2, 2))
+
+      assert(s1.transform == s2.transform)
+      assert(s1 == s2)
+    }
   }
 }

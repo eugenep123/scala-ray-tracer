@@ -10,7 +10,9 @@ import raytracer.shapes._
 import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
-case class SceneBuilder(items: Seq[YamlValue])(implicit loader: ResourceLoader) {
+case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
+                       (implicit loader: ResourceLoader) {
+
   implicit lazy val lookup = buildLookup
 
   protected def collect[A: ClassTag]: Seq[A] = items.collect { case a: A => a }
@@ -51,7 +53,7 @@ case class SceneBuilder(items: Seq[YamlValue])(implicit loader: ResourceLoader) 
       case g: AddGroup =>
         val group = new Group(transform, material) //Use optional group name
         val children = g.children.map(buildShape)
-        children foreach group.add
+        children foreach group.addChild
         group
       case _: AddPlane =>
         new Plane(transform, material)
@@ -63,9 +65,11 @@ case class SceneBuilder(items: Seq[YamlValue])(implicit loader: ResourceLoader) 
   }
 
   def buildObjFile(filename: String, transform: Matrix, material: Option[Material]): Shape = {
-    val group = loader.loadObject(filename)
+    val group = loader.loadObject(filename) // no transforms
     val group2 = new Group(transform, material)
-    group.children.foreach(group2.add)
+    group2.addChildren(group.children)
+    // subdivide bounding boxes
+    group2.divide(divideThreshold)
     group2
   }
 

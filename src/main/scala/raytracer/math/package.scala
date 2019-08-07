@@ -43,4 +43,12 @@ package object math {
   def mkString(name: String, xs: Double*): String = {
     xs.map(doubleToString).mkString(s"$name(", ", ", ")")
   }
+
+
+  @inline def max(a: Double, b: Double, c: Double): Double =
+    scala.math.max(a, scala.math.max(b, c))
+
+  @inline def min(a: Double, b: Double, c: Double): Double =
+    scala.math.min(a, scala.math.min(b, c))
+
 }

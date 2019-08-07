@@ -74,7 +74,7 @@ case class ShapeBuilder(
 
   def group(children: Seq[Shape]): Group = {
     val g = group
-    children foreach g.add
+    children foreach g.addChild
     g
   }
 

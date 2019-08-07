@@ -95,11 +95,14 @@ trait TestHelpers extends Shapes {
   def worldToObject(s: Shape, point: Point3D): Point3D = s.worldToObject(point)
   def normalToWorld(s: Shape, normal: Vector3D): Vector3D = s.normalToWorld(normal)
 
-  def addChild(g: Group, child: Shape): Group = g.add(child)
+  def addChild(g: Group, child: Shape): Group = g.addChild(child)
 
-  def boundingBox(shapes: Seq[Shape] = Nil): BoundingBox = BoundingBox(shapes)
+  def boundingBox(shapes: Seq[Shape] = Nil): BoundingBox = BoundingBox.of(shapes)
   def boundingBox(min: Point3D, max: Point3D): BoundingBox = new BoundingBox(min, max)
-
+  def splitBounds(box: BoundingBox): (BoundingBox, BoundingBox) = box.split
+  def partitionChildren(group: Group): (Seq[Shape], Seq[Shape]) = group.partitionChildren
+  def makeSubgroup(g: Group, children: Seq[Shape]): Group = g.createSubGroup(children)
+  def divide(g: Group, threshold: Int): Unit = g.divide(threshold)
 
   def parseObjFile(content: String): ParserResult = ObjFileParser.parseContent(content)
 

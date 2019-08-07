@@ -2,11 +2,13 @@ package raytracer
 package shapes
 
 import javax.naming.OperationNotSupportedException
-import math._
-import scala.collection.mutable.ListBuffer
+import raytracer.math._
 
+import scala.collection.mutable.ListBuffer
+import scala.reflect.ClassTag
+
+//TODO: add name
 final class Group(
-                 //TODO: add name
   transform: Matrix,
   material: Option[Material]) extends Shape(transform, material) {
 
@@ -15,26 +17,59 @@ final class Group(
   def isEmpty: Boolean = _children.isEmpty
   def includes(s: Shape): Boolean = _children.contains(s)
   def size: Int = _children.size
-  def children: Seq[Shape] = _children.toSeq
 
-  // Triangle children
-  def triangles: Seq[Triangle] = _children.collect { case t: Triangle => t }
-  def smoothTriangles: Seq[SmoothTriangle] = _children.collect { case t: SmoothTriangle => t }
+  def children: Seq[Shape] = _children
+  def collectChildren[A <: Shape : ClassTag]: Seq[A] =
+    _children.collect { case a: A => a}
 
-  def add(child: Shape): Group = {
+  def addChild(child: Shape): Group = {
     child.parent.foreach {
-      case g: Group => g.remove(child)
+      case g: Group => g.removeChild(child)
     }
     child.setParent(Some(this))
     this._children.append(child)
     this
   }
 
-  def remove(child: Shape): Unit = {
+  def addChildren(xs: Seq[Shape]): Group = {
+    xs foreach addChild
+    this
+  }
+
+  def removeChild(child: Shape): Unit = {
     if (child.parent.contains(this)) {
       child.setParent(None)
       this._children.remove(this._children.indexOf(child))
     }
+  }
+
+  def removeChildren(xs: Seq[Shape]): Unit = {
+    xs foreach removeChild
+  }
+
+  // TODO: return this? or subgroup????
+  def createSubGroup(xs: Seq[Shape]): Group = {
+    val subGroup = Group().addChildren(xs)
+    addChild(subGroup)
+    subGroup
+  }
+
+  def partitionChildren: (Seq[Shape], Seq[Shape]) = {
+    val (leftBounds, rightBounds) = bounds.split
+    val left = children.filter(child => leftBounds.contains(child.boundsTransformed))
+    val right = children.filter(child => rightBounds.contains(child.boundsTransformed))
+    removeChildren(left)
+    removeChildren(right)
+    (left, right)
+  }
+
+  def divide(threshold: Int): Unit = {
+    if (threshold <= size) {
+      val (left, right) = partitionChildren
+      if (!left.isEmpty) createSubGroup(left)
+      if (!right.isEmpty) createSubGroup(right)
+    }
+    collectChildren[Group].foreach(_.divide(threshold))
   }
 
   override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D = {
@@ -49,13 +84,14 @@ final class Group(
     }
   }
 
-
   override protected def calculateBounds: BoundingBox = {
 //    val box = BoundingBox(children.filter(_.renderAllRays))
     // Add bounding box (no shadows or reflection/refraction)
+    //TODO: ass optional visual bounding box (debug only)
 //    add(box.toCube.setRenderAllRays(false))
 //    box
-    BoundingBox(_children)
+
+    BoundingBox.of(_children)
   }
 
   override def canEqual(other: Any): Boolean = other.isInstanceOf[Group]
@@ -82,12 +118,12 @@ object Group {
           case g: Group => g
           case other =>
             val g = Group()
-            g.add(other)
+            g.addChild(other)
             g
         }
       case _ =>
         val g = Group()
-        xs.foreach(g add _)
+        xs.foreach(g addChild _)
         g
     }
   }

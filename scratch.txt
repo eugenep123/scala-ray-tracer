@@ -1,0 +1,68 @@
+
+
+
+func check_axis(origin, direction float64) (float64, float64) {
+	// Convert zero numerators to small, appropriately signed value to avoid a
+	// NaN result below if denominator is zero.
+	tmin_numerator := -1 - origin
+	if tmin_numerator == 0 {
+		tmin_numerator = -math.SmallestNonzeroFloat64
+	}
+	tmax_numerator := 1 - origin
+	if tmax_numerator == 0 {
+		tmax_numerator = math.SmallestNonzeroFloat64
+	}
+
+	// Capture the sign of direction (and handle -0.0).
+	// See http://www.cs.utah.edu/~awilliam/box/box.pdf improved method (end pp2)
+	// We're relying on IEEE fp rules to produce +Inf, -Inf if appropriate.
+	div := 1 / direction
+	if div >= 0 {
+		return tmin_numerator * div, tmax_numerator * div
+	}
+	return tmax_numerator * div, tmin_numerator * div    // swap
+}
+
+
+    func partitionChildren() -> ([Shape], [Shape]) {
+        var left: [Shape] = []
+        var right: [Shape] = []
+
+        let (boundsLeft, boundsRight) = boundingBox().splitBoundingBox()
+
+        for child in children {
+            if boundsLeft.containsBox(box: child.parentSpaceBounds()) {
+                child.removeFromParent()
+                left.append(child)
+            } else if (boundsRight.containsBox(box: child.parentSpaceBounds())) {
+                child.removeFromParent()
+                right.append(child)
+            }
+        }
+
+        return (left, right)
+    }
+
+
+
+    override func boundingBox() -> BoundingBox {
+        if bounds == nil {
+            var box = BoundingBox()
+            for child in children {
+                box.addBox(box: child.parentSpaceBounds())
+            }
+
+            bounds = box
+        }
+
+        return bounds!
+    }
+
+
+    func parentSpaceBounds() -> BoundingBox {
+        if parentBounds == nil {
+            parentBounds = boundingBox().transformed(transform: transform)
+        }
+
+        return parentBounds!
+    }

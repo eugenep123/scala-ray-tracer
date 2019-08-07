@@ -10,7 +10,7 @@ object Chapter15 extends App {
 
   val scene = Scene
     .fromResourceYaml(resource)
-    .withDimensions(400,400)
+    .withDimensions(1024,768)
 
 
   val obj = scene.world.objects.head

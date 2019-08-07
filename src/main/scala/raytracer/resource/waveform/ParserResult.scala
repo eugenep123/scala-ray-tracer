@@ -41,7 +41,7 @@ class ParserResult extends ObjBuilder {
   }
 
   private def addShape(s: Shape): Unit = {
-    currentGroup.add(s)
+    currentGroup.addChild(s)
   }
   override def addVector(x: Double, y: Double, z: Double, w: Double): Unit = {
     require(w == 1.0) // For now only allow points
