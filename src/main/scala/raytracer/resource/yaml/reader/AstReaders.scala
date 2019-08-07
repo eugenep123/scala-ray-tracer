@@ -169,24 +169,22 @@ object AstReaders {
   }
 
   implicit object AddShapeReader extends AddReader[AddShape] {
-    override def readAdd(map: YamlMap, addType: String): ParseResult[AddShape] = {
-      if (ShapeValueReader.supports(addType)) ShapeValueReader.readAdd(map, addType)
-      else readBaseShape(map)((transform, material) => success(ShapeReference(addType, transform, material)))
-    }
-  }
-
-  implicit object ShapeValueReader extends AddReader[ShapeValue] {
     val shapes = Set("cylinder", "cone", "sphere", "cube", "plane", "group", "obj")
-    def supports(addType: String) = shapes.contains(addType)
 
-    override def readAdd(map: YamlMap, addType: String): ParseResult[ShapeValue] =
-      readBaseShape(map)((transform, material) => readShape(map, addType, transform, material))
+    override def readAdd(map: YamlMap, addType: String): ParseResult[AddShape] = {
+      readBaseShape(map)((transform, material) =>
+        if (supports(addType)) readShape(map, addType, transform, material)
+        else success(ShapeReference(addType, transform, material))
+      )
+    }
+
+    def supports(addType: String): Boolean = shapes.contains(addType)
 
     def readShape(
       map: YamlMap,
       shapeType: String,
       transform: TransformOption,
-      material: MaterialOption): ParseResult[ShapeValue] = {
+      material: MaterialOption): ParseResult[AddShape] = {
       shapeType match {
         case "sphere" => success(AddSphere(transform, material))
         case "cube" => success(AddCube(transform, material))
@@ -240,12 +238,12 @@ object AstReaders {
           } yield DefineTransform(key, value)
         case "shape" =>
           for {
-            value <- map.read[ShapeValue]("value")
+            value <- map.read[AddShape]("value")
           } yield DefineShape(key, value)
         case _ =>
           // shape
           for {
-            value <- map.read[ShapeValue]("value")
+            value <- map.read[AddShape]("value")
           } yield DefineShape(key, value)
       }
     }

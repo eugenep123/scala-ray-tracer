@@ -8,14 +8,11 @@ trait ResourceLoader {
   //    def readMaterial(filename: String): Group
 }
 object ResourceLoader {
-  implicit def default: ResourceLoader = new ResourceLoader {
-    override def loadObject(filename: String): Group = {
-      //TODO: inject path via implicit
-//      val name = s"/examples/triangles/$filename"
-//      val name = s"/examples/triangles/cube.obj"
-      val name = s"/examples/triangles/teapot.obj"
-      val content = getResourceString(name)
-      ObjFileParser.parseGroup(content)
-    }
+
+  // Loads objects from the resource folder: 'objects'
+  implicit def default: ResourceLoader = (filename: String) => {
+    val resourceName = s"/objects/$filename"
+    val content = getResourceString(resourceName)
+    ObjFileParser.parseGroup(content)
   }
 }

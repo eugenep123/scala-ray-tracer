@@ -57,10 +57,10 @@ final class Group(
   def partitionChildren: (Seq[Shape], Seq[Shape]) = {
     val (leftBounds, rightBounds) = bounds.split
     val left = children.filter(child => leftBounds.contains(child.boundsTransformed))
-    val right = children.filter(child => rightBounds.contains(child.boundsTransformed))
     removeChildren(left)
+    val right = children.filter(child => rightBounds.contains(child.boundsTransformed))
     removeChildren(right)
-    (left, right)
+    (left.toList, right.toList)
   }
 
   def divide(threshold: Int): Unit = {
@@ -108,24 +108,6 @@ object Group {
     transform: Matrix = Matrix.identity,
     material: Option[Material] = None): Group = {
     new Group(transform, material)
-  }
-
-  def create(xs: Seq[Shape]): Group = {
-    xs.size match {
-      case 0 => Group()
-      case 1 =>
-        xs.head match {
-          case g: Group => g
-          case other =>
-            val g = Group()
-            g.addChild(other)
-            g
-        }
-      case _ =>
-        val g = Group()
-        xs.foreach(g addChild _)
-        g
-    }
   }
 
 }

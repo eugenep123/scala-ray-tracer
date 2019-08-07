@@ -44,11 +44,17 @@ package object math {
     xs.map(doubleToString).mkString(s"$name(", ", ", ")")
   }
 
-
   @inline def max(a: Double, b: Double, c: Double): Double =
     scala.math.max(a, scala.math.max(b, c))
 
   @inline def min(a: Double, b: Double, c: Double): Double =
     scala.math.min(a, scala.math.min(b, c))
 
+
+  implicit class Tap[A](val underlying: A) extends AnyVal {
+    def tap(func: A => Unit): A = {
+      func(underlying)
+      underlying
+    }
+  }
 }

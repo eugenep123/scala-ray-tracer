@@ -6,7 +6,7 @@ import raytracer.math.Point3D
 object Chapter15 extends App {
 
 
-  val resource = "/examples/triangles/teapot.yaml"
+  val resource = "/scenes/examples/triangles/teapot.yaml"
 
   val scene = Scene
     .fromResourceYaml(resource)

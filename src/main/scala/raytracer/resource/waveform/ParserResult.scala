@@ -26,8 +26,22 @@ class ParserResult extends ObjBuilder {
   def defaultGroup: Group = _groups.head
 
   def toGroup: Group = {
-    val nonEmpty = _groups.filterNot(_.isEmpty)
-    Group.create(nonEmpty)
+    val xs = _groups.filterNot(_.isEmpty)
+    xs.size match {
+      case 0 => Group()
+      case 1 =>
+        xs.head match {
+          case g: Group => g
+          case other =>
+            val g = Group()
+            g.addChild(other)
+            g
+        }
+      case _ =>
+        val g = Group()
+        xs.foreach(g addChild _)
+        g
+    }
   }
 
   private def newGroup(): Group = {

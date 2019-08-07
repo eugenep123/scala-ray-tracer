@@ -25,6 +25,7 @@ object AST {
 
   // Material
   type MaterialOption = Option[MaterialValue]
+  type MaterialList = Seq[MaterialValue]
   sealed trait MaterialValue
   case class MaterialReference(key: String) extends MaterialValue
   case class MaterialObject(
@@ -44,7 +45,7 @@ object AST {
   }
   case class DefineMaterial(key: String, extend: Option[String], value: MaterialObject) extends DefineValue
   case class DefineTransform(key: String, value: TransformList) extends DefineValue
-  case class DefineShape(key: String, value: ShapeValue) extends DefineValue
+  case class DefineShape(key: String, value: AddShape) extends DefineValue
 
   // Adds
   sealed trait AddValue extends YamlValue
@@ -62,22 +63,20 @@ object AST {
     key: String,
     transform: TransformOption,
     material: MaterialOption) extends AddShape
-  // Shape instances
-  sealed trait ShapeValue extends AddShape
   case class AddCylinder(
     minimum: Double, maximum: Double, closed: Boolean,
-    transform: TransformOption, material: MaterialOption) extends ShapeValue
+    transform: TransformOption, material: MaterialOption) extends AddShape
   case class AddCone(
     minimum: Double, maximum: Double, closed: Boolean,
-    transform: TransformOption, material: MaterialOption) extends ShapeValue
-  case class AddSphere(transform: TransformOption, material: MaterialOption) extends ShapeValue
-  case class AddCube(transform: TransformOption, material: MaterialOption) extends ShapeValue
-  case class AddPlane(transform: TransformOption, material: MaterialOption) extends ShapeValue
-  case class AddObjFile(file: String, transform: TransformOption, material: MaterialOption) extends ShapeValue
+    transform: TransformOption, material: MaterialOption) extends AddShape
+  case class AddSphere(transform: TransformOption, material: MaterialOption) extends AddShape
+  case class AddCube(transform: TransformOption, material: MaterialOption) extends AddShape
+  case class AddPlane(transform: TransformOption, material: MaterialOption) extends AddShape
+  case class AddObjFile(file: String, transform: TransformOption, material: MaterialOption) extends AddShape
   case class AddGroup(
     children: Seq[AddShape],
     transform: TransformOption,
-    material: MaterialOption) extends ShapeValue
+    material: MaterialOption) extends AddShape
 
 
   // AST helpers

@@ -180,8 +180,8 @@ class GroupsSpec extends BaseSpec {
       val (left, right) = partitionChildren(g)
 
       assert(g.children == Seq(s3))
-      assert(left == Seq(s3))
-      assert(right == Seq(s3))
+      assert(left == Seq(s1))
+      assert(right == Seq(s2))
     }
 
     scenario("Creating a sub-group from a list of children") {
@@ -265,8 +265,8 @@ class GroupsSpec extends BaseSpec {
       assert(g.children(0) == subgroup)
       assert(g.children(1) == s4)
       assert(subgroup.size == 2)
-      assert(subgroup.children(0).asInstanceOf[Group].children == Seq(s1))
-      assert(subgroup.children(1).asInstanceOf[Group].children == Seq(s2, s3))
+      assert(subgroup.children(0).asInstanceOf[Group].children.toList == Seq(s1))
+      assert(subgroup.children(1).asInstanceOf[Group].children.toList == Seq(s2, s3))
     }
   }
 

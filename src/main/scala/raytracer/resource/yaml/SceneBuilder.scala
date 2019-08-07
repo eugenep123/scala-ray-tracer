@@ -1,6 +1,7 @@
 package raytracer.resource.yaml
 
 import AST._
+import org.scalameter.measure
 import raytracer.math.{Matrix, Operation, Operations, TransformBuilder}
 import raytracer.patterns._
 import raytracer.{Camera, Defaults, Material, PointLight, Scene, World}
@@ -20,28 +21,20 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
   def build: Scene = {
     val camera = collect[AddCamera].headOption.map(buildCamera).getOrElse(Defaults.camera)
     val pointLights = collect[AddLight].map(buildLight)
-    val objects = collect[AddShape].map(buildShape)
+    val objects = collect[AddShape].map(buildShape(_, None, None, Nil))
     Scene(World(objects, pointLights), camera)
   }
 
-  def buildShape(add: AddShape): Shape = {
-    add match {
-      case ShapeReference(key, t, m) =>
-        val define = lookup.shapes.getOrElse(key, error(s"Shape reference not found: '$key'"))
-        buildShapeValue(define.value, Some(key), t, m)
-      case value: ShapeValue =>
-        buildShapeValue(value, None, None, None)
-    }
-  }
-
-  def buildShapeValue(
-    value: ShapeValue,
+  def buildShape(
+    value: AddShape,
     referenceKey: Option[String],
     parentTransform: TransformOption,
-    parentMaterial: MaterialOption): Shape = {
+    parentMaterial: MaterialList): Shape = {
 
-    val transform = buildTransform(value.transform, parentTransform)
-    val material = buildMaterial(value.material, parentMaterial)
+    val mergedTransform = mergeTransform(value.transform, parentTransform)
+    val mergedMaterial = value.material.toSeq ++ parentMaterial
+    def transform: Matrix = buildTransform(mergedTransform)
+    def material: Option[Material] = buildMaterial(mergedMaterial)
 
     value match {
       case AddCone(min, max, closed, _, _) =>
@@ -52,8 +45,8 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
         new Cylinder(min, max, closed, transform, material)
       case g: AddGroup =>
         val group = new Group(transform, material) //Use optional group name
-        val children = g.children.map(buildShape)
-        children foreach group.addChild
+        val children = g.children.map(buildShape(_, None, None, Nil))
+        group.addChildren(children)
         group
       case _: AddPlane =>
         new Plane(transform, material)
@@ -61,6 +54,11 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
         new Sphere(transform, material)
       case obj: AddObjFile =>
         buildObjFile(obj.file, transform, material)
+
+      case ShapeReference(key, t, m) =>
+        // We can have stacking references, with multiple transforms, merge then
+        val define = lookup.shapes.getOrElse(key, error(s"Shape reference not found: '$key'"))
+        buildShape(define.value, Some(key), mergedTransform, mergedMaterial)
     }
   }
 
@@ -68,8 +66,13 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
     val group = loader.loadObject(filename) // no transforms
     val group2 = new Group(transform, material)
     group2.addChildren(group.children)
+    val threshold = math.max(group2.size / 100, divideThreshold)
+
     // subdivide bounding boxes
-    group2.divide(divideThreshold)
+    val time = measure {
+      group2.divide(threshold)
+    }
+    println(s"Divided '$filename' in $time (threshold = $threshold)")
     group2
   }
 
@@ -83,7 +86,7 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
   }
 
   def buildPattern(p: PatternValue): Pattern = {
-    val transform = buildTransform(p.transform, None)
+    val transform = buildTransform(p.transform)
     p match {
       case CheckersPatternValue(a, b, _)  => CheckersPattern(a, b, transform)
       case StripePatternValue(a, b, _)    => StripePattern(a, b, transform)
@@ -92,9 +95,14 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
     }
   }
 
-  def buildTransform(transform: TransformOption, parent: TransformOption): Matrix = {
-    val xs = transform.fold(Seq.empty[TransformItem])(_.xs) ++
-      parent.fold(Seq.empty[TransformItem])(_.xs)
+  def mergeTransform(a: TransformOption, b: TransformOption): TransformOption = {
+    val xs = a.fold(Seq.empty[TransformItem])(_.xs) ++
+      b.fold(Seq.empty[TransformItem])(_.xs)
+    if (xs.isEmpty) None else Some(TransformList(xs))
+  }
+
+  def buildTransform(transform: TransformOption): Matrix = {
+    val xs = transform.map(_.xs).getOrElse(Nil)
     val ops = xs.flatMap(resolveTransformItem)
     ops.foldLeft(TransformBuilder.apply())((b, op) => b.add(op)).build()
   }
@@ -109,15 +117,14 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
     }
   }
 
-
-  def buildMaterial(material: MaterialOption, parent: MaterialOption): Option[Material] = {
-    val xs = resolveMaterialList(material) ++ resolveMaterialList(parent)
+  def buildMaterial(list: MaterialList): Option[Material] = {
+    val xs = list.flatMap(resolveMaterialList)
     val merged = mergeMaterial(xs)
     buildMaterial(merged)
   }
 
   def buildMaterial(key: String): Option[Material] = {
-    buildMaterial(Some(MaterialReference("blue-material")), None)
+    buildMaterial(Seq(MaterialReference("blue-material")))
   }
   def buildMaterial(m: MaterialObject): Option[Material] = {
     val isEmpty = m.productIterator.forall { case o: Option[_] => o.isEmpty }

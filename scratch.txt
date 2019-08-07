@@ -24,8 +24,8 @@ func check_axis(origin, direction float64) (float64, float64) {
 }
 
 
-    func partitionChildren() -> ([Shape], [Shape]) {
-        var left: [Shape] = []
+
+var left: [Shape] = []
         var right: [Shape] = []
 
         let (boundsLeft, boundsRight) = boundingBox().splitBoundingBox()
@@ -41,28 +41,3 @@ func check_axis(origin, direction float64) (float64, float64) {
         }
 
         return (left, right)
-    }
-
-
-
-    override func boundingBox() -> BoundingBox {
-        if bounds == nil {
-            var box = BoundingBox()
-            for child in children {
-                box.addBox(box: child.parentSpaceBounds())
-            }
-
-            bounds = box
-        }
-
-        return bounds!
-    }
-
-
-    func parentSpaceBounds() -> BoundingBox {
-        if parentBounds == nil {
-            parentBounds = boundingBox().transformed(transform: transform)
-        }
-
-        return parentBounds!
-    }

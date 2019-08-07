@@ -24,7 +24,7 @@ object Yaml {
   }
 
   def parse(yamlString: String): ParseResult[SceneBuilder] =
-    parseItems(yamlString).map(SceneBuilder.apply)
+    parseItems(yamlString).map(SceneBuilder.apply(_))
 
   def parseItems(yamlString: String): ParseResult[Seq[YamlValue]] = {
     for {
