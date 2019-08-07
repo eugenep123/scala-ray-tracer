@@ -1,6 +1,5 @@
 package raytracer.math
 
-import raytracer.math
 import raytracer.shapes.Shape
 
 // u/v is only used for smooth triangles
@@ -39,30 +38,6 @@ case class Intersection(
 
 
   def prepare(ray: Ray, xs: Seq[Intersection]): RayIntersection = {
-//    var n1 = 1.0
-//    var n2 = 1.0
-//    if (xs.size > 1) {
-//      val containers = scala.collection.mutable.ArrayBuffer.empty[Shape]
-//      xs.takeWhile { intersection =>
-//        val shape = intersection.obj
-//        val isHit = (intersection eq this)
-//        if (isHit) {
-//          n1 =
-//            if (containers.isEmpty) 1.0
-//            else containers.last.material.refractiveIndex
-//        }
-//
-//        if (containers.contains(shape)) containers.remove(containers.indexOf(shape))
-//        else containers.append(shape)
-//        if (isHit) {
-//          n2 =
-//            if (containers.isEmpty) 1.0
-//            else containers.last.material.refractiveIndex
-//        }
-//        !isHit
-//      }
-//    }
-
     val (n1, n2) = calculateRefractive(xs)
     val point = ray.position(t)
     val eye = -ray.direction

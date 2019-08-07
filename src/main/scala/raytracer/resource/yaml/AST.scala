@@ -73,7 +73,7 @@ object AST {
   case class AddSphere(transform: TransformOption, material: MaterialOption) extends ShapeValue
   case class AddCube(transform: TransformOption, material: MaterialOption) extends ShapeValue
   case class AddPlane(transform: TransformOption, material: MaterialOption) extends ShapeValue
-  case class AddObjFile(filename: String, transform: TransformOption, material: MaterialOption) extends ShapeValue
+  case class AddObjFile(file: String, transform: TransformOption, material: MaterialOption) extends ShapeValue
   case class AddGroup(
     children: Seq[AddShape],
     transform: TransformOption,

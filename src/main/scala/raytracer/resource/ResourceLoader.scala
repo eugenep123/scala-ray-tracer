@@ -12,7 +12,8 @@ object ResourceLoader {
     override def loadObject(filename: String): Group = {
       //TODO: inject path via implicit
 //      val name = s"/examples/triangles/$filename"
-      val name = s"/examples/triangles/cube.obj"
+//      val name = s"/examples/triangles/cube.obj"
+      val name = s"/examples/triangles/teapot.obj"
       val content = getResourceString(name)
       ObjFileParser.parseGroup(content)
     }

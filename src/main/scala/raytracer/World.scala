@@ -32,16 +32,15 @@ final case class World(
       surface += material.lighting(light, overPoint, eye, normal, inShadow)
     }
 
-    var reflected = reflectedColor(hit, remaining)
-    var refracted = refractedColor(hit, remaining)
+    val reflected = reflectedColor(hit, remaining)
+    val refracted = refractedColor(hit, remaining)
 
     if (material.reflective > 0.0 && material.transparency > 0.0) {
       val reflectance = hit.reflectance
-      reflected *= reflectance
-      refracted *= (1 - reflectance)
+      surface + reflected * reflectance + refracted * (1 - reflectance)
+    } else {
+      surface + reflected + refracted
     }
-
-    surface + reflected + refracted
   }
 
   def reflectedColor(hit: RayIntersection, remaining: Int = MaxRecursion): Color = {
@@ -55,7 +54,8 @@ final case class World(
   }
 
   def refractedColor(hit: RayIntersection, remaining: Int = MaxRecursion): Color = {
-    if (remaining <= 0 || hit.material.transparency == 0.0) Color.Black
+    val transparency = hit.material.transparency
+    if (remaining <= 0 || transparency == 0.0) Color.Black
     else {
       // Find the ration of first index of refraction to the second
       // (yup, this is inverted from the definition of snell's Law.)
@@ -81,8 +81,8 @@ final case class World(
 
         // Find the color of the refracted ray, making sure to multiply
         // by the transparency value to account for any opacity
-        val color = colorAt(refractRay, remaining - 1, false)
-        color * hit.material.transparency
+        val color = colorAt(refractRay, remaining - 1, false) * transparency
+        color
       }
     }
   }

@@ -5,7 +5,7 @@ import raytracer.math.{Operation, Point3D, Vector3D}
 import raytracer.resource.yaml.AST._
 
 // Used to read YamlMaps
-object YamlReader {
+object AstReaders {
   import ParseResult._
   import raytracer.resource.yaml.reader.Converters._
   import raytracer.resource.yaml.reader.Readers._
@@ -202,8 +202,8 @@ object YamlReader {
           }
         case "obj" =>
           for {
-            filename <- map.readString("filename")
-          } yield AddObjFile(filename, transform, material)
+            file <- map.readString("file")
+          } yield AddObjFile(file, transform, material)
         case "group" =>
           for {
             children <- map.read[Seq[AddShape]]("children")

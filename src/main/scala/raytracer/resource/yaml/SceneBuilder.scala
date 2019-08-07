@@ -10,7 +10,7 @@ import raytracer.shapes._
 import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
-case class SceneBuilder(items: Seq[YamlValue])(implicit resource: ResourceLoader) {
+case class SceneBuilder(items: Seq[YamlValue])(implicit loader: ResourceLoader) {
   implicit lazy val lookup = buildLookup
 
   protected def collect[A: ClassTag]: Seq[A] = items.collect { case a: A => a }
@@ -58,13 +58,15 @@ case class SceneBuilder(items: Seq[YamlValue])(implicit resource: ResourceLoader
       case _: AddSphere =>
         new Sphere(transform, material)
       case obj: AddObjFile =>
-        buildObjFile(obj.filename, transform, material)
+        buildObjFile(obj.file, transform, material)
     }
   }
 
-
   def buildObjFile(filename: String, transform: Matrix, material: Option[Material]): Shape = {
-    ???
+    val group = loader.loadObject(filename)
+    val group2 = new Group(transform, material)
+    group.children.foreach(group2.add)
+    group2
   }
 
   def buildCamera(add: AddCamera): Camera = {
@@ -117,7 +119,7 @@ case class SceneBuilder(items: Seq[YamlValue])(implicit resource: ResourceLoader
     val isEmpty = m.productIterator.forall { case o: Option[_] => o.isEmpty }
     if (isEmpty) None
     else {
-      val default = Material()
+      val default = Material.Default
       val pattern = m.pattern.map(buildPattern).orElse(default.pattern)
       val mat = new Material(
         m.color.getOrElse(default.color),

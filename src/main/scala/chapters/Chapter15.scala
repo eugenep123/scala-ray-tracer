@@ -1,6 +1,7 @@
 package chapters
 
 import raytracer.Scene
+import raytracer.math.Point3D
 
 object Chapter15 extends App {
 
@@ -12,5 +13,18 @@ object Chapter15 extends App {
     .withDimensions(400,400)
 
 
-  scene.saveTo(Settings.folder)
+  val obj = scene.world.objects.head
+  val bounds = obj.bounds
+  println(bounds)
+  println(bounds.center)
+
+
+  val toCenter = Point3D.origin - bounds.center
+  println(toCenter)
+
+
+
+
+
+  scene.saveToAndOpen(Settings.folder)
 }
