@@ -18,7 +18,6 @@ case class RayIntersection(
   n2: Double) {
 
   val material = shape.material
-  val renderAllRays: Boolean = true
   lazy val reflectance = schlick()
 
 //  lazy val reflectance = schlick()

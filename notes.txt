@@ -9,6 +9,20 @@ Issues:
     - Failing tests:
         - shadeHit() with a reflective, transparent material
 
+    - performance:
+        parrallize group divide algorithm
+
+
+    - issues:
+        share obj files between groups
+            Divided 'dragon.obj' in 117058.132752 ms (threshold = 234)
+            Divided 'dragon.obj' in 114126.600818 ms (threshold = 234)
+            Divided 'dragon.obj' in 113226.425574 ms (threshold = 234)
+            Divided 'dragon.obj' in 110757.721839 ms (threshold = 234)
+            Divided 'dragon.obj' in 106014.38817 ms (threshold = 234)
+            Divided 'dragon.obj' in 106939.335667 ms (threshold = 234)
+            Render time: 113523.430672 ms
+
 
 
 - mesh normalization

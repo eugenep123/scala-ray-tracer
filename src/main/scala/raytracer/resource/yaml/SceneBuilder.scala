@@ -63,6 +63,7 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
   }
 
   def buildObjFile(filename: String, transform: Matrix, material: Option[Material]): Shape = {
+    println(s"Loading obj file: $filename...")
     val group = loader.loadObject(filename) // no transforms
     val group2 = new Group(transform, material)
     group2.addChildren(group.children)

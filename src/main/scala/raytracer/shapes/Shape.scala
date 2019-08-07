@@ -16,6 +16,8 @@ abstract class Shape(
   private var _parent = Option.empty[Shape]
   @volatile private var _bounds = Option.empty[BoundingBox]
 
+  val castsShadow: Boolean = true //todo
+
   final def material: Material = {
     materialOpt orElse(parent.map(_.material)) getOrElse Material.Default
   }

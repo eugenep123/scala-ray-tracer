@@ -12,7 +12,7 @@ case class Intersection(
   @inline private final def calculateRefractive(xs: Seq[Intersection]): (Double, Double) = {
     var n1 = 1.0
     var n2 = 1.0
-    if (xs.size > 1) {
+    if (xs.size >= 1) {
       val containers = scala.collection.mutable.ArrayBuffer.empty[Shape]
       xs.takeWhile { intersection =>
         val shape = intersection.obj
@@ -59,9 +59,7 @@ case class Intersection(
 object Intersection {
   // Always make sure the hit is optimized
   def sort(xs: Seq[Intersection]): Seq[Intersection] = xs.sortBy(_.t)
-  def hit(xs: Seq[Intersection], allShapes: Boolean = true): Option[Intersection] = {
-//    val ys = if (allShapes) xs else xs.filter(_.obj.renderAllRays)
-//    ys.find(_.t > 0)
+  def hit(xs: Seq[Intersection]): Option[Intersection] = {
     xs.find(_.t > 0)
   }
 }
