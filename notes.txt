@@ -1,8 +1,5 @@
 TODO:
-    - test if shadow works
     - test if material is passed through
-       -in deep nested aread
-            bbox material should be passed through
 
 
             Second, try setting ambient to 0, and diffuse to (1 - transparency). That is to say, since you've got
@@ -27,7 +24,7 @@ Issues:
             Divided 'dragon.obj' in 114126.600818 ms (threshold = 234)
             Divided 'dragon.obj' in 113226.425574 ms (threshold = 234)
             Divided 'dragon.obj' in 110757.721839 ms (threshold = 234)
-            Divided 'dragon.obj' in 106014.38817 ms (threshold = 234)
+            Divided 'dragon.obj' in 106014.38817  ms (threshold = 234)
             Divided 'dragon.obj' in 106939.335667 ms (threshold = 234)
             Render time: 113523.430672 ms
 

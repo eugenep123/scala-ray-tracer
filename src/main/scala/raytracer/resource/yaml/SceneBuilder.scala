@@ -67,7 +67,7 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
     val group = loader.loadObject(filename) // no transforms
     val group2 = new Group(transform, material)
     group2.addChildren(group.children)
-    val threshold = math.max(group2.size / 100, divideThreshold)
+    val threshold = math.max(group2.size / 20, divideThreshold)
 
     // subdivide bounding boxes
     val time = measure {

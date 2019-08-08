@@ -10,7 +10,7 @@ import scala.math.abs
 final class Cube(
   transform: Matrix,
   material: Option[Material],
-  castsShadow: Boolean) extends Shape(transform, material) {
+  castsShadow: Boolean) extends Shape(transform, material, castsShadow) {
 
   override def localNormalAt(point: Point3D, i: Intersection): Vector3D = {
     val maxC = max(abs(point.x), abs(point.y), abs(point.z))
