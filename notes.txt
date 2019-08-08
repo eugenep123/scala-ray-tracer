@@ -1,4 +1,12 @@
 TODO:
+    - test if shadow works
+    - test if material is passed through
+       -in deep nested aread
+            bbox material should be passed through
+
+
+            Second, try setting ambient to 0, and diffuse to (1 - transparency). That is to say, since you've got
+            transparency set to 0.8, try setting diffuse to 0.2.
 
 
 Issues:
@@ -23,6 +31,8 @@ Issues:
             Divided 'dragon.obj' in 106939.335667 ms (threshold = 234)
             Render time: 113523.430672 ms
 
+    - fix transparency shadows
+        http://forum.raytracerchallenge.com/thread/25/visible-invisible-shapes
 
 
 - mesh normalization

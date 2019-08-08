@@ -186,9 +186,14 @@ object AstReaders {
       transform: TransformOption,
       material: MaterialOption): ParseResult[AddShape] = {
       shapeType match {
-        case "sphere" => success(AddSphere(transform, material))
-        case "cube" => success(AddCube(transform, material))
-        case "plane" => success(AddPlane(transform, material))
+        case "sphere" =>
+          success(AddSphere(transform, material))
+        case "cube" =>
+          for {
+            shadow <- map.readBoolOpt("shadow")
+          } yield AddCube(transform, material, shadow.getOrElse(true))
+        case "plane" =>
+          success(AddPlane(transform, material))
         case "cylinder" | "cone" =>
           for {
             minimum <- map.readDouble("min")

@@ -72,7 +72,7 @@ class YamlSpec extends WordSpec with Matchers with TestHelpers {
         Seq(TransformReference("large-object"),
             TransformOperation(Translation(8.5, 1.5, -0.5))))
       val expected =
-        AddCube(Some(transform), Some(MaterialReference("blue-material")))
+        AddCube(Some(transform), Some(MaterialReference("blue-material")), true)
       parseItems(yaml).get shouldEqual List(expected)
     }
 
@@ -187,6 +187,16 @@ class YamlSpec extends WordSpec with Matchers with TestHelpers {
       val expected = Seq(white, blue)
       parseItems(yaml).get shouldEqual expected
 
+    }
+
+    "support shadow flag" in {
+      val resource = "/scenes/examples/dragon/one-dragon.yaml"
+      val result = Yaml.parseResource(resource).get
+      result.items foreach println
+
+      val model = result.build
+
+      println(model)
     }
   }
 }

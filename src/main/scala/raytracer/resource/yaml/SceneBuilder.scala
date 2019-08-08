@@ -39,8 +39,8 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
     value match {
       case AddCone(min, max, closed, _, _) =>
         new Cone(min, max, closed, transform, material)
-      case _: AddCube =>
-        new Cube(transform, material)
+      case AddCube(_, _, shadows) =>
+        new Cube(transform, material, shadows)
       case AddCylinder(min, max, closed, _, _) =>
         new Cylinder(min, max, closed, transform, material)
       case g: AddGroup =>

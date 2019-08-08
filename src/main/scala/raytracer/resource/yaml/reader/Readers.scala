@@ -59,6 +59,7 @@ object Readers {
     def readDouble(key: String): ParseResult[Double] = readWith(key, toDouble)
     def readDoubleOpt(key: String): ParseResult[Option[Double]] = readOptWith(key, toDouble)
     def readBool(key: String): ParseResult[Boolean] = readWith(key, toBoolean)
+    def readBoolOpt(key: String): ParseResult[Option[Boolean]] = readOptWith(key, toBoolean)
     def readInt(key: String): ParseResult[Int] = readWith(key, toInt)
     def readString(key: String): ParseResult[String] = readWith(key, toStr)
     def readStringOpt(key: String): ParseResult[Option[String]] = readOptWith(key, toStr)

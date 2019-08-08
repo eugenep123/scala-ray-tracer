@@ -54,7 +54,8 @@ case class ShapeBuilder(
     closed: Boolean = false): Cylinder =
     new Cylinder(minimum, maximum, closed, transform, materialOpt)
 
-  def cube: Cube = new Cube(transform, materialOpt)
+  def cube(castsShadow: Boolean): Cube = new Cube(transform, materialOpt, castsShadow)
+  def cube:Cube = cube(true)
 
   def smoothTriangle(
     p1: Point3D, p2: Point3D, p3: Point3D,

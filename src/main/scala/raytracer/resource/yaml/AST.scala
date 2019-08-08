@@ -70,7 +70,10 @@ object AST {
     minimum: Double, maximum: Double, closed: Boolean,
     transform: TransformOption, material: MaterialOption) extends AddShape
   case class AddSphere(transform: TransformOption, material: MaterialOption) extends AddShape
-  case class AddCube(transform: TransformOption, material: MaterialOption) extends AddShape
+  case class AddCube(
+    transform: TransformOption,
+    material: MaterialOption,
+    shadow: Boolean) extends AddShape
   case class AddPlane(transform: TransformOption, material: MaterialOption) extends AddShape
   case class AddObjFile(file: String, transform: TransformOption, material: MaterialOption) extends AddShape
   case class AddGroup(

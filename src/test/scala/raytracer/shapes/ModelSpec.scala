@@ -84,5 +84,11 @@ class ModelSpec extends WordSpec with Matchers with TestHelpers {
       assert(s1.transform == s2.transform)
       assert(s1 == s2)
     }
+
+    "cubes with no shadows" in {
+      val c = Shape().cube(false)
+
+      c.castsShadow shouldEqual false
+    }
   }
 }
