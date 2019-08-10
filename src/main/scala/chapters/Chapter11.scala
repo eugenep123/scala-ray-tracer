@@ -3,7 +3,7 @@ package chapters
 import raytracer.math._
 import raytracer.shapes.Shapes._
 import raytracer._
-import Operation._
+import Transform._
 
 
 object Chapter11 extends App{

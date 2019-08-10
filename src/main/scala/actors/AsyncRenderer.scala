@@ -35,7 +35,7 @@ object AsyncRenderer {
     if (canceledRef.get()) None
     else {
       val ray = camera.rayForPixel(pixel.x, pixel.y)
-      val color = world.colorAtOrBlack(ray)
+      val color = world.colorAt(ray)
       val result = PixelResult(pixel, color)
       Some(result)
     }

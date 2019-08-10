@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object TestApp extends App {
   import AsyncRenderer._
 
-  val resource = "/examples/reflect-refract.yml"
+  val resource = "/scenes/examples/reflect-refract.yml"
   val scene = Scene
     .fromResourceYaml(resource)
     .withDimensions(1024,768)

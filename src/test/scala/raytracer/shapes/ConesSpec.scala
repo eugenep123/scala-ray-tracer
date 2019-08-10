@@ -27,9 +27,9 @@ class ConesSpec extends BaseSpec {
         And("xs[1].t = <t1>")
 
         val shape = cone()
-        val direction2 = normalize(direction)
-        val r = ray(origin, direction2)
-        val xs = localIntersect(shape, r)
+        val direction2 = direction.normalize
+        val r = Ray(origin, direction2)
+        val xs = shape.localIntersect(r)
         assert(xs.size == 2)
         assert(xs(0).t ~= t0)
         assert(xs(1).t ~= t1)
@@ -47,9 +47,9 @@ class ConesSpec extends BaseSpec {
       And("xs[0].t = 0.35355")
 
       val shape = cone()
-      val direction = normalize(vector(0, 1, 1))
-      val r = ray(point(0, 0, -1), direction)
-      val xs = localIntersect(shape, r)
+      val direction = vector(0, 1, 1).normalize
+      val r = Ray(point(0, 0, -1), direction)
+      val xs = shape.localIntersect(r)
       assert(xs.size == 1)
       assert(xs(0).t ~= 0.35355)
     }
@@ -107,8 +107,8 @@ class ConesSpec extends BaseSpec {
         Then("xs.count = <count>")
 
         val shape = cone(-0.5, 0.5, true)
-        val r = ray(origin, direction.normalize)
-        val xs = localIntersect(shape, r)
+        val r = Ray(origin, direction.normalize)
+        val xs = shape.localIntersect(r)
         assert(xs.size == count)
       }
     }
@@ -135,7 +135,3 @@ class ConesSpec extends BaseSpec {
     }
   }
 }
-
-/*
-
- */

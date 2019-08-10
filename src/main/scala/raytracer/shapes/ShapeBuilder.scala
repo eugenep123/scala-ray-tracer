@@ -1,6 +1,5 @@
 package raytracer.shapes
 
-import raytracer.Defaults.Materials
 import raytracer.math._
 import raytracer._
 import patterns._
@@ -14,7 +13,7 @@ case class ShapeBuilder(
   def setTransform(m: Matrix): ShapeBuilder =
     new ShapeBuilder(m, materialOpt)
   def transform(f: TransformBuilder => TransformBuilder): ShapeBuilder = {
-    setTransform(f(TransformBuilder.from(transform)).build())
+    setTransform(f(Transform.from(transform)).build())
   }
   def translate(x: Double, y: Double, z: Double): ShapeBuilder =
     transform(tb => tb.translate(x, y, z))
@@ -40,7 +39,6 @@ case class ShapeBuilder(
   final def setAmbient(a: Double): ShapeBuilder = updateMaterial(_.setAmbient(a))
   final def setColor(c: Color): ShapeBuilder = updateMaterial(_.setColor(c))
   final def setColor(r: Double, g: Double, b: Double): ShapeBuilder = setColor(Color(r, g, b))
-  final def glass: ShapeBuilder = setMaterial(Materials.glass)
 
   def cone(
     minimum: Double = -INFINITY,
@@ -54,7 +52,8 @@ case class ShapeBuilder(
     closed: Boolean = false): Cylinder =
     new Cylinder(minimum, maximum, closed, transform, materialOpt)
 
-  def cube: Cube = new Cube(transform, materialOpt)
+  def cube(castsShadow: Boolean): Cube = new Cube(transform, materialOpt, castsShadow)
+  def cube:Cube = cube(true)
 
   def smoothTriangle(
     p1: Point3D, p2: Point3D, p3: Point3D,
@@ -74,7 +73,7 @@ case class ShapeBuilder(
 
   def group(children: Seq[Shape]): Group = {
     val g = group
-    children foreach g.add
+    children foreach g.addChild
     g
   }
 

@@ -1,7 +1,7 @@
 package raytracer.resource.yaml
 
 import raytracer.Color
-import raytracer.math.{Operation, Point3D, Vector3D}
+import raytracer.math.{Transform, Point3D, Vector3D}
 
 object AST {
 
@@ -12,7 +12,7 @@ object AST {
   case class TransformList(xs: Seq[TransformItem])
   sealed trait TransformItem
   case class TransformReference(key:String) extends TransformItem
-  case class TransformOperation(op: Operation) extends TransformItem
+  case class TransformOperation(op: Transform) extends TransformItem
 
   // Patterns
   sealed trait PatternValue {
@@ -25,6 +25,7 @@ object AST {
 
   // Material
   type MaterialOption = Option[MaterialValue]
+  type MaterialList = Seq[MaterialValue]
   sealed trait MaterialValue
   case class MaterialReference(key: String) extends MaterialValue
   case class MaterialObject(
@@ -44,7 +45,7 @@ object AST {
   }
   case class DefineMaterial(key: String, extend: Option[String], value: MaterialObject) extends DefineValue
   case class DefineTransform(key: String, value: TransformList) extends DefineValue
-  case class DefineShape(key: String, value: ShapeValue) extends DefineValue
+  case class DefineShape(key: String, value: AddShape) extends DefineValue
 
   // Adds
   sealed trait AddValue extends YamlValue
@@ -62,22 +63,23 @@ object AST {
     key: String,
     transform: TransformOption,
     material: MaterialOption) extends AddShape
-  // Shape instances
-  sealed trait ShapeValue extends AddShape
   case class AddCylinder(
     minimum: Double, maximum: Double, closed: Boolean,
-    transform: TransformOption, material: MaterialOption) extends ShapeValue
+    transform: TransformOption, material: MaterialOption) extends AddShape
   case class AddCone(
     minimum: Double, maximum: Double, closed: Boolean,
-    transform: TransformOption, material: MaterialOption) extends ShapeValue
-  case class AddSphere(transform: TransformOption, material: MaterialOption) extends ShapeValue
-  case class AddCube(transform: TransformOption, material: MaterialOption) extends ShapeValue
-  case class AddPlane(transform: TransformOption, material: MaterialOption) extends ShapeValue
-  case class AddObjFile(filename: String, transform: TransformOption, material: MaterialOption) extends ShapeValue
+    transform: TransformOption, material: MaterialOption) extends AddShape
+  case class AddSphere(transform: TransformOption, material: MaterialOption) extends AddShape
+  case class AddCube(
+    transform: TransformOption,
+    material: MaterialOption,
+    shadow: Boolean) extends AddShape
+  case class AddPlane(transform: TransformOption, material: MaterialOption) extends AddShape
+  case class AddObjFile(file: String, transform: TransformOption, material: MaterialOption) extends AddShape
   case class AddGroup(
     children: Seq[AddShape],
     transform: TransformOption,
-    material: MaterialOption) extends ShapeValue
+    material: MaterialOption) extends AddShape
 
 
   // AST helpers

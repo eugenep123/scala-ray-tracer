@@ -1,45 +1,44 @@
 package raytracer.math
 
-import raytracer.math
 import raytracer.shapes.Shape
 
-import scala.math.pow
+import scala.math.{pow, sqrt}
 
-// Cached intersection computation
 case class RayIntersection(
-  ray: Ray,
   t: Double,
-  obj: Shape,
+  shape: Shape,
   point: Point3D,
+  overPoint: Point3D,
+  underPoint: Point3D,
   eye: Vector3D,
   normal: Vector3D,
+  reflectV: Vector3D,
   inside: Boolean,
-  n1: Double, n2: Double) {
+  n1: Double,
+  n2: Double) {
 
-  val renderAllRays: Boolean = true //obj.renderAllRays
+  val material = shape.material
+  lazy val reflectance = schlick()
 
-  val overPoint: Point3D = point + normal * EPSILON
-  val underPoint: Point3D = point - normal * EPSILON
+//  lazy val reflectance = schlick()
+//  val reflectance: Double = schlick()
 
-  // After negating the normal, if necessary
-  def reflectV: Vector3D = Vector3D.reflect(ray.direction, normal)
 
-  lazy val reflectiveRay: Ray = math.Ray(overPoint, reflectV)
-  lazy val reflectance: Double = schlick()
-
-  def schlick(): Double = {
-    val Fail = 0.0
+  @inline def schlick(): Double = {
     // find the cosine of the angle between the eye and normal vectors
-    val cos = eye.dot(normal)
+    var cos = eye.dot(normal)
     // total internal reflection con only occur if n1 > n2
     if (n1 > n2) {
       val n = n1 / n2
-      val sin2t = pow(n, 2) * (1.0 - pow(cos, 2))
-      if (sin2t > 1.0) 1.0 else Fail
-    } else {
-      // return anything but 1.0 here, so that the test will fail
-      // appropriately if something goes wrong
-      Fail
+      val sin2T = (n * n) * (1.0 - (cos * cos))
+      if (sin2T > 1.0) {
+        return 1.0
+      }
+      cos = sqrt(1.0 - sin2T)
     }
+    val r = (n1 - n2) / (n1 + n2)
+    val r0 = r * r
+    r0 + (1 - r0) * pow((1 - cos), 5)
   }
+
 }

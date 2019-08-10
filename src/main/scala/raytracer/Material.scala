@@ -75,7 +75,18 @@ case class Material(
 }
 
 object Material {
-  val Default = Defaults.material
+  val Default = new Material(
+    Color.White,
+    ambient = 0.1,
+    diffuse = 0.9,
+    specular = 0.9,
+    shininess = 200.0,
+    reflective = 0.0,
+    transparency = 0.0,
+    refractiveIndex = 1.0,
+    pattern = None
+  )
+
   def apply(): Material = Default
   def apply(
     color: Color = Color.White,
@@ -102,4 +113,17 @@ object Material {
 
   implicit def materialToOptionMatrix(m: Material): Option[Material] = Some(m)
 
+  val Glass = Material(transparency = 1.0, refractiveIndex = 1.5)
+  //ambient to 0, and diffuse to (1 - transparency)
+  ///(0.5, 0.5, 0) for the Color and Transparency = 1. Also Ambient is 0 or 0.1
+  val TransparentBox = Material(
+    Color(0.5, 0.5, 0),
+    ambient = 0.1, //0.1, // or 0
+    diffuse = (1.0 - 0.8), //0.0,
+    specular = 0.0,
+    shininess = 0,
+    reflective = 0.0,
+    transparency = 1.0,
+    refractiveIndex = 1
+  )
 }

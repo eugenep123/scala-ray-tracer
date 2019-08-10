@@ -2,7 +2,8 @@ package raytracer
 package shapes
 
 import org.scalatest.{Matchers, WordSpec}
-import raytracer.math.{Matrix, TransformBuilder, π}
+import raytracer.math.Transform.{Scaling, Translation}
+import raytracer.math.{Matrix, Transform, π}
 
 class ModelSpec extends WordSpec with Matchers with TestHelpers {
 
@@ -18,20 +19,20 @@ class ModelSpec extends WordSpec with Matchers with TestHelpers {
       }
 
       "support Matrices" in {
-        val m1: Matrix = translation(0, -1, 0).matrix
-        val m2: Matrix = TransformBuilder().translate(0, -1, 0).build()
+        val m1: Matrix = Translation(0, -1, 0).matrix
+        val m2: Matrix = Transform().translate(0, -1, 0).build()
         m1 shouldEqual m2
         m1.hashCode() shouldEqual m2.hashCode()
       }
 
       "support plans" in {
-        val a = plane(translation(0, -1, 0))
+        val a = plane(Translation(0, -1, 0))
         val b = Shape().translate(0, -1, 0).plane
         assertEquals(a, b)
       }
 
       "support cubes" in {
-        val a = cube(translation(0, -1, 0))
+        val a = cube(Translation(0, -1, 0))
         val b = Shape().translate(0, -1, 0).cube
         assertEquals(a, b)
       }
@@ -50,19 +51,19 @@ class ModelSpec extends WordSpec with Matchers with TestHelpers {
 
     "create objects correctly" in {
       val lower = plane(
-        translation(0, -1, 0),
+        Translation(0, -1, 0),
         Material().setReflective(1)
       )
       val upper = plane(
-        translation(0, 1, 0),
+        Translation(0, 1, 0),
         Material().setReflective(1)
       )
-      val light = pointLight(point(0, 0, 0), color(1, 1, 1))
+      val light = PointLight(point(0, 0, 0), Color(1, 1, 1))
       val w = World(Seq(lower, upper), Seq(light))
 
 
       val w2 = World.empty
-        .setLight(pointLight(point(0, 0, 0), color(1, 1, 1)))
+        .setLight(PointLight(point(0, 0, 0), Color(1, 1, 1)))
         .add(
           Shape().setReflective(1).translate(0, -1, 0).plane
         )
@@ -71,6 +72,37 @@ class ModelSpec extends WordSpec with Matchers with TestHelpers {
         )
 
       w2 shouldEqual w
+    }
+
+    "test translations" in {
+      val s1 = Shape()
+        .scale(2, 2, 2)
+        .translate(2, 5, -3)
+        .sphere
+
+      val s2 = Sphere(Translation(2, 5, -3) * Scaling(2, 2, 2))
+
+      assert(s1.transform == s2.transform)
+      assert(s1 == s2)
+    }
+
+    "cubes with no shadows" in {
+      val c = Shape().cube(false)
+
+      c.castsShadow shouldEqual false
+    }
+
+    "includes should work" in {
+      val g = group()
+      val c1 = cube()
+      val c2 = cube()
+
+      c1 shouldEqual c2
+      g.addChild(c1)
+
+      g.includes(c1) shouldEqual true
+      g.includes(c2) shouldEqual false
+
     }
   }
 }

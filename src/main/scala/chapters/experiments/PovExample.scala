@@ -1,7 +1,7 @@
 package chapters.experiments
 
 import chapters.RenderApp
-import raytracer.math.Operation.ViewTransform
+import raytracer.math.Transform.ViewTransform
 import raytracer.{Camera, Color, PointLight}
 import raytracer.patterns.CheckersPattern
 import raytracer.shapes.Shape

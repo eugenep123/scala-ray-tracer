@@ -46,7 +46,7 @@ class SmoothTrianglesSpec extends BaseSpec {
       And("i.v = 0.4")
 
       val s = triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
-      val i = intersectionWithUv(3.5, s, 0.2, 0.4)
+      val i = Intersection(3.5, s, 0.2, 0.4)
       assert(i.u == 0.2)
       assert(i.v == 0.4)
     }
@@ -57,8 +57,8 @@ class SmoothTrianglesSpec extends BaseSpec {
       Then("xs[0].u = 0.45")
       And("xs[0].v = 0.25")
 
-      val r = ray(point(-0.2, 0.3, -2), vector(0, 0, 1))
-      val xs = localIntersect(tri, r)
+      val r = Ray(point(-0.2, 0.3, -2), vector(0, 0, 1))
+      val xs = tri.localIntersect(r)
       assert(xs(0).u ~= 0.45)
       assert(xs(0).v ~= 0.25)
     }
@@ -68,8 +68,8 @@ class SmoothTrianglesSpec extends BaseSpec {
       And("n ← normal_at(tri, point(0, 0, 0), i)")
       Then("n = vector(-0.5547, 0.83205, 0)")
 
-      val i = intersectionWithUv(1, tri, 0.45, 0.25)
-      val n = normalAt(tri, point(0, 0, 0), i)
+      val i = Intersection(1, tri, 0.45, 0.25)
+      val n = tri.normalAt(point(0, 0, 0), i)
       assert(n == vector(-0.5547, 0.83205, 0))
     }
 
@@ -80,8 +80,8 @@ class SmoothTrianglesSpec extends BaseSpec {
       And("comps ← prepare_computations(i, r, xs)")
       Then("comps.normalv = vector(-0.5547, 0.83205, 0)")
 
-      val i = intersectionWithUv(1, tri, 0.45, 0.25)
-      val r = ray(point(-0.2, 0.3, -2), vector(0, 0, 1))
+      val i = Intersection(1, tri, 0.45, 0.25)
+      val r = Ray(point(-0.2, 0.3, -2), vector(0, 0, 1))
       val xs = intersections(i)
       val comps = prepareComputations(i, r, xs)
       assert(comps.normal == vector(-0.5547, 0.83205, 0))

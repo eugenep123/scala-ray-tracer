@@ -30,8 +30,8 @@ class CubeSpec extends BaseSpec {
         And(s"xs[0].t = $t1")
         And(s"xs[1].t = $t2")
         val c = cube()
-        val r = ray(origin, direction)
-        val xs = localIntersect(c, r)
+        val r = Ray(origin, direction)
+        val xs = c.localIntersect(r)
         assert(xs.size == 2)
         assert(xs.head.t ~= t1.toDouble)
         assert(xs(1).t == t2.toDouble)
@@ -56,8 +56,8 @@ class CubeSpec extends BaseSpec {
         When("xs ← local_intersect(c, r)")
         Then("xs.count = 0")
         val c = cube()
-        val r = ray(origin, direction)
-        val xs = localIntersect(c, r)
+        val r = Ray(origin, direction)
+        val xs = c.localIntersect(r)
         assert(xs.isEmpty)
       }
     }

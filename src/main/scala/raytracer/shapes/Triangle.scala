@@ -39,7 +39,9 @@ class Triangle(
     }
   }
 
-  override protected def calculateBounds: BoundingBox = BoundingBox(p1, p2, p3)
+  override protected def calculateBounds: BoundingBox = {
+    BoundingBox.Empty.add(p1).add(p2).add(p3)
+  }
 
   override def canEqual(other: Any): Boolean = other.isInstanceOf[Triangle]
 
@@ -49,7 +51,6 @@ class Triangle(
 }
 
 object Triangle {
-
   def apply(
     p1: Point3D,
     p2: Point3D,

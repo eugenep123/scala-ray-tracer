@@ -1,9 +1,9 @@
 package raytracer.math
-import Operation._
+import Transform._
 
-case class TransformBuilder private(operations: List[Operation]) {
+case class TransformBuilder(operations: List[Transform]) {
 
-  def add(op: Operation): TransformBuilder =
+  def add(op: Transform): TransformBuilder =
     TransformBuilder(op :: operations)
 
   def identity: TransformBuilder = add(Identity)
@@ -35,7 +35,3 @@ case class TransformBuilder private(operations: List[Operation]) {
     operations.reverse.mkString("Builder(", ", ", ")")
 }
 
-object TransformBuilder {
-  def apply(): TransformBuilder = new TransformBuilder(Nil)
-  def from(m: Matrix): TransformBuilder = new TransformBuilder(List(TransformMatrix(m)))
-}

@@ -2,62 +2,61 @@ package raytracer
 
 import math._
 import shapes.Shape
-import Defaults._
+
 import scala.math.sqrt
+import World.MaxRecursion
 
 final case class World(
   objects: Seq[Shape],
   lights: Seq[PointLight]) {
 
-  def colorAt(ray: Ray, remaining: Int = MaxRecursion, allShapes: Boolean): Option[Color] = {
+  def colorAt(ray: Ray, remaining: Int = MaxRecursion): Color = {
     val xs = intersect(ray)
-    for {
-      intersection <- Intersection.hit(xs, allShapes)
-      hit = intersection.prepare(ray, xs)
-      color <- shadeHit(hit, remaining)
-    } yield color
+    val hitOpt = Intersection.hit(xs)
+    hitOpt.fold(Color.Black) { intersection =>
+      val hit = intersection.prepare(ray, xs)
+      shadeHit(hit, remaining)
+    }
   }
-
-  def colorAtOrBlack(ray: Ray, remaining: Int = MaxRecursion): Color =
-    colorAt(ray, remaining, true).getOrElse(Color.Black)
 
   def intersect(r: Ray): Seq[Intersection] =
     Intersection.sort(objects.flatMap(_.intersect(r)))
 
-  def shadeHit(hit: RayIntersection, remaining: Int = MaxRecursion): Option[Color] = {
-    import hit.{eye, normal, obj, overPoint}
+  def shadeHit(hit: RayIntersection, remaining: Int = MaxRecursion): Color = {
+    import hit.{eye, normal, material, overPoint}
+
     // Can have multiple lights, calculate for each and add together (Page 96)
-    val colors = lights.map { light =>
-      val inShadow = hit.renderAllRays && isShadowed(overPoint, light)
-      obj.material.lighting(light, overPoint, eye, normal, inShadow)
+    var surface = Color.Black
+    lights.foreach { light =>
+      //val inShadow = hit.renderAllRays && isShadowed(overPoint, light)
+      val inShadow = isShadowed(overPoint, light)
+      surface += material.lighting(light, overPoint, eye, normal, inShadow)
     }
-    val surfaceOpt = colors.reduceOption(_ + _)
-    // If no light, this will be none, if which case we return none
-    surfaceOpt map { surface =>
-      val reflected = reflectedColor(hit, remaining)
-      val refracted = refractedColor(hit, remaining)
 
-      val material = hit.obj.material
-      if (material.reflective > 0.0 && material.transparency > 0.0) {
-        val reflectance = hit.reflectance
-        surface + (reflected.map(_ * reflectance)) +
-                   refracted.map(_ * (1.0 - reflectance))
-      } else {
-        surface + reflected + refracted
-      }
+    val reflected = reflectedColor(hit, remaining)
+    val refracted = refractedColor(hit, remaining)
+
+    if (material.reflective > 0.0 && material.transparency > 0.0) {
+      val reflectance = hit.reflectance
+      surface + (reflected * reflectance) + (refracted * (1 - reflectance))
+    } else {
+      surface + reflected + refracted
     }
   }
 
-  def reflectedColor(hit: RayIntersection, remaining: Int = MaxRecursion): Option[Color] = {
-    if (remaining <= 0 || hit.obj.material.reflective == 0.0) None
+  def reflectedColor(hit: RayIntersection, remaining: Int = MaxRecursion): Color = {
+    val material = hit.material
+    if (remaining <= 0 || material.reflective == 0.0) Color.Black
     else {
-      val color = colorAt(hit.reflectiveRay, remaining - 1, false)
-      color.map(_ * hit.obj.material.reflective)
+      val reflectiveRay = Ray(hit.overPoint, hit.reflectV)
+      val color = colorAt(reflectiveRay, remaining - 1)
+      color * material.reflective
     }
   }
 
-  def refractedColor(hit: RayIntersection, remaining: Int = MaxRecursion): Option[Color] = {
-    if (remaining <= 0 || hit.obj.material.transparency == 0.0) None
+  def refractedColor(hit: RayIntersection, remaining: Int = MaxRecursion): Color = {
+    val transparency = hit.material.transparency
+    if (remaining <= 0 || transparency == 0.0) Color.Black
     else {
       // Find the ration of first index of refraction to the second
       // (yup, this is inverted from the definition of snell's Law.)
@@ -70,22 +69,21 @@ final case class World(
       val sin2T = (nRatio * nRatio) * (1 - (cosI * cosI))
 
       // check for total internal refraction
-      if (sin2T > 1) None
+      if (sin2T > 1.0) Color.Black
       else {
         // find con(theta_t) via trigonometric identity
         val cosT = sqrt(1.0 - sin2T)
 
         // Compute the direction of the refracted ray
-        val direction = hit.normal * (nRatio * cosI - cosT) -
-          (hit.eye * nRatio)
+        val direction = hit.normal * (nRatio * cosI - cosT) - (hit.eye * nRatio)
 
         // Create the directed ray
         val refractRay = Ray(hit.underPoint, direction)
 
         // Find the color of the refracted ray, making sure to multiply
         // by the transparency value to account for any opacity
-        val colorOpt = colorAt(refractRay, remaining - 1, false)
-        colorOpt.map(_ * hit.obj.material.transparency)
+        val color = colorAt(refractRay, remaining - 1) * transparency
+        color
       }
     }
   }
@@ -99,8 +97,8 @@ final case class World(
     val distance = v.magnitude
     val direction = v.normalize
     val r = Ray(point, direction)
-    val hit = Intersection.hit(intersect(r), false)
-    hit.exists(_.t < distance)
+    val hit = Intersection.hit(intersect(r))
+    hit.exists(i => i.t < distance && i.obj.castsShadow)
   }
 
   def setLight(light: PointLight): World = this.copy(lights = Seq(light))
@@ -119,6 +117,7 @@ final case class World(
 }
 
 object World {
+  val MaxRecursion = 5
   val empty: World = new World(Nil, Nil)
 
   def apply(objects: Seq[Shape] = Nil, lights: Seq[PointLight] = Nil): World =

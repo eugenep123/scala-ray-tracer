@@ -10,8 +10,6 @@ package object math {
   val PI = Math.PI
   type Radians = Double
 
-  val Builder: TransformBuilder = TransformBuilder()
-
   @inline def doubleEquals(a: Double, b: Double): Boolean =
     Math.abs(a - b) < EPSILON_TEST
 
@@ -38,9 +36,23 @@ package object math {
   }
 
   implicit def transformationsToMatrix(t: TransformBuilder): Matrix = t.build()
-  implicit def operationToMatrix(o: Operation): Matrix = o.matrix
+  implicit def operationToMatrix(o: Transform): Matrix = o.matrix
 
   def mkString(name: String, xs: Double*): String = {
     xs.map(doubleToString).mkString(s"$name(", ", ", ")")
+  }
+
+  @inline def max(a: Double, b: Double, c: Double): Double =
+    scala.math.max(a, scala.math.max(b, c))
+
+  @inline def min(a: Double, b: Double, c: Double): Double =
+    scala.math.min(a, scala.math.min(b, c))
+
+
+  implicit class Tap[A](val underlying: A) extends AnyVal {
+    def tap(func: A => Unit): A = {
+      func(underlying)
+      underlying
+    }
   }
 }

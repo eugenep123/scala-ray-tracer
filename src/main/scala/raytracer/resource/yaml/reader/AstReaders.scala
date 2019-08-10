@@ -1,11 +1,11 @@
 package raytracer.resource.yaml.reader
 
 import raytracer.Color
-import raytracer.math.{Operation, Point3D, Vector3D}
+import raytracer.math.{Transform, Point3D, Vector3D}
 import raytracer.resource.yaml.AST._
 
 // Used to read YamlMaps
-object YamlReader {
+object AstReaders {
   import ParseResult._
   import raytracer.resource.yaml.reader.Converters._
   import raytracer.resource.yaml.reader.Readers._
@@ -41,8 +41,8 @@ object YamlReader {
       } yield TransformOperation(op)
     }
 
-    def readOperation(action: String, values: Vector[Double]): ParseResult[Operation] = {
-      import raytracer.math.Operation._
+    def readOperation(action: String, values: Vector[Double]): ParseResult[Transform] = {
+      import raytracer.math.Transform._
       (action, values) match {
         case ("translate",  Vector(x, y, z))  => success(Translation(x, y, z))
         case ("scale",      Vector(x, y, z))  => success(Scaling(x, y, z))
@@ -169,28 +169,31 @@ object YamlReader {
   }
 
   implicit object AddShapeReader extends AddReader[AddShape] {
-    override def readAdd(map: YamlMap, addType: String): ParseResult[AddShape] = {
-      if (ShapeValueReader.supports(addType)) ShapeValueReader.readAdd(map, addType)
-      else readBaseShape(map)((transform, material) => success(ShapeReference(addType, transform, material)))
-    }
-  }
-
-  implicit object ShapeValueReader extends AddReader[ShapeValue] {
     val shapes = Set("cylinder", "cone", "sphere", "cube", "plane", "group", "obj")
-    def supports(addType: String) = shapes.contains(addType)
 
-    override def readAdd(map: YamlMap, addType: String): ParseResult[ShapeValue] =
-      readBaseShape(map)((transform, material) => readShape(map, addType, transform, material))
+    override def readAdd(map: YamlMap, addType: String): ParseResult[AddShape] = {
+      readBaseShape(map)((transform, material) =>
+        if (supports(addType)) readShape(map, addType, transform, material)
+        else success(ShapeReference(addType, transform, material))
+      )
+    }
+
+    def supports(addType: String): Boolean = shapes.contains(addType)
 
     def readShape(
       map: YamlMap,
       shapeType: String,
       transform: TransformOption,
-      material: MaterialOption): ParseResult[ShapeValue] = {
+      material: MaterialOption): ParseResult[AddShape] = {
       shapeType match {
-        case "sphere" => success(AddSphere(transform, material))
-        case "cube" => success(AddCube(transform, material))
-        case "plane" => success(AddPlane(transform, material))
+        case "sphere" =>
+          success(AddSphere(transform, material))
+        case "cube" =>
+          for {
+            shadow <- map.readBoolOpt("shadow")
+          } yield AddCube(transform, material, shadow.getOrElse(true))
+        case "plane" =>
+          success(AddPlane(transform, material))
         case "cylinder" | "cone" =>
           for {
             minimum <- map.readDouble("min")
@@ -202,8 +205,8 @@ object YamlReader {
           }
         case "obj" =>
           for {
-            filename <- map.readString("filename")
-          } yield AddObjFile(filename, transform, material)
+            file <- map.readString("file")
+          } yield AddObjFile(file, transform, material)
         case "group" =>
           for {
             children <- map.read[Seq[AddShape]]("children")
@@ -240,12 +243,12 @@ object YamlReader {
           } yield DefineTransform(key, value)
         case "shape" =>
           for {
-            value <- map.read[ShapeValue]("value")
+            value <- map.read[AddShape]("value")
           } yield DefineShape(key, value)
         case _ =>
           // shape
           for {
-            value <- map.read[ShapeValue]("value")
+            value <- map.read[AddShape]("value")
           } yield DefineShape(key, value)
       }
     }

@@ -5,7 +5,7 @@ import java.util
 import org.yaml.snakeyaml.Yaml
 import raytracer.Scene
 import raytracer.resource.yaml.AST.YamlValue
-import raytracer.resource.yaml.reader.YamlReader.YamlValueReader
+import raytracer.resource.yaml.reader.AstReaders.YamlValueReader
 import raytracer.resource.yaml.reader._
 
 import scala.collection.JavaConverters._
@@ -24,7 +24,7 @@ object Yaml {
   }
 
   def parse(yamlString: String): ParseResult[SceneBuilder] =
-    parseItems(yamlString).map(SceneBuilder.apply)
+    parseItems(yamlString).map(SceneBuilder.apply(_))
 
   def parseItems(yamlString: String): ParseResult[Seq[YamlValue]] = {
     for {
