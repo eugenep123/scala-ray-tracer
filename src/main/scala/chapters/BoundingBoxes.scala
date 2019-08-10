@@ -9,6 +9,6 @@ object BoundingBoxes extends App {
   val scene = Scene
     .fromResourceYaml(resource)
     .withDimensions(2880, 1800)
-  //    .withDimensions(2000,2000)
+  //    .withDimensions(1024, 768)
   scene.saveToAndOpen(Settings.folder)
 }

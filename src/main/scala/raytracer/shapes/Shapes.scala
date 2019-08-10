@@ -1,8 +1,8 @@
 package raytracer
 package shapes
 
-import Defaults.Materials
 import math._
+import raytracer.shapes.Csg._
 
 
 // Shape factory
@@ -13,7 +13,7 @@ trait Shapes {
     transform: Matrix = Transform,
     material: Option[Material] = None): Sphere = Sphere(transform, material)
 
-  def glassSphere(transform: Matrix = Transform): Sphere = sphere(transform, Some(Materials.glass))
+  def glassSphere(transform: Matrix = Transform): Sphere = sphere(transform, Some(Material.Glass))
 
   def plane(
     transform: Matrix = Transform,
@@ -55,6 +55,13 @@ trait Shapes {
     transform: Matrix = Matrix.identity,
     material: Option[Material] = None): SmoothTriangle = {
     SmoothTriangle(p1, p2, p3, n1, n2, n3, transform, material)
+  }
+
+  def csg(
+    operation: CsgOperation, left: Shape, right: Shape,
+    transform: Matrix = Matrix.identity,
+    material: Option[Material] = None): Csg = {
+    Csg(operation, left, right, transform, material)
   }
 
   def testShape(

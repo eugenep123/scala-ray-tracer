@@ -14,11 +14,12 @@ final class Group(
 
   private val _children: ListBuffer[Shape] = ListBuffer.empty
 
-  def isEmpty: Boolean = _children.isEmpty
-  def includes(s: Shape): Boolean = _children.contains(s)
-  def size: Int = _children.size
-
   def children: Seq[Shape] = _children
+  def isEmpty: Boolean = _children.isEmpty
+  def size: Int = _children.size
+  final override def includes(s: Shape): Boolean =
+    _children.exists(_ eq s) //ref equality!!!
+
   def collectChildren[A <: Shape : ClassTag]: Seq[A] =
     _children.collect { case a: A => a}
 
@@ -26,7 +27,7 @@ final class Group(
     child.parent.foreach {
       case g: Group => g.removeChild(child)
     }
-    child.setParent(Some(this))
+    child.setParent(this)
     this._children.append(child)
     this
   }
@@ -47,8 +48,7 @@ final class Group(
     xs foreach removeChild
   }
 
-  // TODO: return this? or subgroup????
-  def createSubGroup(xs: Seq[Shape]): Group = {
+  def makeSubgroup(xs: Seq[Shape]): Group = {
     val subGroup = Group().addChildren(xs)
     addChild(subGroup)
     subGroup
@@ -56,20 +56,20 @@ final class Group(
 
   def partitionChildren: (Seq[Shape], Seq[Shape]) = {
     val (leftBounds, rightBounds) = bounds.split
-    val left = children.filter(child => leftBounds.contains(child.boundsTransformed))
+    val left = children.filter(child => leftBounds.contains(child.parentSpaceBounds))
     removeChildren(left)
-    val right = children.filter(child => rightBounds.contains(child.boundsTransformed))
+    val right = children.filter(child => rightBounds.contains(child.parentSpaceBounds))
     removeChildren(right)
     (left.toList, right.toList)
   }
 
-  def divide(threshold: Int): Unit = {
+  override def divide(threshold: Int): Unit = {
     if (threshold <= size) {
       val (left, right) = partitionChildren
-      if (!left.isEmpty) createSubGroup(left)
-      if (!right.isEmpty) createSubGroup(right)
+      if (!left.isEmpty) makeSubgroup(left)
+      if (!right.isEmpty) makeSubgroup(right)
     }
-    collectChildren[Group].foreach(_.divide(threshold))
+    _children.foreach(_.divide(threshold))
   }
 
   override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D = {
@@ -90,8 +90,7 @@ final class Group(
     //TODO: ass optional visual bounding box (debug only)
 //    add(box.toCube.setRenderAllRays(false))
 //    box
-
-    BoundingBox.of(_children)
+    _children.foldLeft(BoundingBox.Empty)((box, shape) => box.add(shape.parentSpaceBounds))
   }
 
   override def canEqual(other: Any): Boolean = other.isInstanceOf[Group]

@@ -1,6 +1,9 @@
 package raytracer
 package shapes
 
+import raytracer.math.{Matrix, Ray}
+import raytracer.math.Transform.{Scaling, Translation}
+
 class GroupsSpec extends BaseSpec {
 
   feature("Groups") {
@@ -11,7 +14,7 @@ class GroupsSpec extends BaseSpec {
       And("g is empty")
 
       val g = group()
-      assert(g.transform == identityMatrix)
+      assert(g.transform == Matrix.identity)
       assert(g.isEmpty)
     }
 
@@ -41,8 +44,8 @@ class GroupsSpec extends BaseSpec {
       Then("xs is empty")
 
       val g = group()
-      val r = ray(point(0, 0, 0), vector(0, 0, 1))
-      val xs = localIntersect(g, r)
+      val r = Ray(point(0, 0, 0), vector(0, 0, 1))
+      val xs = g.localIntersect(r)
       assert(xs.isEmpty)
     }
 
@@ -66,14 +69,14 @@ class GroupsSpec extends BaseSpec {
 
       val g = group()
       val s1 = sphere()
-      val s2 = sphere(translation(0, 0, -3))
-      val s3 = sphere(translation(5, 0, 0))
+      val s2 = sphere(Translation(0, 0, -3))
+      val s3 = sphere(Translation(5, 0, 0))
 
-      addChild(g, s1)
-      addChild(g, s2)
-      addChild(g, s3)
-      val r = ray(point(0, 0, -5), vector(0, 0, 1))
-      val xs = localIntersect(g, r)
+      g.addChild(s1)
+      g.addChild(s2)
+      g.addChild(s3)
+      val r = Ray(point(0, 0, -5), vector(0, 0, 1))
+      val xs = g.localIntersect(r)
       assert(xs.size == 4)
       assert(xs(0).obj == s2)
       assert(xs(1).obj == s2)
@@ -91,12 +94,12 @@ class GroupsSpec extends BaseSpec {
       And("xs ← intersect(g, r)")
       Then("xs.count = 2")
 
-      val g = group(scaling(2, 2, 2))
+      val g = group(Scaling(2, 2, 2))
 
-      val s = sphere(translation(5, 0, 0))
-      addChild(g, s)
-      val r = ray(point(10, 0, -10), vector(0, 0, 1))
-      val xs = intersect(g, r)
+      val s = sphere(Translation(5, 0, 0))
+      g.addChild(s)
+      val r = Ray(point(10, 0, -10), vector(0, 0, 1))
+      val xs = g.intersect(r)
       assert(xs.size == 2)
     }
 
@@ -110,8 +113,8 @@ class GroupsSpec extends BaseSpec {
 
       val child = testShape()
       val shape = group().addChild(child)
-      val r = ray(point(0, 0, -5), vector(0, 1, 0))
-      val xs = intersect(shape, r)
+      val r = Ray(point(0, 0, -5), vector(0, 1, 0))
+      val xs = shape.intersect(r)
       assert(child.savedRay.isEmpty)
     }
 
@@ -125,9 +128,9 @@ class GroupsSpec extends BaseSpec {
 
       val child = testShape()
       val shape = group()
-      addChild(shape, child)
-      val r = ray(point(0, 0, -5), vector(0, 0, 1))
-      val xs = intersect(shape, r)
+      shape.addChild(child)
+      val r = Ray(point(0, 0, -5), vector(0, 0, 1))
+      val xs = shape.intersect(r)
       assert(child.savedRay.isDefined)
     }
 
@@ -173,11 +176,11 @@ class GroupsSpec extends BaseSpec {
         And("left = [s1]")
         And("right = [s2]")
 
-      val s1 = sphere(translation(-2, 0, 0))
-      val s2 = sphere(translation(2, 0, 0))
+      val s1 = sphere(Translation(-2, 0, 0))
+      val s2 = sphere(Translation(2, 0, 0))
       val s3 = sphere()
       val g = group().addChildren(Seq(s1, s2, s3))
-      val (left, right) = partitionChildren(g)
+      val (left, right) = g.partitionChildren
 
       assert(g.children == Seq(s3))
       assert(left == Seq(s1))
@@ -195,7 +198,7 @@ class GroupsSpec extends BaseSpec {
       val s1 = sphere()
       val s2 = sphere()
       val g = group()
-      val subGroup = makeSubgroup(g, Seq(s1, s2))
+      val subGroup = g.makeSubgroup(Seq(s1, s2))
       assert(g.size == 1)
       assert(g.children.head == subGroup)
     }
@@ -216,12 +219,12 @@ class GroupsSpec extends BaseSpec {
       And("subgroup[0] is a group of [s1]")
       And("subgroup[1] is a group of [s2]")
 
-      val s1 = Sphere(translation(-2, -2, 0))
-      val s2 = Sphere(translation(-2, 2, 0))
-      val s3 = Sphere(scaling(4, 4, 4))
+      val s1 = Sphere(Translation(-2, -2, 0))
+      val s2 = Sphere(Translation(-2, 2, 0))
+      val s3 = Sphere(Scaling(4, 4, 4))
       val g = Group().addChildren(Seq(s1, s2, s3))
 
-      divide(g, 1)
+      g.divide(1)
 
       assert(g.children.head == s3)
       val subgroup = g.children(1)
@@ -251,16 +254,16 @@ class GroupsSpec extends BaseSpec {
       And("subgroup[0] is a group of [s1]")
       And("subgroup[1] is a group of [s2, s3]")
 
-      val s1 = sphere(translation(-2, 0, 0))
+      val s1 = sphere(Translation(-2, 0, 0))
 
-      val s2 = sphere(translation(2, 1, 0))
-      val s3 = sphere(translation(2, -1, 0))
+      val s2 = sphere(Translation(2, 1, 0))
+      val s3 = sphere(Translation(2, -1, 0))
 
       val subgroup = group().addChildren(Seq(s1, s2, s3))
       val s4 = sphere()
 
       val g = group().addChildren(Seq(subgroup, s4))
-      divide(g, 3)
+      g.divide(3)
 
       assert(g.children(0) == subgroup)
       assert(g.children(1) == s4)

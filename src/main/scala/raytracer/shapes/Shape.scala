@@ -14,9 +14,16 @@ abstract class Shape(
   val materialOpt: Option[Material],
   val castsShadow: Boolean = true) {
 
-  private var _parent = Option.empty[Shape]
   @volatile private var _bounds = Option.empty[BoundingBox]
+  private var _parent = Option.empty[Shape]
 
+  final def bounds: BoundingBox = {
+    _bounds.getOrElse {
+      val b = calculateBounds
+      _bounds = Some(b)
+      b
+    }
+  }
 
   final def material: Material = {
     materialOpt orElse(parent.map(_.material)) getOrElse Material.Default
@@ -27,21 +34,24 @@ abstract class Shape(
     this._parent = opt
     this._bounds = None
   }
+  final def setParent(p: Shape): this.type =
+    setParent(Some(p))
   final def setParent(p: Option[Shape]): this.type = {
     this.parent = p
+    //TODO: check if child is CSG not allowed to set to None
     this
   }
 
-  final def bounds: BoundingBox = {
-    _bounds.getOrElse {
-      val b = calculateBounds
-      _bounds = Some(b)
-      b
-    }
-  }
+  // By default shapes do not have children (just check equality)
+  def includes(s: Shape): Boolean = this eq s
 
-  final def boundsTransformed: BoundingBox = bounds.transform(transform)
+  // Subdividing a primitive does nothing
+  def divide(threshold: Int): Unit = {}
 
+  // bounds in parent space
+  final def parentSpaceBounds: BoundingBox = bounds.transform(transform)
+
+  // bounds will be in object space
   protected def calculateBounds: BoundingBox
 
   final def intersect(ray: Ray): Seq[Intersection] = {
@@ -91,4 +101,11 @@ abstract class Shape(
 object Shape {
   def apply(): ShapeBuilder = new ShapeBuilder()
   def from(s: Shape): ShapeBuilder = new ShapeBuilder(s.transform, s.materialOpt)
+
 }
+
+//
+//trait NodeLike {
+//  def isEmpty: Boolean
+//  def includes(s: Shape): Boolean
+//}

@@ -10,8 +10,6 @@ package object math {
   val PI = Math.PI
   type Radians = Double
 
-  val Builder: TransformBuilder = TransformBuilder()
-
   @inline def doubleEquals(a: Double, b: Double): Boolean =
     Math.abs(a - b) < EPSILON_TEST
 
@@ -38,7 +36,7 @@ package object math {
   }
 
   implicit def transformationsToMatrix(t: TransformBuilder): Matrix = t.build()
-  implicit def operationToMatrix(o: Operation): Matrix = o.matrix
+  implicit def operationToMatrix(o: Transform): Matrix = o.matrix
 
   def mkString(name: String, xs: Double*): String = {
     xs.map(doubleToString).mkString(s"$name(", ", ", ")")

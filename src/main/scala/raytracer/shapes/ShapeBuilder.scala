@@ -1,6 +1,5 @@
 package raytracer.shapes
 
-import raytracer.Defaults.Materials
 import raytracer.math._
 import raytracer._
 import patterns._
@@ -14,7 +13,7 @@ case class ShapeBuilder(
   def setTransform(m: Matrix): ShapeBuilder =
     new ShapeBuilder(m, materialOpt)
   def transform(f: TransformBuilder => TransformBuilder): ShapeBuilder = {
-    setTransform(f(TransformBuilder.from(transform)).build())
+    setTransform(f(Transform.from(transform)).build())
   }
   def translate(x: Double, y: Double, z: Double): ShapeBuilder =
     transform(tb => tb.translate(x, y, z))
@@ -40,7 +39,6 @@ case class ShapeBuilder(
   final def setAmbient(a: Double): ShapeBuilder = updateMaterial(_.setAmbient(a))
   final def setColor(c: Color): ShapeBuilder = updateMaterial(_.setColor(c))
   final def setColor(r: Double, g: Double, b: Double): ShapeBuilder = setColor(Color(r, g, b))
-  final def glass: ShapeBuilder = setMaterial(Materials.glass)
 
   def cone(
     minimum: Double = -INFINITY,

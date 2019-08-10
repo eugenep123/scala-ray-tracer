@@ -32,26 +32,25 @@ class MatrixSpec extends BaseSpec {
           | 13.5 | 14.5 | 15.5 | 16.5 |
         """.matrix
       Given(s"the following 4x4 matrix M:$m")
-      //      val m = Matrix.parse(str)
       Then("M[0,0] = 1")
+      And("M[0,3] = 4")
+      And("M[1,0] = 5.5")
+      And("M[1,2] = 7.5")
+      And("M[2,2] = 11")
+      And("M[3,0] = 13.5")
+      And("M[3,2] = 15.5")
       assert(m(0, 0) ~= 1)
 
-      And("M[0,3] = 4")
       assert(m(0, 3) ~= 4)
 
-      And("M[1,0] = 5.5")
       assert(m(1, 0) ~= 5.5)
 
-      And("M[1,2] = 7.5")
       assert(m(1, 2) ~= 7.5)
 
-      And("M[2,2] = 11")
       assert(m(2, 2) ~= 11)
 
-      And("M[3,0] = 13.5")
       assert(m(3, 0) ~= 13.5)
 
-      And("M[3,2] = 15.5")
       assert(m(3, 2) ~= 15.5)
     }
 /*
@@ -265,11 +264,10 @@ class MatrixSpec extends BaseSpec {
           | 0 | 0 | 0 | 1 |
         """.matrix
       Given(s"the following matrix A:$a")
+      And("b ← tuple(1, 2, 3, 1)")
+      Then(s"A * b =  tuple(18, 24, 33, 1)")
       val b = tuple(1, 2, 3, 1)
-      And(s"b ← $b")
-      val expected = tuple(18, 24, 33, 1)
-      Then(s"A * b = $expected")
-      assert(a * b == expected)
+      assert(a * b ==  tuple(18, 24, 33, 1))
     }
 
     scenario("A matrix multiplied by a point") {
@@ -281,11 +279,9 @@ class MatrixSpec extends BaseSpec {
           | 0 | 0 | 0 | 1 |
         """.matrix
       Given(s"the following matrix A:$a")
-      val b = point(1, 2, 3)
-      And(s"b ← $b")
-      val expected = point(18, 24, 33)
-      Then(s"A * b = $expected")
-      assert(a * b == expected)
+      And(s"b ← point(1, 2, 3)")
+      Then(s"A * b = point(18, 24, 33)")
+      assert(a * point(1, 2, 3) == point(18, 24, 33))
     }
 
 //    scenario("A matrix multiplied by a vector") {
@@ -314,7 +310,7 @@ class MatrixSpec extends BaseSpec {
         """.matrix
       Given(s"i ← $i")
       Then("i == identity")
-      assert(i == identityMatrix)
+      assert(i == Matrix.identity)
     }
 
     scenario("Multiplying a matrix by the identity matrix") {
@@ -327,14 +323,14 @@ class MatrixSpec extends BaseSpec {
         """.matrix
       Given(s"the following matrix A: $m")
       Then("A * identity_matrix = A")
-      assert(m * identityMatrix == m)
+      assert(m * Matrix.identity == m)
     }
 
     scenario("Multiplying the identity matrix by a tuple") {
       val a = tuple(1, 2, 3, 4)
       Given(s"a ← $a")
       Then("identity_matrix * a = a")
-      assert(identityMatrix * a == a)
+      assert(Matrix.identity * a == a)
     }
 
     scenario("Transposing a matrix") {
@@ -355,13 +351,13 @@ class MatrixSpec extends BaseSpec {
           | 0 | 8 | 3 | 8 |
         """.matrix
       Then(s"transpose(a) is the following matrix: $expected")
-      assert(transpose(a) == expected)
+      assert(a.transpose == expected)
     }
 
     scenario("Transposing the identity matrix") {
       Given("A ← transpose(identity_matrix)")
       Then("A = identity_matrix")
-      assert(transpose(identityMatrix) == identityMatrix)
+      assert(Matrix.identity.transpose == Matrix.identity)
     }
     /*
         scenario("Calculating the determinant of a 2x2 matrix") {
@@ -498,7 +494,7 @@ class MatrixSpec extends BaseSpec {
 //      assert(cofactor(A, 0, 3) == 51)
 
       And("determinant(A) = -4071")
-      assert(determinant(A) == -4071)
+      assert(A.determinant == -4071)
     }
 
     scenario("Testing an invertible matrix for invertibility") {
@@ -512,7 +508,7 @@ class MatrixSpec extends BaseSpec {
       Given(s"the following 4x4 matrix A: $A")
 
       Then("determinant(A) = -2120")
-      assert(determinant(A) == -2120)
+      assert(A.determinant == -2120)
 
       And("A is invertible")
       assert(A.isInvertible)
@@ -529,7 +525,7 @@ class MatrixSpec extends BaseSpec {
       Given(s"the following 4x4 matrix A: $A")
 
       Then("determinant(A) = 0")
-      assert(determinant(A) == 0.0)
+      assert(A.determinant == 0.0)
 
       And("A is not invertible")
       assert(!A.isInvertible)
@@ -546,10 +542,10 @@ class MatrixSpec extends BaseSpec {
       Given(s"the following 4x4 matrix A: $A")
 
       And("B ← inverse(A)")
-      val B = inverse(A)
+      val B = A.inverse
 
       Then("determinant(A) = 532")
-      assert(determinant(A) == 532)
+      assert(A.determinant == 532)
 
 //      And("cofactor(A, 2, 3) = -160")
 //      assert(cofactor(A, 2, 3) ~= -160)
@@ -635,7 +631,7 @@ class MatrixSpec extends BaseSpec {
       val C = A * B
       And(s"C ← A * B: $C")
       Then("C * inverse(B) = A")
-      assert((C * inverse(B)) == A)
+      assert((C * B.inverse) == A)
 
     }
 

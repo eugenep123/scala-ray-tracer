@@ -2,7 +2,7 @@ package raytracer.shapes
 
 import raytracer.math._
 import Cube.checkAxis
-import raytracer.Defaults
+import raytracer.{Defaults, Material}
 
 //http://www.raytracerchallenge.com/bonus/bounding-boxes.html
 final case class BoundingBox(
@@ -56,8 +56,8 @@ final case class BoundingBox(
     val toOrigin = Point3D.origin - this.center
     val ext = this.extents
     val scale = Vector3D(1.0 / ext.x, 1.0 / ext.y, 1.0 / ext.z)
-    val transform = Builder.translate(toOrigin).scale(scale).inverse
-    Cube(transform, Defaults.Materials.boundingBoxMaterial)
+    val transform = Transform().translate(toOrigin).scale(scale).inverse
+    Cube(transform, Material.TransparentBox)
   }
 
   def split: (BoundingBox, BoundingBox) = {
@@ -100,9 +100,6 @@ object BoundingBox {
     Point3D(-INFINITY, -INFINITY, -INFINITY)  // smallest point
   )
 
-  def of(shapes: Seq[Shape]): BoundingBox = {
-    if (shapes.isEmpty) BoundingBox.Empty
-    else shapes.foldLeft(Empty)((box, shape) => box.add(shape.boundsTransformed))
-  }
+
 
 }

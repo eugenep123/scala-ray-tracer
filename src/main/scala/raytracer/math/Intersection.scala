@@ -50,7 +50,7 @@ case class Intersection(
 
     val overPoint = point + normal * EPSILON
     val underPoint = point - normal * EPSILON
-    val reflect = ray.direction.reflected(normal)
+    val reflect = ray.direction.reflect(normal)
 
     RayIntersection(t, obj, point, overPoint, underPoint, eye, normal, reflect, inside, n1, n2)
   }

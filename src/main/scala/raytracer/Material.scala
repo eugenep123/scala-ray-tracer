@@ -113,4 +113,17 @@ object Material {
 
   implicit def materialToOptionMatrix(m: Material): Option[Material] = Some(m)
 
+  val Glass = Material(transparency = 1.0, refractiveIndex = 1.5)
+  //ambient to 0, and diffuse to (1 - transparency)
+  ///(0.5, 0.5, 0) for the Color and Transparency = 1. Also Ambient is 0 or 0.1
+  val TransparentBox = Material(
+    Color(0.5, 0.5, 0),
+    ambient = 0.1, //0.1, // or 0
+    diffuse = (1.0 - 0.8), //0.0,
+    specular = 0.0,
+    shininess = 0,
+    reflective = 0.0,
+    transparency = 1.0,
+    refractiveIndex = 1
+  )
 }

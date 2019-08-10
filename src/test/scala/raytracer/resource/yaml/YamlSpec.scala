@@ -1,7 +1,7 @@
 package raytracer.resource.yaml
 
 import org.scalatest.{Matchers, WordSpec}
-import raytracer.math.{Operation, Point3D, Vector3D}
+import raytracer.math.{Transform, Point3D, Vector3D}
 import raytracer.{Color, TestHelpers}
 
 class YamlSpec extends WordSpec with Matchers with TestHelpers {
@@ -9,7 +9,7 @@ class YamlSpec extends WordSpec with Matchers with TestHelpers {
   import Yaml.parseItems
   val resourceName = "/cover.yaml"
 
-  import Operation._
+  import Transform._
 
   "The Yaml reader" should {
 

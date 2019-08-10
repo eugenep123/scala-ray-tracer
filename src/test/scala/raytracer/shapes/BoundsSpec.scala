@@ -2,6 +2,7 @@ package raytracer.shapes
 
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import raytracer.BaseSpec
+import raytracer.math.Transform.{RotationX, RotationY}
 import raytracer.math._
 
 class BoundsSpec extends BaseSpec {
@@ -13,7 +14,7 @@ class BoundsSpec extends BaseSpec {
       Then("box.min = point(infinity, infinity, infinity)")
       And("box.max = point(-infinity, -infinity, -infinity)")
 
-      val box = boundingBox(Nil)
+      val box = BoundingBox.Empty
       assert(box.minimum == point(INFINITY, INFINITY, INFINITY))
       assert(box.maximum == point(-INFINITY, -INFINITY, -INFINITY))
     }
@@ -23,7 +24,7 @@ class BoundsSpec extends BaseSpec {
       Then("box.min = point(-1, -2, -3)")
       And("box.max = point(3, 2, 1)")
 
-      val box = boundingBox(point(-1, -2, -3), point(3, 2, 1))
+      val box = BoundingBox(point(-1, -2, -3), point(3, 2, 1))
       assert(box.minimum == point(-1, -2, -3))
       assert(box.maximum == point(3, 2, 1))
     }
@@ -39,7 +40,7 @@ class BoundsSpec extends BaseSpec {
 
       val p1 = point(-5, 2, 0)
       val p2 = point(7, 0, -3)
-      val box = boundingBox(Nil)
+      val box = BoundingBox.Empty
         .add(p1)
         .add(p2)
       assert(box.minimum == point(-5, 0, -3))
@@ -53,8 +54,8 @@ class BoundsSpec extends BaseSpec {
       Then("box1.min = point(-5, -7, -2)")
       And("box1.max = point(14, 4, 8)")
 
-      val box1 = boundingBox(point(-5, -2, 0), point(7, 4, 4))
-      val box2 = boundingBox(point(8, -7, -2), point(14, 2, 8))
+      val box1 = BoundingBox(point(-5, -2, 0), point(7, 4, 4))
+      val box2 = BoundingBox(point(8, -7, -2), point(14, 2, 8))
 
       val box = box1.add(box2)
       assert(box.minimum == point(-5, -7, -2))
@@ -79,7 +80,7 @@ class BoundsSpec extends BaseSpec {
         Given("box ← bounding_box(min=point(5, -2, 0) max=point(11, 4, 7))")
         And(s"p ← $p")
         Then(s"box_contains_point(box, p) is $result")
-        val box = boundingBox(point(5, -2, 0), point(11, 4, 7))
+        val box = BoundingBox(point(5, -2, 0), point(11, 4, 7))
         assert(box.contains(p) == result)
       }
     }
@@ -97,8 +98,8 @@ class BoundsSpec extends BaseSpec {
         Given("box ← bounding_box(min=point(5, -2, 0) max=point(11, 4, 7))")
         And("box2 ← bounding_box(min=<min> max=<max>)")
         Then(s"box_contains_box(box, box2) is $result>")
-        val box = boundingBox(point(5, -2, 0), point(11, 4, 7))
-        val box2 = boundingBox(min, max)
+        val box = BoundingBox(point(5, -2, 0), point(11, 4, 7))
+        val box2 = BoundingBox(min, max)
         assert(box.contains(box2) == result)
       }
     }
@@ -110,8 +111,8 @@ class BoundsSpec extends BaseSpec {
       Then("box2.min = point(-1.4142, -1.7071, -1.7071)")
       And("box2.max = point(1.4142, 1.7071, 1.7071)")
 
-      val box = boundingBox(point(-1, -1, -1), point(1, 1, 1))
-      val matrix = rotationX(π / 4) * rotationY(π / 4)
+      val box = BoundingBox(point(-1, -1, -1), point(1, 1, 1))
+      val matrix = RotationX(π / 4) * RotationY(π / 4)
       val box2 = box.transform(matrix)
       assert(box2.minimum == point(-1.4142, -1.7071, -1.7071))
       assert(box2.maximum == point(1.4142, 1.7071, 1.7071))
@@ -140,16 +141,16 @@ class BoundsSpec extends BaseSpec {
         And("direction ← normalize(<direction>)")
         And("r ← ray(<origin>, direction)")
         Then("intersects(box, r) is <result>")
-        val box = boundingBox(point(-1, -1, -1), point(1, 1, 1))
+        val box = BoundingBox(point(-1, -1, -1), point(1, 1, 1))
         val direction = dir.normalize
-        val r = ray(origin, direction)
+        val r = Ray(origin, direction)
         assert(box.intersects(r) == result)
 
       }
     }
 
     scenario("Convert a bounding box to a cube in object space") {
-      val box = boundingBox(Point3D(-8, -2, -0.5), Point3D(2, 4, 0.5))
+      val box = BoundingBox(Point3D(-8, -2, -0.5), Point3D(2, 4, 0.5))
 
       assert(box.center == Point3D(-3.0, 1.0, 0.0))
       assert(box.extents == Vector3D(5.0, 3.0, 0.5))
@@ -185,9 +186,9 @@ class BoundsSpec extends BaseSpec {
           And(s"direction ← normalize($dir)")
           And("r ← ray($origin, direction)")
          Then(s"intersects(box, r) is $result")
-        val box = boundingBox(point(5, -2, 0), point(11, 4, 7))
-        val direction = normalize(dir)
-        val r = ray(origin, direction)
+        val box = BoundingBox(point(5, -2, 0), point(11, 4, 7))
+        val direction = dir.normalize
+        val r = Ray(origin, direction)
         assert(box.intersects(r) == result)
       }
     }
@@ -200,8 +201,8 @@ class BoundsSpec extends BaseSpec {
         And("right.min = point(4, -4, -5)")
         And("right.max = point(9, 6, 5)")
 
-      val box = boundingBox(point(-1, -4, -5), point(9, 6, 5))
-      val (left, right) = splitBounds(box)
+      val box = BoundingBox(point(-1, -4, -5), point(9, 6, 5))
+      val (left, right) = box.split
       assert(left.minimum == point(-1, -4, -5))
       assert(left.maximum == point(4, 6, 5))
       assert(right.minimum == point(4, -4, -5))
@@ -216,8 +217,8 @@ class BoundsSpec extends BaseSpec {
         And("right.min = point(4, -2, -3)")
         And("right.max = point(9, 5.5, 3)")
 
-      val box = boundingBox(point(-1, -2, -3), point(9, 5.5, 3))
-      val (left, right) = splitBounds(box)
+      val box = BoundingBox(point(-1, -2, -3), point(9, 5.5, 3))
+      val (left, right) = box.split
       assert(left.minimum == point(-1, -2, -3))
       assert(left.maximum == point(4, 5.5, 3))
       assert(right.minimum == point(4, -2, -3))
@@ -232,8 +233,8 @@ class BoundsSpec extends BaseSpec {
         And("right.min = point(-1, 3, -3)")
         And("right.max = point(5, 8, 3)")
 
-      val box = boundingBox(point(-1, -2, -3), point(5, 8, 3))
-       val (left, right) = splitBounds(box)
+      val box = BoundingBox(point(-1, -2, -3), point(5, 8, 3))
+       val (left, right) = box.split
       assert(left.minimum == point(-1, -2, -3))
       assert(left.maximum == point(5, 3, 3))
       assert(right.minimum == point(-1, 3, -3))
@@ -248,8 +249,8 @@ class BoundsSpec extends BaseSpec {
         And("right.min = point(-1, -2, 2)")
         And("right.max = point(5, 3, 7)")
 
-      val box = boundingBox(point(-1, -2, -3), point(5, 3, 7))
-      val (left, right) = splitBounds(box)
+      val box = BoundingBox(point(-1, -2, -3), point(5, 3, 7))
+      val (left, right) = box.split
       assert(left.minimum == point(-1, -2, -3))
       assert(left.maximum == point(5, 3, 2))
       assert(right.minimum == point(-1, -2, 2))

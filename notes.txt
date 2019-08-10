@@ -1,22 +1,17 @@
 TODO:
-    - test if material is passed through
 
-
-            Second, try setting ambient to 0, and diffuse to (1 - transparency). That is to say, since you've got
-            transparency set to 0.8, try setting diffuse to 0.2.
 
 
 Issues:
+    - csg sets parent (immutable)
+        how to enforce this
+
     - shape transform/material is immutable
         hard to set later on, especially if in a group
         how to deal with equals (all fields, or without group, or without transforms)
 
-    - Failing tests:
-        - shadeHit() with a reflective, transparent material
-
     - performance:
-        parrallize group divide algorithm
-
+        parallelize group divide algorithm
 
     - issues:
         share obj files between groups
@@ -28,8 +23,7 @@ Issues:
             Divided 'dragon.obj' in 106939.335667 ms (threshold = 234)
             Render time: 113523.430672 ms
 
-    - fix transparency shadows
-        http://forum.raytracerchallenge.com/thread/25/visible-invisible-shapes
+
 
 
 - mesh normalization
@@ -40,62 +34,10 @@ Issues:
         load name in yaml
         load name in obj
 
+    idea:
+        split shape into
+            a node (path, children, parent)
+            and a immutable/sharable primitive
 
+        http://forum.raytracerchallenge.com/thread/25/visible-invisible-shapes
 
-
-
-
-
-Matrix optimizations:
-
-:
-baseline      -  400x400  = Render time: 112625.905523 ms
-fast matrix   -  400x400  = Render time:   5580.347912 ms   20.182596
-initial group -  400x400  = Render time:  20579.920096 ms   5.472611
-cached bounds -  400x400  = Render time:   1436.438503 ms   78.406354
-
-baseline      - 1024x768  = Render time: 531141.445412 ms
-fast matrix   - 1024x768  = Render time:  22597.537039 ms   23.504395
-initial group - 1024x768  = Render time:  84814.712728 ms   6.262374
-cached bounds - 1024x768  = Render time:   4814.635046 ms   110.318111
-
-teapot-no-BVH - 1024x768  = Render time: 47376.31329 ms
-teapot-divide - 1024x768  = Render time: 18947.472254 ms
-
-
-Before prepare refactor:
-old1    2000x2000: Render time: 52595.373378 ms
-old2               Render time: 40639.136012 ms
-old3               Render time: 40844.802396 ms
-olf4               Render time: 44866.749555 ms
-
-new1  2000x2000    Render time: 41431.521833 ms
-new2               Render time: 49663.291739 ms
-                   Render time: 41450.486818 ms
-                   Render time: 46451.517864 ms
-
-nn1                Render time: 41841.659728 ms
-nn2                Render time: 51686.300182 ms
-nn3                Render time: 40655.522372 ms
-nn4                Render time: 41933.1001 ms
-
-nnn1               Render time: 42006.705196 ms
-                   Render time: 45322.581236 ms
-                   Render time: 44829.977198 ms
-
-
-aa                 Render time: 40998.649165 ms
-                   Render time: 44207.289969 ms
-                   Render time: 45704.044918 ms
-
-
-With new schlick
-                   Render time: 52631.506113 ms
-                   Render time: 42411.646714 ms
-                   Render time: 41104.52482 ms
-                   Render time: 42634.394177 ms
-
-with no options
-                   Render time: 42866.430177 ms
-                   Render time: 40117.302856 ms
-                   Render time: 44806.695347 ms

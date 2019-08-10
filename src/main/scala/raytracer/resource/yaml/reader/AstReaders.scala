@@ -1,7 +1,7 @@
 package raytracer.resource.yaml.reader
 
 import raytracer.Color
-import raytracer.math.{Operation, Point3D, Vector3D}
+import raytracer.math.{Transform, Point3D, Vector3D}
 import raytracer.resource.yaml.AST._
 
 // Used to read YamlMaps
@@ -41,8 +41,8 @@ object AstReaders {
       } yield TransformOperation(op)
     }
 
-    def readOperation(action: String, values: Vector[Double]): ParseResult[Operation] = {
-      import raytracer.math.Operation._
+    def readOperation(action: String, values: Vector[Double]): ParseResult[Transform] = {
+      import raytracer.math.Transform._
       (action, values) match {
         case ("translate",  Vector(x, y, z))  => success(Translation(x, y, z))
         case ("scale",      Vector(x, y, z))  => success(Scaling(x, y, z))

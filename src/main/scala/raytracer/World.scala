@@ -2,8 +2,9 @@ package raytracer
 
 import math._
 import shapes.Shape
-import Defaults._
+
 import scala.math.sqrt
+import World.MaxRecursion
 
 final case class World(
   objects: Seq[Shape],
@@ -116,6 +117,7 @@ final case class World(
 }
 
 object World {
+  val MaxRecursion = 5
   val empty: World = new World(Nil, Nil)
 
   def apply(objects: Seq[Shape] = Nil, lights: Seq[PointLight] = Nil): World =

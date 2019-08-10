@@ -6,7 +6,7 @@ import shapes._
 
 object Defaults {
 
-  final val MaxRecursion = 3
+
 
   val width = 400
   val height = 400
@@ -31,22 +31,6 @@ object Defaults {
     val s2 = Shapes.sphere(Operations.scaling(0.5, 0.5, 0.5))
     val objects = Seq(s1, s2)
     new World(objects, Seq(light))
-  }
-
-  object Materials {
-    val glass = Material(transparency = 1.0, refractiveIndex = 1.5)
-    //ambient to 0, and diffuse to (1 - transparency)
-    ///(0.5, 0.5, 0) for the Color and Transparency = 1. Also Ambient is 0 or 0.1
-    val boundingBoxMaterial = Material(
-      Color(0.5, 0.5, 0),
-      ambient = 0.1, //0.1, // or 0
-      diffuse = (1.0 - 0.8), //0.0,
-      specular = 0.0,
-      shininess = 0,
-      reflective = 0.0,
-      transparency = 1.0,
-      refractiveIndex = 1
-    )
   }
 
 }

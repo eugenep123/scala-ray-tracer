@@ -1,6 +1,8 @@
 package raytracer
 package shapes
 
+import raytracer.math.Ray
+
 class TriangleSpec extends BaseSpec {
 
   feature("Triangles") {
@@ -52,8 +54,8 @@ class TriangleSpec extends BaseSpec {
       When("xs ← local_intersect(t, r)")
       Then("xs is empty")
       val t = triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
-      val r = ray(point(0, -1, -2), vector(0, 1, 0))
-      val xs = localIntersect(t, r)
+      val r = Ray(point(0, -1, -2), vector(0, 1, 0))
+      val xs = t.localIntersect(r)
       assert(xs.isEmpty)
     }
 
@@ -63,8 +65,8 @@ class TriangleSpec extends BaseSpec {
       When("xs ← local_intersect(t, r)")
       Then("xs is empty")
       val t = triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
-      val r = ray(point(1, 1, -2), vector(0, 0, 1))
-      val xs = localIntersect(t, r)
+      val r = Ray(point(1, 1, -2), vector(0, 0, 1))
+      val xs = t.localIntersect(r)
       assert(xs.isEmpty)
     }
 
@@ -74,8 +76,8 @@ class TriangleSpec extends BaseSpec {
       When("xs ← local_intersect(t, r)")
       Then("xs is empty")
       val t = triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
-      val r = ray(point(-1, 1, -2), vector(0, 0, 1))
-      val xs = localIntersect(t, r)
+      val r = Ray(point(-1, 1, -2), vector(0, 0, 1))
+      val xs = t.localIntersect(r)
       assert(xs.isEmpty)
     }
 
@@ -86,8 +88,8 @@ class TriangleSpec extends BaseSpec {
       When("xs ← local_intersect(t, r)")
       Then("xs is empty")
       val t = triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
-      val r = ray(point(0, -1, -2), vector(0, 0, 1))
-      val xs = localIntersect(t, r)
+      val r = Ray(point(0, -1, -2), vector(0, 0, 1))
+      val xs = t.localIntersect(r)
       assert(xs.isEmpty)
     }
 
@@ -98,8 +100,8 @@ class TriangleSpec extends BaseSpec {
       Then("xs.count = 1")
       And("xs[0].t = 2")
       val t = triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
-      val r = ray(point(0, 0.5, -2), vector(0, 0, 1))
-      val xs = localIntersect(t, r)
+      val r = Ray(point(0, 0.5, -2), vector(0, 0, 1))
+      val xs = t.localIntersect(r)
       assert(xs.size == 1)
       assert(xs.head.t == 2)
     }

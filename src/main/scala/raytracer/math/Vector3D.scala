@@ -36,7 +36,7 @@ final case class Vector3D(x: Double, y: Double, z: Double) {
     }
   }
 
-  @inline def reflected(normal: Vector3D): Vector3D = {
+  @inline def reflect(normal: Vector3D): Vector3D = {
     this - normal * 2 * this.dot(normal)
   }
 

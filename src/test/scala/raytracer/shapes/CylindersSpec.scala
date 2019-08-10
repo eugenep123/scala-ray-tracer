@@ -23,9 +23,9 @@ class CylindersSpec extends BaseSpec {
         When("xs ← local_intersect(cyl, r)")
         Then("xs.count = 0")
         val cyl = cylinder()
-        val direction = normalize(d)
-        val r = ray(origin, direction)
-        val xs = localIntersect(cyl, r)
+        val direction = d.normalize
+        val r = Ray(origin, direction)
+        val xs = cyl.localIntersect(r)
         assert(xs.size == 0)
       }
     }
@@ -51,9 +51,9 @@ class CylindersSpec extends BaseSpec {
         And("xs[1].t = <t1>")
 
         val cyl = cylinder()
-        val directionNormal = normalize(direction).normalize
-        val r = ray(origin, directionNormal)
-        val xs = localIntersect(cyl, r)
+        val directionNormal = direction.normalize
+        val r = Ray(origin, directionNormal)
+        val xs = cyl.localIntersect(r)
         assert(xs.size == 2)
         assert(xs(0).t ~= t0)
         assert(xs(1).t ~= t1)
@@ -151,9 +151,9 @@ class CylindersSpec extends BaseSpec {
         Then(s"xs.count = $count")
 
         val cyl = cylinder(1, 2)
-        val directionNormal = normalize(direction)
-        val r = ray(point, directionNormal)
-        val xs = localIntersect(cyl, r)
+        val directionNormal = direction.normalize
+        val r = Ray(point, directionNormal)
+        val xs = cyl.localIntersect(r)
         assert(xs.size == count)
 
       }
@@ -183,10 +183,10 @@ class CylindersSpec extends BaseSpec {
         Then("xs.count = <count>")
 
         val cyl = cylinder( 1, 2, true)
-        val directionNormal = normalize(direction)
-        val r = ray(point, directionNormal)
+        val directionNormal = direction.normalize
+        val r = Ray(point, directionNormal)
         assert(cyl.closed)
-        val xs = localIntersect(cyl, r)
+        val xs = cyl.localIntersect(r)
         assert(xs.size == count)
       }
     }

@@ -1,12 +1,12 @@
 package raytracer.resource.yaml
 
-import AST._
 import org.scalameter.measure
-import raytracer.math.{Matrix, Operation, Operations, TransformBuilder}
+import raytracer.math.{Matrix, Operations, Transform}
 import raytracer.patterns._
-import raytracer.{Camera, Defaults, Material, PointLight, Scene, World}
 import raytracer.resource.ResourceLoader
+import raytracer.resource.yaml.AST._
 import raytracer.shapes._
+import raytracer._
 
 import scala.annotation.tailrec
 import scala.reflect.ClassTag
@@ -67,7 +67,7 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
     val group = loader.loadObject(filename) // no transforms
     val group2 = new Group(transform, material)
     group2.addChildren(group.children)
-    val threshold = math.max(group2.size / 20, divideThreshold)
+    val threshold = scala.math.max(group2.size / 20, divideThreshold)
 
     // subdivide bounding boxes
     val time = measure {
@@ -105,10 +105,10 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
   def buildTransform(transform: TransformOption): Matrix = {
     val xs = transform.map(_.xs).getOrElse(Nil)
     val ops = xs.flatMap(resolveTransformItem)
-    ops.foldLeft(TransformBuilder.apply())((b, op) => b.add(op)).build()
+    ops.foldLeft(Transform())((b, op) => b.add(op)).build()
   }
 
-  def resolveTransformItem(t: TransformItem): Seq[Operation] = {
+  def resolveTransformItem(t: TransformItem): Seq[Transform] = {
     t match {
       case TransformOperation(op) => Seq(op)
       case TransformReference(key) =>
