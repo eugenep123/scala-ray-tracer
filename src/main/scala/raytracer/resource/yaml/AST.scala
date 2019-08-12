@@ -1,7 +1,8 @@
 package raytracer.resource.yaml
 
 import raytracer.Color
-import raytracer.math.{Transform, Point3D, Vector3D}
+import raytracer.math.{Point3D, Transform, Vector3D}
+import raytracer.patterns.UVMapping
 
 object AST {
 
@@ -22,6 +23,20 @@ object AST {
   case class StripePatternValue(   a: Color, b: Color, transform: TransformOption) extends PatternValue
   case class GradientPatternValue( a: Color, b: Color, transform: TransformOption) extends PatternValue
   case class RingPatternValue(     a: Color, b: Color, transform: TransformOption) extends PatternValue
+  case class MapPatternValue(mapping: UVMapping, uv: UVPatternValue, transform: TransformOption) extends PatternValue
+  case class CubeMapPatternValue(
+    left: UVPatternValue,
+    front: UVPatternValue,
+    right: UVPatternValue,
+    back: UVPatternValue,
+    up: UVPatternValue,
+    down: UVPatternValue,
+    transform: TransformOption) extends PatternValue
+
+  sealed trait UVPatternValue
+  case class AlightCheckUVPatternValue(main: Color, ul: Color, ur: Color, bl: Color, br: Color) extends UVPatternValue
+  case class CheckersUVPatternValue(width: Int, height: Int, a: Color, b: Color) extends UVPatternValue
+  case class ImageUVPatternValue(file: String) extends UVPatternValue
 
   // Material
   type MaterialOption = Option[MaterialValue]

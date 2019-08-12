@@ -36,6 +36,7 @@ abstract class Shape(
   }
   final def setParent(p: Shape): this.type =
     setParent(Some(p))
+
   final def setParent(p: Option[Shape]): this.type = {
     this.parent = p
     //TODO: check if child is CSG not allowed to set to None

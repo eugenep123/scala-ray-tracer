@@ -70,4 +70,28 @@ object Cube {
     else (tmin, tmax)
   }
 
+  sealed trait Face
+  object Face {
+    case object Front extends Face
+    case object Back extends Face
+    case object Left extends Face
+    case object Right extends Face
+    case object Up extends Face
+    case object Down extends Face
+  }
+
+  def face(point: Point3D): Face = {
+    import Face._
+    val abs_x = abs(point.x)
+    val abs_y = abs(point.y)
+    val abs_z = abs(point.z)
+    val coord = max(abs_x, abs_y, abs_z)
+    if (coord == point.x ) Right
+    else if (coord == -point.x)  Left
+    else if (coord == point.y ) Up
+    else if (coord == -point.y)  Down
+    else if (coord == point.z ) Front
+    else Back
+  }
+
 }

@@ -55,6 +55,10 @@ object Color {
   val Red   = Color(1, 0, 0)
   val Green = Color(0, 1, 0)
   val Blue  = Color(0, 0, 1)
+  val Yellow = Color(1, 1, 0)
+  val Brown = Color(1, 0.5, 0)
+  val Cyan = Color(0, 1, 1)
+  val Purple = Color(1, 0, 1)
 
   def normalize(v: Double): Int = {
     ceil(if (v > 1) 255 else if (v < 0) 0 else v * 255).toInt

@@ -2,6 +2,8 @@ package raytracer.math
 
 import java.lang.Math.abs
 
+import raytracer.Color
+
 final case class Point3D(x: Double, y: Double, z: Double) {
   def w: Double = 1.0
 
@@ -21,7 +23,7 @@ final case class Point3D(x: Double, y: Double, z: Double) {
   }
 
   def asTuple: Tuple4 = Tuple4(x, y, z, w)
-
+  def asColor: Color = Color(x, y, z)
   override def toString: String = mkString("point", x, y, z, w)
 }
 

@@ -1,7 +1,8 @@
 package raytracer.resource.yaml.reader
 
 import raytracer.Color
-import raytracer.math.{Transform, Point3D, Vector3D}
+import raytracer.math.{Point3D, Transform, Vector3D}
+import raytracer.patterns.UVMapping
 import raytracer.resource.yaml.AST._
 
 // Used to read YamlMaps
@@ -10,6 +11,13 @@ object AstReaders {
   import raytracer.resource.yaml.reader.Converters._
   import raytracer.resource.yaml.reader.Readers._
 
+
+  private def readColorPair(map: YamlMap): ParseResult[(Color, Color)] = {
+    for {
+      xs <- map.read[Seq[Color]]("colors")
+      pair <- toPair[Color](xs)
+    } yield pair
+  }
 
   // Top level reader
   implicit object YamlValueReader extends MapReader[YamlValue] {
@@ -56,6 +64,42 @@ object AstReaders {
     }
   }
 
+
+  implicit object UVPatternValueReader extends MapReader[UVPatternValue] {
+    override def readMap(map: YamlMap): ParseResult[UVPatternValue] = {
+      for {
+        t <- map.readString("type")
+        value <- readUV(map, t)
+      } yield value
+    }
+    def readUV(map: YamlMap, t: String): ParseResult[UVPatternValue] = {
+      t match {
+        case "align_check" =>
+          for {
+            c <- map.readMap("colors")
+            main <- c.read[Color]("main")
+            ul <- c.read[Color]("ul")
+            ur <- c.read[Color]("ur")
+            bl <- c.read[Color]("bl")
+            br <- c.read[Color]("br")
+          } yield AlightCheckUVPatternValue(main, ul, ur, bl, br)
+        case "checkers" =>
+          for {
+            width <- map.readInt("width")
+            height <- map.readInt("height")
+            colors <- readColorPair(map)
+          } yield CheckersUVPatternValue(width, height, colors._1, colors._2)
+        case "image" =>
+          for {
+            file <- map.readString("file")
+          } yield ImageUVPatternValue(file)
+        case _ =>
+          fail(s"Unknown uv pattern: '$t'")
+      }
+    }
+
+  }
+
   implicit object PatternValueReader extends MapReader[PatternValue] {
     override def readMap(map: YamlMap): ParseResult[PatternValue] = {
       for {
@@ -71,7 +115,44 @@ object AstReaders {
         case "stripes" => readColor2Pattern(map, transform, StripePatternValue.apply)
         case "gradient" => readColor2Pattern(map, transform, GradientPatternValue.apply)
         case "ring" => readColor2Pattern(map, transform, RingPatternValue.apply)
-        case other => fail(s"Unsupported pattern: $other")
+        case "map" =>
+          for {
+            transform <- map.readOpt[TransformList]("transform")
+            typ <- map.readString("mapping")
+            pattern <- readMapPattern(map, transform, typ)
+          } yield pattern
+        case other =>
+          fail(s"Unsupported pattern: $other")
+      }
+    }
+
+    def readMapPattern(map: YamlMap, transform: TransformOption, typ: String): ParseResult[PatternValue] = {
+      typ match {
+        case "planar" =>
+          for {
+            uv <- map.read[UVPatternValue]("uv_pattern")
+          } yield MapPatternValue(UVMapping.Planar, uv, transform)
+
+        case "cube" =>
+          for {
+            left <-  map.read[UVPatternValue]("left")
+            front <-  map.read[UVPatternValue]("front")
+            right <-  map.read[UVPatternValue]("right")
+            back <-  map.read[UVPatternValue]("back")
+            up <-  map.read[UVPatternValue]("up")
+            down <-  map.read[UVPatternValue]("down")
+          } yield CubeMapPatternValue(left, front, right, back, up, down, transform)
+
+        case "cylindrical" =>
+          for {
+            uv <- map.read[UVPatternValue]("uv_pattern")
+          } yield MapPatternValue(UVMapping.Cylindrical, uv, transform)
+        case "spherical" =>
+          for {
+            uv <- map.read[UVPatternValue]("uv_pattern")
+          } yield MapPatternValue(UVMapping.Spherical, uv, transform)
+        case other =>
+          fail(s"Unsupported map pattern: $typ")
       }
     }
 
@@ -83,13 +164,6 @@ object AstReaders {
         val (a, b) = pair
         f(a, b, transform)
       }
-    }
-
-    def readColorPair(map: YamlMap): ParseResult[(Color, Color)] = {
-      for {
-        xs <- map.read[Seq[Color]]("colors")
-        pair <- toPair[Color](xs)
-      } yield pair
     }
 
   }
@@ -198,10 +272,10 @@ object AstReaders {
           for {
             minimum <- map.readDouble("min")
             maximum <- map.readDouble("max")
-            closed <- map.readBool("closed")
+            closed <- map.readBoolOpt("closed")
           } yield {
-            if (shapeType == "cone") AddCone(minimum, maximum, closed, transform, material)
-            else AddCylinder(minimum, maximum, closed, transform, material)
+            if (shapeType == "cone") AddCone(minimum, maximum, closed.getOrElse(false), transform, material)
+            else AddCylinder(minimum, maximum, closed.getOrElse(false), transform, material)
           }
         case "obj" =>
           for {

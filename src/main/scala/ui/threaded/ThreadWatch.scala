@@ -7,8 +7,8 @@ object ThreadWatch extends App {
 
 
 //  val model = new Model()
-//  val resource = "/cover.yaml"
-  val resource = "/scenes/examples/group.yaml"
+//  val resource = "/cover.yml"
+  val resource = "/scenes/examples/group.yml"
   val scene = Scene
     .fromResourceYaml(resource)
     .withDimensions(1024,768)

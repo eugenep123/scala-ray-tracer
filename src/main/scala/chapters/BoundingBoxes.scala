@@ -5,7 +5,7 @@ import raytracer.Scene
 object BoundingBoxes extends App {
 
   val resource = "/scenes/examples/bounding-boxes.yml"
-//  val resource = "/scenes/examples/dragon/one-dragon.yaml"
+//  val resource = "/scenes/examples/dragon/one-dragon.yml"
   val scene = Scene
     .fromResourceYaml(resource)
     .withDimensions(2880, 1800)

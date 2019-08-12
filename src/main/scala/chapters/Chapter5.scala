@@ -4,7 +4,7 @@ import raytracer._
 import shapes._
 import math._
 import Operations._
-import resource.PpmWriter
+import raytracer.resource.ppm.PPMWriter
 
 object Chapter5 extends App {
 
@@ -46,7 +46,7 @@ object Chapter5 extends App {
       val homeDir = System.getProperty("user.home")
       s"$homeDir/dev/other/output"
     }
-    PpmWriter.save(canvas, folder)
+    PPMWriter.save(canvas, folder)
   }
 
 

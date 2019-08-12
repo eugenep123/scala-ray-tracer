@@ -1,7 +1,8 @@
 package raytracer.resource.yaml
 
 import org.scalatest.{Matchers, WordSpec}
-import raytracer.math.{Transform, Point3D, Vector3D}
+import raytracer.math.{Point3D, Transform, Vector3D}
+import raytracer.patterns.UVMapping
 import raytracer.{Color, TestHelpers}
 
 class YamlSpec extends WordSpec with Matchers with TestHelpers {
@@ -84,15 +85,14 @@ class YamlSpec extends WordSpec with Matchers with TestHelpers {
                    |    specular: 0
                    |    diffuse: 0.5
                    |    reflective: 0.5""".stripMargin
-      val material = MaterialObject(Some(Color(1, 0.25, 0.25)),
-                                    Some(0.5),
-                                    Some(0),
-                                    Some(0),
-                                    None,
-                                    Some(0.5),
-                                    None,
-                                    None,
-                                    None)
+      val material = MaterialObjectBuilder()
+          .color(1, 0.25, 0.25)
+          .ambient(0)
+          .specular(0)
+          .diffuse(0.5)
+          .reflective(0.5)
+        .obj
+
       val expected = AddSphere(None, Some(material))
       parseItems(yaml).get shouldEqual List(expected)
     }
@@ -190,13 +190,46 @@ class YamlSpec extends WordSpec with Matchers with TestHelpers {
     }
 
     "support shadow flag" in {
-      val resource = "/scenes/examples/dragon/one-dragon.yaml"
+      val resource = "/scenes/examples/dragon/one-dragon.yml"
       val result = Yaml.parseResource(resource).get
       result.items foreach println
 
       val model = result.build
 
       println(model)
+    }
+
+    "parse map pattern" in {
+      val yaml = """- add: plane
+                   |  material:
+                   |    pattern:
+                   |      type: map
+                   |      mapping: planar
+                   |      uv_pattern:
+                   |        type: align_check
+                   |        colors:
+                   |          main: [1, 1, 1] # white
+                   |          ul: [1, 0, 0]   # red
+                   |          ur: [1, 1, 0]   # yellow
+                   |          bl: [0, 1, 0]   # green
+                   |          br: [0, 1, 1]   # cyan
+                   |    ambient: 0.1
+                   |    diffuse: 0.8""".stripMargin
+
+      val map = MapPatternValue(
+        UVMapping.Planar,
+        AlightCheckUVPatternValue(Color.White, Color.Red, Color.Yellow, Color.Green, Color.Cyan),
+        None
+      )
+      val m = MaterialObjectBuilder()
+        .ambient(0.1)
+        .diffuse(0.8)
+        .pattern(map)
+        .obj
+      val add = AddPlane(None, Some(m))
+      val expected = Seq(add)
+      parseItems(yaml).get shouldEqual expected
+
     }
   }
 }

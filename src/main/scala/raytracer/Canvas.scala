@@ -2,7 +2,7 @@ package raytracer
 
 import java.io.File
 
-import resource.PpmWriter
+import raytracer.resource.ppm.PPMWriter
 
 case class Canvas(width: Int, height: Int) {
   private val array = Array.fill[Color](width * height)(Color.Black)
@@ -26,6 +26,6 @@ case class Canvas(width: Int, height: Int) {
     }
   }
 
-  def save(folder: String): File = PpmWriter.save(this, folder)
+  def save(folder: String): File = PPMWriter.save(this, folder)
 }
 

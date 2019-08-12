@@ -1,8 +1,11 @@
 package raytracer
 
+import raytracer.resource.ppm.{PPMParser, PPMWriter}
+import org.scalatest.prop.TableDrivenPropertyChecks._
+
 class CanvasSpec extends BaseSpec {
 
-  def canvasToPpm(c: Canvas): Seq[String] = resource.PpmWriter(c)
+  def canvasToPpm(c: Canvas): Seq[String] = PPMWriter(c)
 
   feature("Canvas") {
     scenario("Creating a canvas") {
@@ -84,6 +87,124 @@ class CanvasSpec extends BaseSpec {
       val c = Canvas(5, 3)
       val ppm = canvasToPpm(c)
       assert(ppm.last == "\n")
+    }
+
+    scenario("Reading a file with the wrong magic number") {
+      val content = """P32
+                      |1 1
+                      |255
+                      |0 0 0""".stripMargin
+      Given(s"ppm ← a file containing: \n$content")
+      Then("canvas_from_ppm(ppm)")
+      assert(PPMParser.parse(content).isEmpty)
+    }
+
+    scenario("Reading a PPM returns a canvas of the right size") {
+      val content = """P3
+                      |10 2
+                      |255
+                      |0 0 0  0 0 0  0 0 0  0 0 0  0 0 0
+                      |0 0 0  0 0 0  0 0 0  0 0 0  0 0 0
+                      |0 0 0  0 0 0  0 0 0  0 0 0  0 0 0
+                      |0 0 0  0 0 0  0 0 0  0 0 0  0 0 0""".stripMargin
+
+      Given(s"ppm ← a file containing: \n$content")
+      When("canvas ← canvas_from_ppm(ppm)")
+      Then("canvas.width = 10")
+      And("canvas.height = 2")
+
+      val canvas = PPMParser.parse(content).get
+      assert(canvas.width == 10)
+      assert(canvas.height == 2)
+    }
+
+    scenario("Reading pixel data from a PPM file") {
+      val content = """P3
+                      |4 3
+                      |255
+                      |255 127 0  0 127 255  127 255 0  255 255 255
+                      |0 0 0  255 0 0  0 255 0  0 0 255
+                      |255 255 0  0 255 255  255 0 255  127 127 127""".stripMargin
+      Given(s"ppm ← a file containing:\n$content")
+      When("canvas ← canvas_from_ppm(ppm)")
+
+      val examples = Table(
+        ( "x", "y" , "color"                    ),
+        ( 0  , 0   , Color(1, 0.498, 0)         ),
+        ( 1  , 0   , Color(0, 0.498, 1)         ),
+        ( 2  , 0   , Color(0.498, 1, 0)         ),
+        ( 3  , 0   , Color(1, 1, 1)             ),
+        ( 0  , 1   , Color(0, 0, 0)             ),
+        ( 1  , 1   , Color(1, 0, 0)             ),
+        ( 2  , 1   , Color(0, 1, 0)             ),
+        ( 3  , 1   , Color(0, 0, 1)             ),
+        ( 0  , 2   , Color(1, 1, 0)             ),
+        ( 1  , 2   , Color(0, 1, 1)             ),
+        ( 2  , 2   , Color(1, 0, 1)             ),
+        ( 3  , 2   , Color(0.498, 0.498, 0.498) )
+      )
+
+      val canvas = PPMParser.parse(content).get
+
+      forAll(examples) { (x, y, color) =>
+        Then(s"pixel_at(canvas, $x, $y) = $color")
+        val c = canvas(x, y)
+        assert(c == color)
+      }
+    }
+
+    scenario("PPM parsing ignores comment lines") {
+      val ppm = """P3
+                  |# this is a comment
+                  |2 1
+                  |# this, too
+                  |255
+                  |# another comment
+                  |255 255 255
+                  |# oh, no, comments in the pixel data!
+                  |255 0 255""".stripMargin
+
+      Given(s"ppm ← a file containing:\n$ppm")
+
+      When("canvas ← canvas_from_ppm(ppm)")
+      Then("pixel_at(canvas, 0, 0) = color(1, 1, 1)")
+       And("pixel_at(canvas, 1, 0) = color(1, 0, 1)")
+
+      val canvas = PPMParser.parse(ppm).get
+      assert(canvas(0, 0) == Color(1, 1, 1))
+      assert(canvas(1, 0) == Color(1, 0, 1))
+    }
+
+    scenario("PPM parsing allows an RGB triple to span line") {
+      val ppm ="""P3
+                 |1 1
+                 |255
+                 |51
+                 |153
+                 |
+                 |204""".stripMargin
+
+      Given(s"ppm ← a file containing:\n$ppm")
+      When("canvas ← canvas_from_ppm(ppm)")
+      Then("pixel_at(canvas, 0, 0) = color(0.2, 0.6, 0.8)")
+
+      val canvas = PPMParser.parse(ppm).get
+      assert(canvas(0, 0) == Color(0.2, 0.6, 0.8))
+    }
+
+    scenario("PPM parsing respects the scale setting") {
+      val ppm = """P3
+                  |2 2
+                  |100
+                  |100 100 100  50 50 50
+                  |75 50 25  0 0 0""".stripMargin
+      Given(s"ppm ← a file containing:\n$ppm")
+
+      When("canvas ← canvas_from_ppm(ppm)")
+      Then("pixel_at(canvas, 0, 1) = color(0.75, 0.5, 0.25)")
+
+      val canvas = PPMParser.parse(ppm).get
+      assert(canvas(0, 1) == Color(0.75, 0.5, 0.25))
     }
   }
 }

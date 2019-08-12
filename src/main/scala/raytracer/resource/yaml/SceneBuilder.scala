@@ -93,6 +93,23 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
       case StripePatternValue(a, b, _)    => StripePattern(a, b, transform)
       case GradientPatternValue(a, b, _)  => GradientPattern(a, b, transform)
       case RingPatternValue(a, b, _)      => RingPattern(a, b, transform)
+      case MapPatternValue(m, uv, _)      => TextureMapPattern(buildUV(uv), m, transform)
+      case c: CubeMapPatternValue =>
+        CubeMapPattern(
+          buildUV(c.left), buildUV(c.front),
+          buildUV(c.right), buildUV(c.back), buildUV(c.up), buildUV(c.down), transform)
+    }
+  }
+
+  def buildUV(x: UVPatternValue): UVPattern = {
+    x match {
+      case AlightCheckUVPatternValue(main, ul, ur, bl, br) =>
+        UVPattern.AlignCheck(main, ul, ur, bl, br)
+      case CheckersUVPatternValue(width, height, a, b) =>
+        UVPattern.Checkers(width, height, a, b)
+      case ImageUVPatternValue(file) =>
+        val canvas = loader.loadImage(file)
+        UVPattern.Image(canvas)
     }
   }
 

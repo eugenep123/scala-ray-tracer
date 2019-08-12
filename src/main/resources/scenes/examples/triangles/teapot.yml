@@ -1,0 +1,69 @@
+- add: camera
+  width: 1024
+  height: 768
+  field-of-view: 1.047
+#  from: [1, 4, 15]
+#  to: [0, 0, 0]
+#  up: [0, 1, 0]
+  from: [1, 4, 15]
+  to: [0, 0, 0]
+  up: [0, 1, 0]
+
+
+- add: light
+  at: [0, 20, 20]
+  intensity: [1, 1, 1]
+
+- add: plane
+  material:
+    pattern:
+      type: checkers
+#      transform:
+#        - [ rotate-y, 0.785398163397448 ]
+#        - [ scale, 40, 40, 40 ]
+      colors:
+        - [1, 1, 1]
+        - [0, 0, 0]
+#    ambient: 0.3
+#    diffuse: 0.7
+    reflective: 0.3
+#  transform:
+#    - [ translate, 0, -5, 0 ]
+
+- add: obj
+  file: teapot.obj
+  material:
+    color: [1.0, 0.0, 0.2]
+    ambient: 0.5
+    diffuse: 0.7
+    specular: 0.9
+    shininess: 20
+    reflective: 0.2
+  transform:
+#    - [ translate, 10, -23.625, 0 ]
+    - [ scale, 0.1, 0.1, 0.1 ]
+#    - [ translate, 0, 1, 10 ]
+
+- add: sphere
+  transform:
+    - [ scale, 3, 3, 3 ]
+    - [ translate, -7, 3, 2 ]
+  material:
+    color: [0, 0, 1]
+    reflective: 0.4
+
+#- add: sphere
+#  transform:
+#    - [ scale, 3, 3, 3 ]
+#    - [ translate, 0, 3, -1 ]
+#  material:
+#    color: [1, 0, 0]
+#    reflective: 0.6
+
+- add: sphere
+  transform:
+    - [ scale, 3, 3, 3 ]
+    - [ translate, 6.5, 3, 0 ]
+  material:
+    color: [ 0, 1, 0 ]
+    reflective: 0.8
