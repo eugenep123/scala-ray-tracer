@@ -33,22 +33,22 @@
       mapping: cube
       left:
         type: image
-        file: negx.ppm
+        file: negx.jpg
       right:
         type: image
-        file: posx.ppm
+        file: posx.jpg
       front:
         type: image
-        file: posz.ppm
+        file: posz.jpg
       back:
         type: image
-        file: negz.ppm
+        file: negz.jpg
       up:
         type: image
-        file: posy.ppm
+        file: posy.jpg
       down:
         type: image
-        file: negy.ppm
+        file: negy.jpg
     diffuse: 0
     specular: 0
     ambient: 1

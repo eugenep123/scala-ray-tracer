@@ -102,4 +102,22 @@ object Csg {
       (lhit && !inr) || (!lhit && inl)
   }
 
+
+  def unionAll(xs: Seq[Shape], mat: Material): Option[Shape] = {
+    def reduce(ys: List[Shape]): Option[Shape] = {
+      ys match {
+        case Nil => None
+        case h :: Nil => ys.headOption
+        case a :: b :: Nil =>
+          Some(Csg(Union, a, b, material = mat))
+        case _ =>
+          val merged = ys.grouped(2).map {
+            case Seq(a, b) => Csg(Union, a, b)
+            case Seq(a) => a
+          }
+          reduce(merged.toList)
+      }
+    }
+    reduce(xs.toList)
+  }
 }

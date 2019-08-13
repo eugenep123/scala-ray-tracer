@@ -23,7 +23,7 @@ object Yaml {
     }.toList
   }
 
-  def parse(yamlString: String): ParseResult[SceneBuilder] =
+  def parse(yamlString: String)(implicit loader: ResourceLoader): ParseResult[SceneBuilder] =
     parseItems(yamlString).map(SceneBuilder.apply(_))
 
   def parseItems(yamlString: String): ParseResult[Seq[YamlValue]] = {
@@ -33,15 +33,15 @@ object Yaml {
     } yield items
   }
 
-  def parseResource(name: String): ParseResult[SceneBuilder] = {
+  def parseResource(name: String)(implicit loader: ResourceLoader): ParseResult[SceneBuilder] = {
     parse(getResourceString(name))
   }
 
-  def read(yaml: String): Scene = {
+  def read(yaml: String)(implicit loader: ResourceLoader): Scene = {
     parse(yaml).get.build
   }
 
-  def readFromResource(name: String): Scene = {
+  def readFromResource(name: String)(implicit loader: ResourceLoader): Scene = {
     parseResource(name).get.build
   }
 }

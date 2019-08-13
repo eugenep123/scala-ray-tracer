@@ -6,6 +6,8 @@ import resource.yaml.Yaml
 import org.scalameter.measure
 import java.io.File
 
+import raytracer.resource.ResourceLoader
+
 case class Scene(world: World, camera: Camera) {
 
   def withDimensions(width: Int, height: Int): Scene =
@@ -33,7 +35,7 @@ case class Scene(world: World, camera: Camera) {
 }
 
 object Scene {
-  def fromResourceYaml(resourceName: String): Scene = {
+  def fromResourceYaml(resourceName: String)(implicit loader: ResourceLoader): Scene = {
     Yaml.readFromResource(resourceName)
   }
 }

@@ -63,6 +63,14 @@ object Color {
   def normalize(v: Double): Int = {
     ceil(if (v > 1) 255 else if (v < 0) 0 else v * 255).toInt
   }
+
+  def fromRgb(rgb: Int): Color = {
+    Color(
+      ((rgb >> 16) & 0xFF).toDouble / 255.0,
+      ((rgb >>  8) & 0xFF).toDouble / 255.0,
+      ((rgb >>  0) & 0xFF).toDouble / 255.0
+    )
+  }
 }
 
 

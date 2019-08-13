@@ -26,9 +26,6 @@ case class Material(
     inShadow: Boolean): Color = {
     // Combine the surface color with the light's color/intensity.
 
-
-
-//    val c = pattern.fold(color)(_.colorAt(point))
     val c = pattern.fold(color)(_.patternAtShape(point, obj))
 
     val effectiveColor = c * light.intensity

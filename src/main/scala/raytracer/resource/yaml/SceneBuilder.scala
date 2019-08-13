@@ -14,7 +14,7 @@ import scala.reflect.ClassTag
 case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
                        (implicit loader: ResourceLoader) {
 
-  implicit lazy val lookup = buildLookup
+  implicit lazy val lookup: DefineLookup = buildLookup
 
   protected def collect[A: ClassTag]: Seq[A] = items.collect { case a: A => a }
 

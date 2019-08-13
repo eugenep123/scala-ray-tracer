@@ -4,8 +4,10 @@ import java.io.File
 
 import raytracer.resource.ppm.PPMWriter
 
-case class Canvas(width: Int, height: Int) {
-  private val array = Array.fill[Color](width * height)(Color.Black)
+class Canvas private (
+  val width: Int,
+  val height: Int,
+  private val array: Array[Color]) {
 
   def apply(x: Int, y: Int): Color = array(width * y + x)
 
@@ -29,3 +31,14 @@ case class Canvas(width: Int, height: Int) {
   def save(folder: String): File = PPMWriter.save(this, folder)
 }
 
+object Canvas {
+  def apply(width: Int, height: Int) = {
+    val array = Array.fill[Color](width * height)(Color.Black)
+    new Canvas(width, height, array)
+  }
+
+  def apply(width: Int, height: Int, array: Array[Color]): Canvas = {
+    require(array.length == width * height)
+    new Canvas(width, height, array)
+  }
+}

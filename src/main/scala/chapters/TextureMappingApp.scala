@@ -10,10 +10,12 @@ object TextureMappingApp extends App {
 //    "/scenes/texture-mapping/checkered-cylinder.yml",
 //    "/scenes/texture-mapping/checkered-plane-map.yml",
 //    "/scenes/texture-mapping/checkered-sphere.yml",
-    "/scenes/texture-mapping/earth.yml",
+//    "/scenes/texture-mapping/earth.yml",
 //    "/scenes/texture-mapping/orrery.yml",
-//    "/scenes/texture-mapping/skybox.yml"
+    "/scenes/texture-mapping/skybox.yml"
   )
+
+
 
   resources foreach { resource =>
     println(s"Reading: $resource")

@@ -2,8 +2,8 @@ package chapters
 
 object Settings {
 
-  def width: Int = 1024 * 2
-  def height: Int = 768 * 2
+  def width: Int = 1024
+  def height: Int = 768
 
   def folder: String = {
     val homeDir = System.getProperty("user.home")

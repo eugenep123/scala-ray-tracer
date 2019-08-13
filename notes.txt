@@ -1,43 +1,29 @@
 TODO:
+    - area light
+        http://www.raytracerchallenge.com/bonus/area-light.html
 
-
-
-Issues:
-    - csg sets parent (immutable)
-        how to enforce this
-
-    - shape transform/material is immutable
-        hard to set later on, especially if in a group
-        how to deal with equals (all fields, or without group, or without transforms)
-
-    - performance:
-        parallelize group divide algorithm
-
-    - issues:
-        share obj files between groups
-            Divided 'dragon.obj' in 117058.132752 ms (threshold = 234)
-            Divided 'dragon.obj' in 114126.600818 ms (threshold = 234)
-            Divided 'dragon.obj' in 113226.425574 ms (threshold = 234)
-            Divided 'dragon.obj' in 110757.721839 ms (threshold = 234)
-            Divided 'dragon.obj' in 106014.38817  ms (threshold = 234)
-            Divided 'dragon.obj' in 106939.335667 ms (threshold = 234)
-            Render time: 113523.430672 ms
-
-
-
-
-- mesh normalization
-    http://forum.raytracerchallenge.com/thread/27/triangle-mesh-normalization
-
-
-    add name to shape
-        load name in yaml
-        load name in obj
-
-    idea:
-        split shape into
-            a node (path, children, parent)
-            and a immutable/sharable primitive
-
+    - render server (ui)
+    - yaml (debug/named objects)
+        - show groups (again)
+    - invisible shapes
         http://forum.raytracerchallenge.com/thread/25/visible-invisible-shapes
-
+    - special materials:
+        - pattern like, materialAt(point)
+    - obj files
+        - load materials
+            http://www.fileformat.info/format/material/
+        - normalize mesh (http://forum.raytracerchallenge.com/thread/27/triangle-mesh-normalization)
+        - smooth normals
+        - fast object loading
+        - shared cached models, parallelize divide)
+            - or load/cache obj group, then clone
+        - support textures
+    - file formats
+        jpg/png
+        other scene formats?
+    - focal/motion blur
+    - antialiasing
+    - texture maps
+         bilinear interpolation (smaller textures)
+    - optimize
+        - dont return intersection Seq, rather create one up front, then pass it in and add to it
