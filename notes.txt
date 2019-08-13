@@ -27,3 +27,5 @@ TODO:
          bilinear interpolation (smaller textures)
     - optimize
         - dont return intersection Seq, rather create one up front, then pass it in and add to it
+        - in shadow? do we need to render all objects? or can we stop at 1st hit? csg?
+        - optimize worldToObject (pre calculate/cache based on path or parent)

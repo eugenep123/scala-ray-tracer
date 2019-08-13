@@ -22,8 +22,8 @@ case class Intersection(
             if (containers.isEmpty) 1.0
             else containers.last.material.refractiveIndex
         }
-
-        if (containers.contains(shape)) containers.remove(containers.indexOf(shape))
+        // Need to use object equality
+        if (containers.exists(_ eq shape)) containers.remove(containers.indexWhere(_ eq shape))
         else containers.append(shape)
         if (isHit) {
           n2 =
@@ -35,7 +35,6 @@ case class Intersection(
     }
     (n1, n2)
   }
-
 
   def prepare(ray: Ray, xs: Seq[Intersection]): RayIntersection = {
     val (n1, n2) = calculateRefractive(xs)

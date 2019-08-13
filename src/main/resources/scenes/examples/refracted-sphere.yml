@@ -7,9 +7,11 @@
   width: 400
   height: 400
   field-of-view: 1.0471975512 # pi/3
-  from: [ 0, 10.5, 0 ]
+#  from: [ 0, 10.5, 0 ]
+  from: [ 0, 2.5, 0 ]
   to: [ 0, 0, 0 ]
-  up: [ 0, 0, -1 ]
+#  up: [ 0, 0, -1 ]
+  up: [ 0, 0, 1 ]
 
 # ======================================================
 # light sources
@@ -23,43 +25,46 @@
 # a white backdrop for the scene
 # ======================================================
 
-#- add: plane
-#  material:
-#    color: [ 1, 1, 1 ]
-#    ambient: 1
-#    diffuse: 0
-#    specular: 0
-#
-#    pattern:
-#      type: checkers
-#      colors:
-#        - [0, 0, 0]
-#        - [1, 1, 1]
-#      transform:
-#        - [ translate, 0, 0.1, 0 ]
-#  transform:
-#    - [ rotate-x, 1.5707963267948966 ] # pi/2
-#    - [ translate, 0, -10.1, 0 ]
-
-
 - add: plane
   material:
     color: [ 1, 1, 1 ]
     ambient: 1
     diffuse: 0
     specular: 0
-    reflective: 0.4
+
     pattern:
       type: checkers
       colors:
-        - [0.35, 0.35, 0.35]
-        - [0.65, 0.65, 0.65]
+#        - [1, 0, 0]
+#        - [0, 1, 0]
+        - [0.1, 0.1, 0.1]
+        - [1, 1, 1]
       transform:
         - [ translate, 0, 0.1, 0 ]
   transform:
-    - [ rotate-x, 1.5707963267948966 ] # pi/2
+#    - [ rotate-x, 1.5707963267948966 ] # pi/2
     - [ translate, 0, -10.1, 0 ]
 
+
+#- add: plane
+#  material:
+#    color: [ 1, 1, 1 ]
+#    ambient: 1
+#    diffuse: 0
+#    specular: 0
+#    reflective: 0.4
+#    pattern:
+#      type: checkers
+#      colors:
+#        - [0.35, 0.35, 0.35]
+#        - [0.65, 0.65, 0.65]
+#      transform:
+#        - [ translate, 0, 0.1, 0 ]
+#  transform:
+#    - [ rotate-x, 1.5707963267948966 ] # pi/2
+#    - [ translate, 0, -10.1, 0 ]
+
+# glass
 - add: sphere
   material:
     diffuse: 0.1
@@ -67,6 +72,7 @@
     reflective: 1
     transparency: 1.0     #refractive???
     refractive-index: 1.52
+
 
 #air sphere
 - add: sphere
