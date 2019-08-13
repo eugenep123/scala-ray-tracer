@@ -56,7 +56,7 @@ object Chapter6 {
             val Point3D = ray.position(hit.t)
             val normal = hit.obj.normalAt(Point3D, hit)
             val eye = -ray.direction
-            val color = hit.obj.material.lighting(light, Point3D, eye, normal, false)
+            val color = hit.obj.material.lighting(hit.obj, light, Point3D, eye, normal, false)
             canvas.writePixel(x, y, color)
           }
       }

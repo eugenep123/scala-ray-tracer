@@ -24,7 +24,7 @@ case class CubeMapPattern(
     }
   }
 
-  override def colorAt(point: Point3D): Color = {
+  override def patternAt(point: Point3D): Color = {
     val face = Cube.face(point)
     val (u, v) = UVMapping.Cube.map(face, point)
     val pattern = patternForFace(face)

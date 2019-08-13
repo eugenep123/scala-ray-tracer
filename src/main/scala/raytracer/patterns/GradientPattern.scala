@@ -5,7 +5,7 @@ import raytracer.math.{Matrix, Point3D}
 import raytracer.Color
 
 case class GradientPattern(a: Color, b: Color, transform: Matrix) extends Pattern {
-  override def colorAt(point: Point3D): Color = {
+  override def patternAt(point: Point3D): Color = {
     val distance = b - a
     val fraction = point.x - floor(point.x)
     a + distance * fraction

@@ -30,7 +30,7 @@ final case class World(
     lights.foreach { light =>
       //val inShadow = hit.renderAllRays && isShadowed(overPoint, light)
       val inShadow = isShadowed(overPoint, light)
-      surface += material.lighting(light, overPoint, eye, normal, inShadow)
+      surface += material.lighting(hit.shape, light, overPoint, eye, normal, inShadow)
     }
 
     val reflected = reflectedColor(hit, remaining)

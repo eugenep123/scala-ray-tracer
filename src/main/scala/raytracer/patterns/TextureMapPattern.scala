@@ -8,7 +8,7 @@ case class TextureMapPattern(
   transform: Matrix) extends Pattern {
   override type PatternType = TextureMapPattern
 
-  override def colorAt(point: Point3D): Color = {
+  override def patternAt(point: Point3D): Color = {
     val (u, v) = mapping.map(point)
     uv.colorAt(u, v)
   }

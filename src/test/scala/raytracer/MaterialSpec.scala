@@ -13,7 +13,7 @@ class MaterialSpec extends BaseSpec {
                eye: Vector3D,
                normal: Vector3D,
                inShadow: Boolean = false): Color =
-    material.lighting(light, point, eye, normal, inShadow)
+    material.lighting(testShape(), light, point, eye, normal, inShadow)
 
   feature("Materials") {
 

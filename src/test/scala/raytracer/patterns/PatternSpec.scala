@@ -30,9 +30,9 @@ class PatternSpec extends BaseSpec {
       And("stripe_at(pattern, point(0, 1, 0)) = white")
       And("stripe_at(pattern, point(0, 2, 0)) = white")
       val pattern = Pattern.stripe(white, black)
-      assert(pattern.colorAt(point(0, 0, 0)) == white)
-      assert(pattern.colorAt(point(0, 1, 0)) == white)
-      assert(pattern.colorAt(point(0, 2, 0)) == white)
+      assert(pattern.patternAt(point(0, 0, 0)) == white)
+      assert(pattern.patternAt(point(0, 1, 0)) == white)
+      assert(pattern.patternAt(point(0, 2, 0)) == white)
     }
 
     scenario("A stripe pattern is constant in z") {
@@ -41,9 +41,9 @@ class PatternSpec extends BaseSpec {
       And("stripe_at(pattern, point(0, 0, 1)) = white")
       And("stripe_at(pattern, point(0, 0, 2)) = white")
       val pattern = Pattern.stripe(white, black)
-      assert(pattern.colorAt(point(0, 0, 0)) == white)
-      assert(pattern.colorAt(point(0, 0, 1)) == white)
-      assert(pattern.colorAt(point(0, 0, 2)) == white)
+      assert(pattern.patternAt(point(0, 0, 0)) == white)
+      assert(pattern.patternAt(point(0, 0, 1)) == white)
+      assert(pattern.patternAt(point(0, 0, 2)) == white)
     }
 
     scenario("A stripe pattern alternates in x") {
@@ -55,12 +55,12 @@ class PatternSpec extends BaseSpec {
       And("stripe_at(pattern, point(-1, 0, 0)) = black")
       And("stripe_at(pattern, point(-1.1, 0, 0)) = white")
       val pattern = Pattern.stripe(white, black)
-      assert(pattern.colorAt(point(0, 0, 0)) == white)
-      assert(pattern.colorAt(point(0.9, 0, 0)) == white)
-      assert(pattern.colorAt(point(1, 0, 0)) == black)
-      assert(pattern.colorAt(point(-0.1, 0, 0)) == black)
-      assert(pattern.colorAt(point(-1, 0, 0)) == black)
-      assert(pattern.colorAt(point(-1.1, 0, 0)) == white)
+      assert(pattern.patternAt(point(0, 0, 0)) == white)
+      assert(pattern.patternAt(point(0.9, 0, 0)) == white)
+      assert(pattern.patternAt(point(1, 0, 0)) == black)
+      assert(pattern.patternAt(point(-0.1, 0, 0)) == black)
+      assert(pattern.patternAt(point(-1, 0, 0)) == black)
+      assert(pattern.patternAt(point(-1.1, 0, 0)) == white)
     }
 
     scenario("Stripes with an object transformation") {
@@ -71,7 +71,7 @@ class PatternSpec extends BaseSpec {
       Then("c = white")
       val obj = sphere(Scaling(2, 2, 2))
       val pattern = Pattern.stripe(white, black)
-      val c = pattern.colorAt(point(1.5, 0, 0), obj)
+      val c = pattern.patternAtShape(point(1.5, 0, 0), obj)
       assert(c == white)
     }
 
@@ -83,7 +83,7 @@ class PatternSpec extends BaseSpec {
       val obj = sphere()
       val pattern = Pattern.stripe(white, black)
         .setTransform(Scaling(2, 2, 2))
-      val c = pattern.colorAt(point(1.5, 0, 0), obj)
+      val c = pattern.patternAtShape(point(1.5, 0, 0), obj)
       assert(c == white)
     }
 
@@ -101,7 +101,7 @@ class PatternSpec extends BaseSpec {
         .setPattern(pattern)
         .sphere
 
-      val c = pattern.colorAt(point(2.5, 0, 0), obj)
+      val c = pattern.patternAtShape(point(2.5, 0, 0), obj)
       assert(c == white)
     }
 
@@ -128,7 +128,7 @@ class PatternSpec extends BaseSpec {
       Then("c = color(1, 1.5, 2)")
       val shape = sphere(Scaling(2, 2, 2))
       val pattern = TestPattern()
-      val c = pattern.colorAt(point(2, 3, 4), shape)
+      val c = pattern.patternAtShape(point(2, 3, 4), shape)
       assert(c == Color(1, 1.5, 2))
     }
 
@@ -140,7 +140,7 @@ class PatternSpec extends BaseSpec {
       Then("c = color(1, 1.5, 2)")
       val shape = sphere()
       val pattern = TestPattern().setTransform(Scaling(2, 2, 2))
-      val c = pattern.colorAt(point(2, 3, 4), shape)
+      val c = pattern.patternAtShape(point(2, 3, 4), shape)
       assert(c == Color(1, 1.5, 2))
     }
 
@@ -153,7 +153,7 @@ class PatternSpec extends BaseSpec {
       Then("c = color(0.75, 0.5, 0.25)")
       val shape = sphere(Scaling(2, 2, 2))
       val pattern = TestPattern().setTransform(Translation(0.5, 1, 1.5))
-      val c = pattern.colorAt(point(2.5, 3, 3.5), shape)
+      val c = pattern.patternAtShape(point(2.5, 3, 3.5), shape)
       assert(c == Color(0.75, 0.5, 0.25))
     }
 
@@ -164,10 +164,10 @@ class PatternSpec extends BaseSpec {
       And("pattern_at(pattern, point(0.5, 0, 0)) = color(0.5, 0.5, 0.5)")
       And("pattern_at(pattern, point(0.75, 0, 0)) = color(0.25, 0.25, 0.25)")
       val pattern = Pattern.gradient(white, black)
-      assert(pattern.colorAt(point(0, 0, 0)) == white)
-      assert(pattern.colorAt(point(0.25, 0, 0)) == Color(0.75, 0.75, 0.75))
-      assert(pattern.colorAt(point(0.5, 0, 0)) == Color(0.5, 0.5, 0.5))
-      assert(pattern.colorAt(point(0.75, 0, 0)) == Color(0.25, 0.25, 0.25))
+      assert(pattern.patternAt(point(0, 0, 0)) == white)
+      assert(pattern.patternAt(point(0.25, 0, 0)) == Color(0.75, 0.75, 0.75))
+      assert(pattern.patternAt(point(0.5, 0, 0)) == Color(0.5, 0.5, 0.5))
+      assert(pattern.patternAt(point(0.75, 0, 0)) == Color(0.25, 0.25, 0.25))
     }
 
     scenario("A ring should extend in both x and z") {
@@ -178,9 +178,9 @@ class PatternSpec extends BaseSpec {
       // 0.708 = just slightly more than √2/2
       And(" pattern_at(pattern, point(0.708, 0, 0.708)) = black")
       val pattern = Pattern.ring(white, black)
-      assert(pattern.colorAt(point(0, 0, 0)) == white)
-      assert(pattern.colorAt(point(1, 0, 0)) == black)
-      assert(pattern.colorAt(point(0.708, 0, 0.708)) == black)
+      assert(pattern.patternAt(point(0, 0, 0)) == white)
+      assert(pattern.patternAt(point(1, 0, 0)) == black)
+      assert(pattern.patternAt(point(0.708, 0, 0.708)) == black)
     }
 
     scenario("Checkers should repeat in x") {
@@ -189,9 +189,9 @@ class PatternSpec extends BaseSpec {
       And("pattern_at(pattern, point(0.99, 0, 0)) = white")
       And("pattern_at(pattern, point(1.01, 0, 0)) = black")
       val pattern = Pattern.checkers(white, black)
-      assert(pattern.colorAt(point(0, 0, 0)) == white)
-      assert(pattern.colorAt(point(0.99, 0, 0)) == white)
-      assert(pattern.colorAt(point(1.01, 0, 0)) == black)
+      assert(pattern.patternAt(point(0, 0, 0)) == white)
+      assert(pattern.patternAt(point(0.99, 0, 0)) == white)
+      assert(pattern.patternAt(point(1.01, 0, 0)) == black)
     }
 
     scenario("Checkers should repeat in y") {
@@ -200,9 +200,9 @@ class PatternSpec extends BaseSpec {
       And("pattern_at(pattern, point(0, 0.99, 0)) = white")
       And("pattern_at(pattern, point(0, 1.01, 0)) = black")
       val pattern = Pattern.checkers(white, black)
-      assert(pattern.colorAt(point(0, 0, 0)) == white)
-      assert(pattern.colorAt(point(0, 0.99, 0)) == white)
-      assert(pattern.colorAt(point(0, 1.01, 0)) == black)
+      assert(pattern.patternAt(point(0, 0, 0)) == white)
+      assert(pattern.patternAt(point(0, 0.99, 0)) == white)
+      assert(pattern.patternAt(point(0, 1.01, 0)) == black)
     }
 
     scenario("Checkers should repeat in z") {
@@ -211,9 +211,9 @@ class PatternSpec extends BaseSpec {
       And("pattern_at(pattern, point(0, 0, 0.99)) = white")
       And("pattern_at(pattern, point(0, 0, 1.01)) = black")
       val pattern = Pattern.checkers(white, black)
-      assert(pattern.colorAt(point(0, 0, 0)) == white)
-      assert(pattern.colorAt(point(0, 0, 0.99)) == white)
-      assert(pattern.colorAt(point(0, 0, 1.01)) == black)
+      assert(pattern.patternAt(point(0, 0, 0)) == white)
+      assert(pattern.patternAt(point(0, 0, 0.99)) == white)
+      assert(pattern.patternAt(point(0, 0, 1.01)) == black)
     }
 
 
@@ -285,7 +285,7 @@ class PatternSpec extends BaseSpec {
 
         val checkers = UVPattern.Checkers(16, 8, black, white)
         val pattern = TextureMapPattern(checkers, UVMapping.Spherical)
-        assert(pattern.colorAt(point) == color)
+        assert(pattern.patternAt(point) == color)
       }
     }
 
@@ -552,7 +552,7 @@ class PatternSpec extends BaseSpec {
         val down = UVPattern.AlignCheck(Purple, Brown, Green, Blue, white)
         val pattern = Pattern.cubeMap(left, front, right, back, up, down)
         assert(Cube.face(point) == face)
-        val c = pattern.colorAt(point)
+        val c = pattern.patternAt(point)
         assert(c == color)
       }
     }

@@ -16,14 +16,14 @@ object PPMParser {
   def comment[_: P]: P[Unit] = P(("#" ~/ CharsWhile(_ != '\n' )).?)
   def headerComment[_: P] = P((comment ~ newLine).?)
   def header[_: P]: P[(Int, Int, Int)] = P(
-    "P3" ~/ newLine ~ //headerComment  ~
-      widthHeight ~ //headerComment ~
-      number  ~/ newLine //~ headerComment
-  ).log
+    "P3" ~/ newLine ~ headerComment  ~
+      widthHeight ~ headerComment ~
+      number  ~/ newLine ~ headerComment
+  )
 
   def byte[_:P]: P[Int] = P(digits.rep(1, max=3).!).map(_.toInt)
   def color[_:P]: P[(Int, Int, Int)] = P(byte ~ " " ~ byte ~ " " ~ byte)
-  def colorLine[_:P]: P[Seq[(Int, Int, Int)]] = P(color.rep(1, " ")  ~ " ".? ~ &(newLine | End))
+  def colorLine[_:P]: P[Seq[(Int, Int, Int)]] = P(color.rep(1, " " ~ " ".?)  ~ " ".? ~ &(newLine | End))
 //  def colorLine2[_:P]: P[Seq[(Int, Int, Int)]] = P(color.rep(1, " " ~ " ".?) ~ &(newLine | End))
   def colorOnLines[_: P]: P[Seq[(Int, Int, Int)]] = P(byte ~ newLine ~ byte ~ newLine ~ byte  ~ &(newLine | End)).map(Seq(_))
 

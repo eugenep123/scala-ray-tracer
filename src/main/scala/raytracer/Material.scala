@@ -4,6 +4,7 @@ import Math.pow
 
 import math.{Point3D, Vector3D}
 import patterns.Pattern
+import raytracer.shapes.Shape
 
 case class Material(
   color: Color,
@@ -17,6 +18,7 @@ case class Material(
   pattern: Option[Pattern]) {
 
   @inline final def lighting(
+    obj: Shape,
     light: PointLight,
     point: Point3D,
     eye: Vector3D,
@@ -24,8 +26,11 @@ case class Material(
     inShadow: Boolean): Color = {
     // Combine the surface color with the light's color/intensity.
 
-    //    val effectiveColor = color * light.intensity
-    val c = pattern.fold(color)(_.colorAt(point))
+
+
+//    val c = pattern.fold(color)(_.colorAt(point))
+    val c = pattern.fold(color)(_.patternAtShape(point, obj))
+
     val effectiveColor = c * light.intensity
 
     // Compute the ambient contribution.

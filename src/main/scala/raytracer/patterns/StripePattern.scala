@@ -4,7 +4,7 @@ import raytracer.math.{Matrix, Point3D}
 import raytracer.Color
 
 case class StripePattern(a: Color, b: Color, transform: Matrix) extends Pattern {
-  override def colorAt(point: Point3D): Color = {
+  override def patternAt(point: Point3D): Color = {
     if (math.floor(point.x).toInt % 2 == 0) a
     else b
   }
