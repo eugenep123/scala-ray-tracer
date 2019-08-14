@@ -1,11 +1,11 @@
 package performance
 
+import org.scalameter.measure
 import raytracer.Material
 import raytracer.math.Transform
+import raytracer.resource.waveform.{ObjBuilder, ObjParser}
 import raytracer.resource.{ResourceLoader, getResourceString}
 import raytracer.shapes.Group
-import org.scalameter.measure
-import performance.obj.{ObjBuilder, ObjParser, TriangleMesh}
 
 object ObjLoaderTest extends App {
 

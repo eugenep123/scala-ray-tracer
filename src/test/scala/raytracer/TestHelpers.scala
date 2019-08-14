@@ -1,7 +1,6 @@
 package raytracer
 
 import raytracer.math.{Intersection, Point3D, Ray, RayIntersection, Vector3D}
-import raytracer.resource.waveform.{ObjFileParser, ParserResult}
 import raytracer.shapes.{Shape, Shapes}
 
 trait TestHelpers extends Shapes {
@@ -27,7 +26,5 @@ trait TestHelpers extends Shapes {
   }
 
   def defaultWorld(): World = Defaults.world
-
-  def parseObjFile(content: String): ParserResult = ObjFileParser.parseContent(content)
 
 }

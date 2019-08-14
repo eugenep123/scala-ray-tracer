@@ -1,4 +1,4 @@
-package performance.obj
+package raytracer.resource.waveform
 
 import raytracer.Color
 

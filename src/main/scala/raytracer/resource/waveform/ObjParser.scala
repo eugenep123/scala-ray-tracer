@@ -1,10 +1,12 @@
-package performance.obj
+package raytracer.resource.waveform
+
+import performance.obj.VertexIndex
 
 class ObjParser[A](handler: ObjectHandler[A]) {
   import fastparse._
   import NoWhitespace._
-  import handler._
   import SharedParsers._
+  import handler._
 
     // Handlers
   private def group[_: P]: P[Unit] = P("g " ~/  name).map(onGroup)

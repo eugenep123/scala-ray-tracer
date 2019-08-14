@@ -1,6 +1,6 @@
 package performance.obj
 
-import raytracer.resource._
+import raytracer.resource.waveform.{MaterialHandler, MaterialLibParser}
 
 object TestApp extends App {
 

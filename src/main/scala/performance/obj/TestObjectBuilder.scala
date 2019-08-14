@@ -1,5 +1,7 @@
 package performance.obj
+
 import raytracer.resource._
+import raytracer.resource.waveform.{ObjBuilder, ObjParser}
 
 object TestObjectBuilder extends App {
 

@@ -12,7 +12,8 @@ TODO:
     - obj files
         - load materials
             http://www.fileformat.info/format/material/
-        - normalize mesh (http://forum.raytracerchallenge.com/thread/27/triangle-mesh-normalization)
+        - normalize mesh
+            - add setting
         - smooth normals
         - fast object loading
         - shared cached models, parallelize divide)

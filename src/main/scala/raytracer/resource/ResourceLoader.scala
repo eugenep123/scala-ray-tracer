@@ -6,7 +6,7 @@ import java.io.File
 import javax.imageio.ImageIO
 import raytracer.{Canvas, Color}
 import raytracer.resource.ppm.PPMParser
-import raytracer.resource.waveform.ObjFileParser
+import raytracer.resource.waveform.{ObjBuilder, ObjParser}
 import raytracer.shapes.Group
 
 trait ResourceLoader {
@@ -22,7 +22,9 @@ object ResourceLoader {
     override def loadObject(filename: String): Group = {
       val resourceName = s"/objects/$filename"
       val content = getResourceString(resourceName)
-      ObjFileParser.parseGroup(content)
+      val parser = new ObjParser(ObjBuilder)
+      //    val normalized = Point3D.normalize(vertices)
+      parser.parse(content).toGroup()
     }
 
     override def loadImage(filename: String): Canvas = {
