@@ -1,9 +1,8 @@
 package raytracer
 package shapes
 
-import math._
+import raytracer.math._
 import raytracer.shapes.Csg._
-
 
 // Shape factory
 trait Shapes {
@@ -47,14 +46,15 @@ trait Shapes {
     p2: Point3D,
     p3: Point3D,
     transform: Matrix = Transform,
-    material: Option[Material] = None): Triangle = Triangle(p1, p2, p3, transform, material)
+    material: Option[Material] = None): Triangle =
+    Triangle(p1, p2, p3, transform, material)
 
   def smoothTriangle(
     p1: Point3D, p2: Point3D, p3: Point3D,
     n1: Vector3D, n2: Vector3D, n3: Vector3D,
     transform: Matrix = Matrix.identity,
-    material: Option[Material] = None): SmoothTriangle = {
-    SmoothTriangle(p1, p2, p3, n1, n2, n3, transform, material)
+    material: Option[Material] = None): Triangle = {
+    Triangle.smooth(p1, p2, p3, n1, n2, n3, transform, material)
   }
 
   def csg(

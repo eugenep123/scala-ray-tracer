@@ -107,4 +107,5 @@ object BoundingBox {
     xs.foldLeft(Empty)((bbox, p) => bbox.add(p))
   }
 
+
 }

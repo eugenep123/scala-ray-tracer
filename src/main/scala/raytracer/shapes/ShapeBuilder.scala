@@ -1,8 +1,8 @@
 package raytracer.shapes
 
-import raytracer.math._
 import raytracer._
-import patterns._
+import raytracer.math._
+import raytracer.patterns._
 
 case class ShapeBuilder(
   transform: Matrix = Matrix.identity,
@@ -55,13 +55,27 @@ case class ShapeBuilder(
   def cube(castsShadow: Boolean): Cube = new Cube(transform, materialOpt, castsShadow)
   def cube:Cube = cube(true)
 
-  def smoothTriangle(
+//  def smoothTriangle(
+//    p1: Point3D, p2: Point3D, p3: Point3D,
+//    n1: Vector3D, n2: Vector3D, n3: Vector3D): SmoothTriangle =
+//    new SmoothTriangle(p1, p2, p3, n1, n2, n3, transform, materialOpt)
+//  def triangle(
+//    p1: Point3D, p2: Point3D, p3: Point3D): Triangle =
+//    new Triangle(p1, p2, p3, transform, materialOpt)
+
+  def triangle(
     p1: Point3D, p2: Point3D, p3: Point3D,
-    n1: Vector3D, n2: Vector3D, n3: Vector3D): SmoothTriangle =
-    new SmoothTriangle(p1, p2, p3, n1, n2, n3, transform, materialOpt)
+    n1: Vector3D, n2: Vector3D, n3: Vector3D): Triangle =
+    Triangle.smooth(p1, p2, p3, n1, n2, n3, transform, materialOpt)
+
   def triangle(
     p1: Point3D, p2: Point3D, p3: Point3D): Triangle =
-    new Triangle(p1, p2, p3, transform, materialOpt)
+    Triangle(p1, p2, p3, transform, materialOpt)
+
+  def triangle(data: TriangleData): Triangle =
+    Triangle.data(data, transform, materialOpt)
+
+
   def plane: Plane = new Plane(transform, materialOpt)
   def sphere: Sphere = new Sphere(transform, materialOpt)
   def testShape: TestShape = new TestShape(transform, materialOpt)
@@ -87,8 +101,9 @@ case class ShapeBuilder(
     case c: Cylinder => cylinder(c.minimum, c.maximum, c.closed)
     case _: Group => group
     case _: Plane => plane
-    case t: Triangle => triangle(t.p1, t.p2, t.p3)
-    case t: SmoothTriangle => smoothTriangle(t.p1, t.p2, t.p3, t.n1, t.n2, t.n3)
+//    case t: Triangle => triangle(t.p1, t.p2, t.p3)
+//    case t: SmoothTriangle => smoothTriangle(t.p1, t.p2, t.p3, t.n1, t.n2, t.n3)
+    case s: Triangle => triangle(s.data)
     case _: Sphere => sphere
     case _: TestShape => testShape
   }

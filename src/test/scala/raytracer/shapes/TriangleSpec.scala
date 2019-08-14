@@ -21,7 +21,7 @@ class TriangleSpec extends BaseSpec {
       val p1 = point(0, 1, 0)
       val p2 = point(-1, 0, 0)
       val p3 = point(1, 0, 0)
-      val t = triangle(p1, p2, p3)
+      val t = triangle(p1, p2, p3).data.asInstanceOf[TriangleData.Default]
       assert(t.p1 == p1)
       assert(t.p2 == p2)
       assert(t.p3 == p3)
@@ -40,12 +40,13 @@ class TriangleSpec extends BaseSpec {
       And("n2 = t.normal")
       And("n3 = t.normal")
       val t = triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+      val data = t.data.asInstanceOf[TriangleData.Default]
       val n1 = localNormalAt(t, point(0, 0.5, 0))
       val n2 = localNormalAt(t, point(-0.5, 0.75, 0))
       val n3 = localNormalAt(t, point(0.5, 0.25, 0))
-      assert(n1 == t.normal)
-      assert(n2 == t.normal)
-      assert(n3 == t.normal)
+      assert(n1 == data.normal)
+      assert(n2 == data.normal)
+      assert(n3 == data.normal)
     }
 
     scenario("Intersecting a ray parallel to the triangle") {

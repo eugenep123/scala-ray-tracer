@@ -1,53 +1,28 @@
-package raytracer
-package shapes
+package raytracer.shapes
 
-import scala.math.abs
-import math._
+import raytracer.Material
+import raytracer.math.{Intersection, Matrix, Point3D, Ray, Vector3D}
 
 class Triangle(
-  val p1: Point3D,
-  val p2: Point3D,
-  val p3: Point3D,
+  val data: TriangleData,
   transform: Matrix,
-  material: Option[Material]) extends Shape(transform, material){
+  material: Option[Material]) extends Shape(transform, material) {
 
-  val e1 = p2 - p1
-  val e2 = p3 - p1
-  val normal: Vector3D = e2.cross(e1).normalize
+  def p1: Point3D = data.p1
+  def p2: Point3D = data.p2
+  def p3: Point3D = data.p3
 
-  override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D = normal
+  override protected def calculateBounds: BoundingBox = data.bounds
 
-  final override def localIntersect(ray: Ray): Seq[Intersection] = {
-    // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-    val dirCrossE2 = ray.direction.cross(e2)
-    val det = e1.dot(dirCrossE2)
-    if (abs(det) < EPSILON) Nil
-    else {
-      // Check p1-p3 edge
-      val f = 1.0 / det
-      val p1ToOrigin = ray.origin - p1
-      val u = f * p1ToOrigin.dot(dirCrossE2)
-      if (u < 0.0 || u > 1.0) return Nil
+  override def localNormalAt(localPoint: Point3D, hit: Intersection): Vector3D =
+    data.localNormalAt(localPoint, hit)
 
-      // p1-p2 and p2-p3
-      val originCrossE1 = p1ToOrigin.cross(e1)
-      val v = f * ray.direction.dot(originCrossE1)
-      if (v < 0 || (u + v) > 1) return Nil
+  override def localIntersect(ray: Ray): Seq[Intersection] =
+    data.localIntersect(this, ray)
 
-      val t = f * e2.dot(originCrossE1)
-      Seq(Intersection(t, this, u, v))
-    }
-  }
+  override def canEqual(other: Any): Boolean =
+    other.isInstanceOf[Triangle]
 
-  override protected def calculateBounds: BoundingBox = {
-    BoundingBox.of(p1, p2, p3)
-  }
-
-  override def canEqual(other: Any): Boolean = other.isInstanceOf[Triangle]
-
-  override def hashCode: Int = {
-    (super.hashCode, p1, p2, p3).hashCode()
-  }
 }
 
 object Triangle {
@@ -56,11 +31,21 @@ object Triangle {
     p2: Point3D,
     p3: Point3D,
     transform: Matrix = Matrix.identity,
+    material: Option[Material] = None): Triangle =
+    new Triangle(TriangleData(p1, p2, p3), transform, material)
+
+  def smooth(
+    p1: Point3D, p2: Point3D, p3: Point3D,
+    n1: Vector3D, n2: Vector3D, n3: Vector3D,
+    transform: Matrix = Matrix.identity,
     material: Option[Material] = None): Triangle = {
-    new Triangle(p1, p2, p3, transform, material)
+    new Triangle(TriangleData(p1, p2, p3, n1, n2, n3), transform, material)
   }
 
-  def fanTriangulation(vertices: Seq[Point3D]): Seq[Triangle] = {
-    (1 until vertices.size - 1).map(index => Triangle(vertices(0), vertices(index), vertices(index + 1)))
+  def data(
+    data: TriangleData,
+    transform: Matrix = Matrix.identity,
+    material: Option[Material] = None): Triangle = {
+    new Triangle(data, transform, material)
   }
 }

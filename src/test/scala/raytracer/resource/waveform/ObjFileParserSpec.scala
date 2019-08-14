@@ -1,8 +1,8 @@
 package raytracer.resource
 package waveform
 
+import raytracer.shapes.{Triangle, TriangleData}
 import raytracer.{BaseSpec, shapes}
-import raytracer.shapes.{SmoothTriangle, Triangle}
 
 class ObjFileParserSpec extends BaseSpec {
 
@@ -231,9 +231,9 @@ class ObjFileParserSpec extends BaseSpec {
       val result = parseObjFile(content)
 
       val g = result.defaultGroup
-      val triangles = g.collectChildren[SmoothTriangle]
-      val t1 = triangles(0)
-      val t2 = triangles(1)
+      val triangles = g.collectChildren[Triangle]
+      val t1 = triangles(0).data.asInstanceOf[TriangleData.Smooth]
+      val t2 = triangles(1).data
       assert(t1.p1 == result.vertices(1))
       assert(t1.p2 == result.vertices(2))
       assert(t1.p3 == result.vertices(3))

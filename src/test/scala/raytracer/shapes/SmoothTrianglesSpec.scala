@@ -20,7 +20,8 @@ class SmoothTrianglesSpec extends BaseSpec {
       val n1 = vector(0, 1, 0)
       val n2 = vector(-1, 0, 0)
       val n3 = vector(1, 0, 0)
-      val tri = SmoothTriangle(p1, p2, p3, n1, n2, n3)
+      val tri = Triangle.smooth(p1, p2, p3, n1, n2, n3)
+      val data = tri.data.asInstanceOf[TriangleData.Smooth]
 
     scenario("Constructing a smooth triangle") {
       Then("tri.p1 = p1")
@@ -33,9 +34,9 @@ class SmoothTrianglesSpec extends BaseSpec {
       assert(tri.p1 == p1)
       assert(tri.p2 == p2)
       assert(tri.p3 == p3)
-      assert(tri.n1 == n1)
-      assert(tri.n2 == n2)
-      assert(tri.n3 == n3)
+      assert(data.n1 == n1)
+      assert(data.n2 == n2)
+      assert(data.n3 == n3)
     }
 
     scenario("An intersection can encapsulate `u` and `v`") {

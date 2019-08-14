@@ -1,7 +1,7 @@
 package raytracer.resource.waveform
 
 import raytracer.math.{Point3D, Vector3D}
-import raytracer.shapes.{Group, Shape, SmoothTriangle, Triangle}
+import raytracer.shapes.{Group, Shape, Triangle, TriangleData}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -72,7 +72,7 @@ class ParserResult extends ObjBuilder {
     points match {
       case Seq(p1, p2, p3) => addShape(Triangle(p1, p2, p3))
       case _ =>
-        Triangle.fanTriangulation(points).foreach(addShape)
+        TriangleData.fanTriangulation(points).foreach(t => addShape(Triangle.data(t)))
     }
   }
 
@@ -81,9 +81,9 @@ class ParserResult extends ObjBuilder {
     val pairs = xs.map { case (v, n) => (vertices(v), normals(n)) }
     pairs match {
       case Seq((p1,n1), (p2, n2), (p3, n3)) =>
-        addShape(SmoothTriangle(p1, p2, p3, n1, n2, n3))
+        addShape(Triangle.smooth(p1, p2, p3, n1, n2, n3))
       case _ =>
-        SmoothTriangle.fanTriangulation(pairs).foreach(addShape)
+        TriangleData.fanTriangulationS(pairs).foreach(t => addShape(Triangle.data(t)))
     }
   }
   override def addFace3(xs: Seq[(Int, Int, Int)]): Unit = {
@@ -91,9 +91,9 @@ class ParserResult extends ObjBuilder {
     val pairs = xs.map { case (v, _, n) => (vertices(v), normals(n)) } //TODO: textures
     pairs match {
       case Seq((p1,n1), (p2, n2), (p3, n3)) =>
-        addShape(SmoothTriangle(p1, p2, p3, n1, n2, n3))
+        addShape(Triangle.smooth(p1, p2, p3, n1, n2, n3))
       case _ =>
-        SmoothTriangle.fanTriangulation(pairs).foreach(addShape)
+        TriangleData.fanTriangulationS(pairs).foreach(t => addShape(Triangle.data(t)))
     }
   }
 
