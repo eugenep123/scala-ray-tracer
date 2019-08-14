@@ -104,9 +104,3 @@ object Shape {
   def from(s: Shape): ShapeBuilder = new ShapeBuilder(s.transform, s.materialOpt)
 
 }
-
-//
-//trait NodeLike {
-//  def isEmpty: Boolean
-//  def includes(s: Shape): Boolean
-//}

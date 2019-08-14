@@ -7,7 +7,7 @@ object RenderCoverApp extends App {
 
 //  val resource = "/cover.yml"
 //  val resource = "/scenes/examples/reflect-refract.yml"
-  val resource = "/scenes/examples/refracted-sphere.yml"  //broken
+  val resource = "/scenes/examples/refracted-sphere.yml"
 //  val resource = "/scenes/examples/table.yml"
 //  val resource = "/scenes/examples/cylinders.yml"
 //val resource = "/scenes/examples/chapter7.yml"

@@ -11,6 +11,7 @@ final case class BoundingBox(
 
   def center: Point3D = Point3D.center(minimum, maximum)
   def extents: Vector3D = (minimum - maximum).abs / 2.0
+  def diagonal: Vector3D = (maximum - minimum)
 
   def transform(m: Matrix): BoundingBox = {
     val points = Seq(
@@ -23,7 +24,7 @@ final case class BoundingBox(
       Point3D(maximum.x, maximum.y, minimum.z),
       maximum
     )
-    points.foldLeft(BoundingBox.Empty)((b, p) => b.add(m * p))
+    BoundingBox.of(points.map(m * _))
   }
 
   def intersects(ray: Ray): Boolean = {
@@ -62,10 +63,7 @@ final case class BoundingBox(
 
   def split: (BoundingBox, BoundingBox) = {
     // figure out the box's largest dimension
-    val dx = maximum.x - minimum.x
-    val dy = maximum.y - minimum.y
-    val dz = maximum.z - minimum.z
-
+    val Vector3D(dx, dy, dz) = diagonal
     val greatest = max(dx, dy, dz)
     var (x0, y0, z0) = (minimum.x, minimum.y, minimum.z)
     var (x1, y1, z1) = (maximum.x, maximum.y, maximum.z)
@@ -90,6 +88,7 @@ final case class BoundingBox(
     val right = BoundingBox(midMin, maximum)
     (left, right)
   }
+
 }
 
 
@@ -100,6 +99,12 @@ object BoundingBox {
     Point3D(-INFINITY, -INFINITY, -INFINITY)  // smallest point
   )
 
+  def of(p1: Point3D, p2: Point3D, p3: Point3D): BoundingBox = {
+    Empty.add(p1).add(p2).add(p3)
+  }
 
+  def of(xs: Seq[Point3D]): BoundingBox = {
+    xs.foldLeft(Empty)((bbox, p) => bbox.add(p))
+  }
 
 }

@@ -3,6 +3,7 @@ package raytracer.math
 import java.lang.Math.abs
 
 import raytracer.Color
+import raytracer.shapes.BoundingBox
 
 final case class Point3D(x: Double, y: Double, z: Double) {
   def w: Double = 1.0
@@ -39,4 +40,17 @@ object Point3D {
   @inline def center(a: Point3D, b: Point3D): Point3D =
     Point3D((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2)
 
+  def normalize(xs: Vector[Point3D]): Vector[Point3D] = {
+    val bounds = BoundingBox.of(xs)
+    val Vector3D(sx, sy, sz) = bounds.diagonal
+    val scale = raytracer.math.max(sx, sy, sz) / 2.0
+    val min = bounds.minimum
+    xs.map { v =>
+      Point3D(
+        (v.x - (min.x + sx / 2)) / scale,
+        (v.y - (min.y + sy / 2)) / scale,
+        (v.z - (min.z + sz / 2)) / scale
+      )
+    }
+  }
 }
