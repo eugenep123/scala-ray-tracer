@@ -2,6 +2,7 @@ package chapters
 
 import raytracer.Scene
 import raytracer.math.Point3D
+import raytracer.shapes._
 
 object Chapter15 extends App {
 
@@ -13,7 +14,9 @@ object Chapter15 extends App {
     .withDimensions(1024,768)
 
 
-  val obj = scene.world.objects.head
+  val obj = scene.world.objects
+    .collect { case g: Group => g }
+    .head
   val bounds = obj.bounds
   println(bounds)
   println(bounds.center)

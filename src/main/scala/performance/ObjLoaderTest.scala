@@ -32,7 +32,7 @@ object ObjLoaderTest extends App {
     val time1 = measure {
       println(s"Loading: $filename...")
       val loader = ResourceLoader.default
-      val group = loader.loadObject(filename) // no transforms
+      val group = loader.loadObject(filename, false) // no transforms
       divide(group)
     }
     println(s"Loaded '$filename' in $time1")
@@ -42,7 +42,7 @@ object ObjLoaderTest extends App {
     val time = measure {
       val resourceName = s"/objects/$filename"
       val content = getResourceString(resourceName)
-      val parser = new ObjParser(ObjBuilder)
+      val parser = new ObjParser(new ObjBuilder)
       val result = parser.parse(content)
       val group = result.toGroup()
       divide(group)

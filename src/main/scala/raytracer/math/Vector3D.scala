@@ -13,7 +13,7 @@ final case class Vector3D(x: Double, y: Double, z: Double) {
   def magnitude: Double = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2))
   def normalize: Vector3D = {
     val m = this.magnitude
-    require(m > 0)
+    require(m > 0, s"Failed to normalize: $this")
     Vector3D(x / m, y / m, z / m)
   }
   def cross(other: Vector3D): Vector3D = {

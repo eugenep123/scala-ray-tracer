@@ -60,7 +60,7 @@ object TriangleMesh {
     def pushGroup(): Unit = {
       if (triangles.nonEmpty) {
         val group = MeshGroup(triangles.map(MeshTriangle))
-        groups +:= group
+        groups :+= group
         triangles = Vector.empty
       }
     }
@@ -70,7 +70,7 @@ object TriangleMesh {
         pushGroup()
         currentGroup = groupName
       }
-      triangles +:= triangle
+      triangles :+= triangle
     }
     pushGroup()
 

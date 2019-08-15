@@ -12,19 +12,20 @@ import raytracer.shapes.Group
 trait ResourceLoader {
   def loadImage(file: String): Canvas
 
-  def loadObject(filename: String): Group
+  def loadObject(filename: String, normalize: Boolean): Group
   //    def readMaterial(filename: String): Group
 }
 object ResourceLoader {
 
   implicit val default = new ResourceLoader {
 
-    override def loadObject(filename: String): Group = {
+    override def loadObject(filename: String, normalize: Boolean): Group = {
       val resourceName = s"/objects/$filename"
       val content = getResourceString(resourceName)
-      val parser = new ObjParser(ObjBuilder)
-      //    val normalized = Point3D.normalize(vertices)
-      parser.parse(content).toGroup()
+      val parser = new ObjParser(new ObjBuilder)
+      val result = parser.parse(content)
+      val r2 = if (normalize) result.normalize else result
+      r2.toGroup()
     }
 
     override def loadImage(filename: String): Canvas = {

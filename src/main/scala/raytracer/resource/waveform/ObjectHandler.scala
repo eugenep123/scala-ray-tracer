@@ -1,5 +1,6 @@
-package performance.obj
+package raytracer.resource.waveform
 
+import performance.obj.VertexIndex
 import raytracer.math.{Point3D, Vector3D}
 
 trait ObjectHandler[A] {

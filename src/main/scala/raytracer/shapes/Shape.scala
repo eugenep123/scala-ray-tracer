@@ -14,7 +14,7 @@ abstract class Shape(
   val materialOpt: Option[Material],
   val castsShadow: Boolean = true) {
 
-  @volatile private var _bounds = Option.empty[BoundingBox]
+  @volatile protected var _bounds = Option.empty[BoundingBox]
   private var _parent = Option.empty[Shape]
 
   final def bounds: BoundingBox = {

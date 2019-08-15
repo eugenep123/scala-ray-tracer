@@ -79,7 +79,9 @@ object TriangleData {
 
 
   def fanTriangulation(vertices: Seq[Point3D]): Seq[TriangleData] = {
-    (1 until vertices.size - 1).map(index => TriangleData(vertices(0), vertices(index), vertices(index + 1)))
+    (1 until vertices.size - 1).map { index =>
+      TriangleData(vertices(0), vertices(index), vertices(index + 1))
+    }
   }
 
   def fanTriangulationS(pairs: Seq[(Point3D, Vector3D)]): Seq[TriangleData] = {

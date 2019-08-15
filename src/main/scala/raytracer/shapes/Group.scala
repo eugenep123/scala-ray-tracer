@@ -27,8 +27,10 @@ final class Group(
     child.parent.foreach {
       case g: Group => g.removeChild(child)
     }
+
     child.setParent(this)
     this._children.append(child)
+    _bounds = None
     this
   }
 

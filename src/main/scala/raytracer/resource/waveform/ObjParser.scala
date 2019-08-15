@@ -18,8 +18,8 @@ class ObjParser[A](handler: ObjectHandler[A]) {
   private def useMaterial[_: P]: P[Unit] = P("usemtl " ~/  name).map(onUseMaterial)
 
   private def indexOnly[_: P]: P[VertexIndex] = P(index).map(i => VertexIndex(i))
-  private def indexNormal[_: P]: P[VertexIndex] = P(two(index, "//")).map(pair => VertexIndex(pair._1, pair._2))
-  private def indexTexture[_:P]: P[VertexIndex] = P(two(index, "/")).map(pair => VertexIndex(pair._1, -1, pair._2))
+  private def indexNormal[_: P]: P[VertexIndex] = P(two(index, "//")).map(pair => VertexIndex(pair._1, -1, pair._2))
+  private def indexTexture[_:P]: P[VertexIndex] = P(two(index, "/")).map(pair => VertexIndex(pair._1, pair._2, -1))
   private def indexTextureNormal[_:P]: P[VertexIndex] = P(triple(index, "/")).map((VertexIndex.apply _).tupled)
 
   private def face[_: P]: P[Unit] = P("f " ~/

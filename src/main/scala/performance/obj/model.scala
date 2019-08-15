@@ -5,8 +5,8 @@ import raytracer.shapes.{Group, Triangle, TriangleData}
 
 case class VertexIndex(
   vertex: Int,
-  normal: Int = -1,
-  texture: Int = -1)
+  texture: Int = -1,
+  normal: Int = -1)
 
 case class Face(
   material: Int,
@@ -31,7 +31,7 @@ case class ObjResult(
   }
 
   def smooth(xs: Seq[VertexIndex]): Seq[TriangleData] = {
-    val points = xs.map(vi => (vertices(vi.vertex - 1), normals(vi.vertex - 1)))
+    val points = xs.map(vi => (vertices(vi.vertex - 1), normals(vi.normal - 1)))
     TriangleData.fanTriangulationS(points)
   }
 
@@ -39,20 +39,26 @@ case class ObjResult(
     val points = xs.map(vi => vertices(vi.vertex - 1))
     TriangleData.fanTriangulation(points)
   }
+  def normalize: ObjResult = {
+    val normalized = Point3D.normalize(vertices)
+    copy(vertices = normalized)
+  }
 
   def toGroup() = {
     val root = Group()
     var current = root
     var currentName = "default-group"
     forEach { case (name, triangle) =>
-      if (name != currentName && !current.isEmpty) {
-        root.addChild(current)
-        current = Group()
+      if (name != currentName ) {
+        if (!current.isEmpty) {
+          root.addChild(current)
+          current = Group()
+        }
         currentName = name
       }
       current.addChild(Triangle.data(triangle))
     }
-    if (!current.isEmpty) {
+    if (!current.isEmpty && (root ne current)) {
       root.addChild(current)
     }
     root

@@ -17,7 +17,7 @@ object TestObjectBuilder extends App {
 //    val parser = new ObjParser(new ObjBuilder)
   //  val result = parser.parse(content)
   //  println(result)
-  val parser = new ObjParser(ObjBuilder)
+  val parser = new ObjParser(new ObjBuilder)
   val result = parser.parse(content)
 
   val mesh = TriangleMesh.build(result)

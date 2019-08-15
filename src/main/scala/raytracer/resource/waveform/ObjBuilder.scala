@@ -3,7 +3,7 @@ package raytracer.resource.waveform
 import performance.obj.{Face, ObjResult, VertexIndex}
 import raytracer.math.{Point3D, Radians, Vector3D}
 
-object ObjBuilder extends ObjectHandler[ObjResult] {
+class ObjBuilder extends ObjectHandler[ObjResult] {
   type UVPair = (Double, Double)
   private var materials = Vector.empty[String]
   private var groups = Vector("default-group")
@@ -17,33 +17,33 @@ object ObjBuilder extends ObjectHandler[ObjResult] {
   private def materialId: Int = materials.size - 1
 
   override def onGroup(name: String): Unit = {
-    if (vertices.isEmpty || groups.size == 1) {
+    if (faces.isEmpty && groups.size == 1) {
       groups = Vector.empty
     }
-    groups +:= name
+    groups :+= name
   }
 
   override def onObject(name: String): Unit = {
-    objects +:= name
+    objects :+= name
   }
 
   override def onVertex(x: Double, y: Double, z: Double, w: Option[Double]): Unit = {
-    vertices +:= Point3D(x, y, z)
+    vertices :+= Point3D(x, y, z)
   }
 
   override def onNormal(x: Double, y: Double, z: Double): Unit = {
-    normals +:= Vector3D(x, y, z)
+    normals :+= Vector3D(x, y, z)
   }
 
   override def onTextureCoords(u: Radians, v: Radians, w: Option[Radians]): Unit = {
-    textureCoords +:= (u, v)
+    textureCoords :+= (u, v)
   }
   override def onFace(xs: Seq[VertexIndex]): Unit = {
-    faces +:= Face(materialId, groupId, xs)
+    faces :+= Face(materialId, groupId, xs)
   }
 
   override def onUseMaterial(name: String): Unit = {
-    materials +:= name
+    materials :+= name
   }
 
   override def onSetSmoothShading(on: Boolean): Unit = {
