@@ -23,6 +23,9 @@ class Triangle(
   override def canEqual(other: Any): Boolean =
     other.isInstanceOf[Triangle]
 
+  override def hashCode: Int = {
+    (super.hashCode, data.hashCode()).hashCode()
+  }
 }
 
 object Triangle {

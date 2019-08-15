@@ -42,6 +42,7 @@ final class Group(
   def removeChild(child: Shape): Unit = {
     if (child.parent.exists(_ eq this)) {
       child.setParent(None)
+      _bounds = None
       this._children.remove(this._children.indexOf(child))
     }
   }
