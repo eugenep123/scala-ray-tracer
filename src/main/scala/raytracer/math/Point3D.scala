@@ -13,6 +13,9 @@ final case class Point3D(x: Double, y: Double, z: Double) {
   def -(v: Vector3D): Point3D = Point3D(x - v.x, y - v.y, z - v.z)
   def unary_- = Point3D(-x, -y, -z)
 
+//  def *(s: Double): Point3D = Point3D(x * s, y * s, z * s)
+//  def +(p: Point3D): Point3D = Point3D(x + p.x, y + p.y, z + p.z)
+
   override def equals(other: Any): Boolean = other match {
     case rhs: Point3D =>
       abs(x - rhs.x) < EPSILON_TEST &&
@@ -38,7 +41,7 @@ object Point3D {
     Point3D(math.max(a.x, b.x), math.max(a.y, b.y), math.max(a.z, b.z))
 
   @inline def center(a: Point3D, b: Point3D): Point3D =
-    Point3D((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2)
+    Point3D((a.x + b.x) * 0.5, (a.y + b.y) * 0.5, (a.z + b.z) * 0.5)
 
   def normalize(xs: Vector[Point3D]): Vector[Point3D] = {
     val bounds = BoundingBox.of(xs)

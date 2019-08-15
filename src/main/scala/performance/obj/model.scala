@@ -1,7 +1,7 @@
 package performance.obj
 
 import raytracer.math._
-import raytracer.shapes.{Group, Triangle, TriangleData}
+import raytracer.shapes.{BoundingBox, Group, Triangle, TriangleData}
 
 case class VertexIndex(
   vertex: Int,
@@ -12,6 +12,11 @@ case class Face(
   material: Int,
   group: Int,
   xs: Seq[VertexIndex])
+
+
+case class BVHInfo(index: Int, bounds: BoundingBox) {
+  val centroid: Point3D = bounds.center
+}
 
 case class ObjResult(
   materials: Vector[String],

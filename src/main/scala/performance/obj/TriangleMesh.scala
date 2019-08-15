@@ -35,11 +35,11 @@ object TriangleMesh {
     import group._
     val (leftBounds, rightBounds) = bounds.split
     val left = children.filter(child => leftBounds.contains(child.bounds))
-    val right = children.filter(child => leftBounds.contains(child.bounds))
+    val right = children.filter(child => rightBounds.contains(child.bounds))
     val remaining = children.filterNot(c => left.exists(_ eq c) || right.exists(_ eq c))
 
     val dividedLeft = divide(MeshGroup(left))
-    val dividedRight =divide(MeshGroup(right))
+    val dividedRight = divide(MeshGroup(right))
 
     val newChildren = Seq(dividedLeft, dividedRight) ++ remaining
     MeshGroup(newChildren)

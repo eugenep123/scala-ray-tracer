@@ -4,10 +4,12 @@ import java.awt.image.BufferedImage
 import java.io.File
 
 import javax.imageio.ImageIO
+import performance.obj.ObjResult
 import raytracer.{Canvas, Color}
 import raytracer.resource.ppm.PPMParser
 import raytracer.resource.waveform.{ObjBuilder, ObjParser}
 import raytracer.shapes.Group
+import sun.jvm.hotspot.utilities.ObjectReader
 
 trait ResourceLoader {
   def loadImage(file: String): Canvas
@@ -19,13 +21,24 @@ object ResourceLoader {
 
   implicit val default = new ResourceLoader {
 
+    private var objectCache = Map.empty[String, ObjResult]
+
     override def loadObject(filename: String, normalize: Boolean): Group = {
       val resourceName = s"/objects/$filename"
-      val content = getResourceString(resourceName)
-      val parser = new ObjParser(new ObjBuilder)
-      val result = parser.parse(content)
-      val r2 = if (normalize) result.normalize else result
-      r2.toGroup()
+      val result = objectCache.get(filename) match {
+        case Some(result) =>
+          println(s"Using cached obj file: $filename")
+          result
+        case None =>
+          println(s"Reading obj file: $filename")
+          val content = getResourceString(resourceName)
+          val parser = new ObjParser(new ObjBuilder)
+          val r = parser.parse(content)
+          val r2 = if (normalize) r.normalize else r
+          objectCache += (filename -> r2)
+          r2
+      }
+      result.toGroup()
     }
 
     override def loadImage(filename: String): Canvas = {

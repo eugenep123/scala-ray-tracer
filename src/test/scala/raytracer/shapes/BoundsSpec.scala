@@ -256,6 +256,13 @@ class BoundsSpec extends BaseSpec {
       assert(right.minimum == point(-1, -2, 2))
       assert(right.maximum == point(5, 3, 7))
     }
+
+    scenario("cebter and centraid") {
+      val box = BoundingBox(point(-1, -2, -3), point(5, 3, 7))
+      val c = box.center
+      val cen = box.centroid
+      assert(c == cen)
+    }
   }
 
 }

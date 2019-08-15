@@ -1,6 +1,7 @@
 package performance
 
 import org.scalameter.measure
+import performance.obj.TriangleMesh
 import raytracer.Material
 import raytracer.math.Transform
 import raytracer.resource.waveform.{ObjBuilder, ObjParser}
@@ -13,6 +14,7 @@ object ObjLoaderTest extends App {
   val transform = Transform().identity.build()
   val material = Material()
   val filename = "dragon.obj"
+//  val filename = "teapot.obj"
   val divideThreshold = 20
 
   def divide(g: Group) = {
@@ -44,12 +46,16 @@ object ObjLoaderTest extends App {
       val content = getResourceString(resourceName)
       val parser = new ObjParser(new ObjBuilder)
       val result = parser.parse(content)
-      val group = result.toGroup()
-      divide(group)
+      val mesh = TriangleMesh.build(result)
+      val bounds = mesh.bounds
+      println(bounds)
+//      val group = result.toGroup()
+//      divide(group)
     }
     println(s"New: loaded '$filename' in $time (threshold = 1)")
   }
-
-  loadOldObject()
+//Divided 'dragon.obj' in 79089.937715 ms (threshold = 1174)
+  //Loaded 'dragon.obj' in 79972.387794 ms
+//  loadOldObject()
   loadNew()
 }

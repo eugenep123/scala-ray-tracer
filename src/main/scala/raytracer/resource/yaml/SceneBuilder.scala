@@ -63,7 +63,7 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
   }
 
   def buildObjFile(filename: String, transform: Matrix, material: Option[Material]): Shape = {
-    println(s"Loading obj file: $filename...")
+
     val group = loader.loadObject(filename, false) // no transforms
     val group2 = new Group(transform, material)
     group2.addChildren(group.children)
@@ -71,6 +71,7 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
 
     // subdivide bounding boxes
     val time = measure {
+      println(s"Building bvh for: $filename...")
       group2.divide(threshold)
     }
     println(s"Divided '$filename' in $time (threshold = $threshold)")

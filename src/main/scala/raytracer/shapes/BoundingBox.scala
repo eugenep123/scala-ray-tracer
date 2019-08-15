@@ -13,6 +13,9 @@ final case class BoundingBox(
   def extents: Vector3D = (minimum - maximum).abs / 2.0
   def diagonal: Vector3D = (maximum - minimum)
 
+//  def centroid = {
+//    (minimum * 0.5) + (maximum * 0.5)
+//  }
   def transform(m: Matrix): BoundingBox = {
     val points = Seq(
       maximum,
