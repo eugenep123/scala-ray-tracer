@@ -1,6 +1,6 @@
 package raytracer
 
-import raytracer.math.Transform.{RotationY, Translation, ViewTransform}
+import raytracer.math.Transforms.{RotationY, Translation, ViewTransform}
 
 import scala.math.sqrt
 import raytracer.math._

@@ -60,7 +60,7 @@ final case class BoundingBox(
     val toOrigin = Point3D.origin - this.center
     val ext = this.extents
     val scale = Vector3D(1.0 / ext.x, 1.0 / ext.y, 1.0 / ext.z)
-    val transform = Transform().translate(toOrigin).scale(scale).inverse
+    val transform = Transforms().translate(toOrigin).scale(scale).inverse
     Cube(transform, Material.TransparentBox)
   }
 

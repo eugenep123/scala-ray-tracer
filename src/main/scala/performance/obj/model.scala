@@ -37,13 +37,7 @@ case class ObjResult(
 
   def smooth(xs: Seq[VertexIndex]): Seq[TriangleData] = {
     val points = xs.map(vi => (vertices(vi.vertex - 1), normals(vi.normal - 1)))
-//    TriangleData.fanTriangulationS(points)
-    points match {
-      case Seq((p1,n1), (p2, n2), (p3, n3)) =>
-        Seq(TriangleData(p1, p2, p3, n1, n2, n3))
-      case _ =>
-        TriangleData.fanTriangulationS(points)
-    }
+    TriangleData.fanTriangulationS(points)
   }
 
   def normal(xs: Seq[VertexIndex]): Seq[TriangleData] = {

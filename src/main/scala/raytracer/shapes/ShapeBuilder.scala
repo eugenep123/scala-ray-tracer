@@ -13,7 +13,7 @@ case class ShapeBuilder(
   def setTransform(m: Matrix): ShapeBuilder =
     new ShapeBuilder(m, materialOpt)
   def transform(f: TransformBuilder => TransformBuilder): ShapeBuilder = {
-    setTransform(f(Transform.from(transform)).build())
+    setTransform(f(Transforms.from(transform)).build())
   }
   def translate(x: Double, y: Double, z: Double): ShapeBuilder =
     transform(tb => tb.translate(x, y, z))

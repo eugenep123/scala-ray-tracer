@@ -1,7 +1,7 @@
 package raytracer.math
 
 import raytracer.BaseSpec
-import raytracer.math.Transform.{Scaling, Translation}
+import raytracer.math.Transforms.{Scaling, Translation}
 
 class RaySpec extends BaseSpec {
 

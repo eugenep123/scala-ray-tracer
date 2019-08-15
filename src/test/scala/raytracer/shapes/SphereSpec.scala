@@ -3,7 +3,7 @@ package shapes
 
 import java.lang.Math.sqrt
 
-import raytracer.math.Transform._
+import raytracer.math.Transforms._
 import raytracer.math._
 
 class SphereSpec extends BaseSpec {

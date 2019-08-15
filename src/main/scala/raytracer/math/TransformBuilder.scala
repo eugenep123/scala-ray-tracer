@@ -1,9 +1,9 @@
 package raytracer.math
-import Transform._
+import Transforms._
 
-case class TransformBuilder(operations: List[Transform]) {
+case class TransformBuilder(operations: List[Transforms]) {
 
-  def add(op: Transform): TransformBuilder =
+  def add(op: Transforms): TransformBuilder =
     TransformBuilder(op :: operations)
 
   def identity: TransformBuilder = add(Identity)

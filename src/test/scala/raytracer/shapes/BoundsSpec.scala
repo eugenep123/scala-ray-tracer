@@ -2,7 +2,7 @@ package raytracer.shapes
 
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import raytracer.BaseSpec
-import raytracer.math.Transform.{RotationX, RotationY}
+import raytracer.math.Transforms.{RotationX, RotationY}
 import raytracer.math._
 
 class BoundsSpec extends BaseSpec {
@@ -257,12 +257,6 @@ class BoundsSpec extends BaseSpec {
       assert(right.maximum == point(5, 3, 7))
     }
 
-    scenario("cebter and centraid") {
-      val box = BoundingBox(point(-1, -2, -3), point(5, 3, 7))
-      val c = box.center
-      val cen = box.centroid
-      assert(c == cen)
-    }
   }
 
 }

@@ -2,8 +2,8 @@ package raytracer
 package shapes
 
 import org.scalatest.{Matchers, WordSpec}
-import raytracer.math.Transform.{Scaling, Translation}
-import raytracer.math.{Matrix, Transform, π}
+import raytracer.math.Transforms.{Scaling, Translation}
+import raytracer.math.{Matrix, Transforms, π}
 
 class ModelSpec extends WordSpec with Matchers with TestHelpers {
 
@@ -20,7 +20,7 @@ class ModelSpec extends WordSpec with Matchers with TestHelpers {
 
       "support Matrices" in {
         val m1: Matrix = Translation(0, -1, 0).matrix
-        val m2: Matrix = Transform().translate(0, -1, 0).build()
+        val m2: Matrix = Transforms().translate(0, -1, 0).build()
         m1 shouldEqual m2
         m1.hashCode() shouldEqual m2.hashCode()
       }

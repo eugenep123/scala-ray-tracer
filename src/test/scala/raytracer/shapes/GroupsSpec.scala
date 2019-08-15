@@ -2,7 +2,7 @@ package raytracer
 package shapes
 
 import raytracer.math.{Matrix, Ray}
-import raytracer.math.Transform.{Scaling, Translation}
+import raytracer.math.Transforms.{Scaling, Translation}
 
 class GroupsSpec extends BaseSpec {
 

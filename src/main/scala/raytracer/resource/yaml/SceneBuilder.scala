@@ -1,7 +1,7 @@
 package raytracer.resource.yaml
 
 import org.scalameter.measure
-import raytracer.math.{Matrix, Operations, Transform}
+import raytracer.math.{Matrix, Operations, Transforms}
 import raytracer.patterns._
 import raytracer.resource.ResourceLoader
 import raytracer.resource.yaml.AST._
@@ -123,10 +123,10 @@ case class SceneBuilder(items: Seq[YamlValue], divideThreshold: Int = 20)
   def buildTransform(transform: TransformOption): Matrix = {
     val xs = transform.map(_.xs).getOrElse(Nil)
     val ops = xs.flatMap(resolveTransformItem)
-    ops.foldLeft(Transform())((b, op) => b.add(op)).build()
+    ops.foldLeft(Transforms())((b, op) => b.add(op)).build()
   }
 
-  def resolveTransformItem(t: TransformItem): Seq[Transform] = {
+  def resolveTransformItem(t: TransformItem): Seq[Transforms] = {
     t match {
       case TransformOperation(op) => Seq(op)
       case TransformReference(key) =>

@@ -3,7 +3,7 @@ package performance
 import org.scalameter.measure
 import performance.obj.TriangleMesh
 import raytracer.Material
-import raytracer.math.Transform
+import raytracer.math.Transforms
 import raytracer.resource.waveform.{ObjBuilder, ObjParser}
 import raytracer.resource.{ResourceLoader, getResourceString}
 import raytracer.shapes.Group
@@ -11,7 +11,7 @@ import raytracer.shapes.Group
 object ObjLoaderTest extends App {
 
 
-  val transform = Transform().identity.build()
+  val transform = Transforms().identity.build()
   val material = Material()
   val filename = "dragon.obj"
 //  val filename = "teapot.obj"

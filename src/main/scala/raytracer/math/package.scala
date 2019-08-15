@@ -36,7 +36,7 @@ package object math {
   }
 
   implicit def transformationsToMatrix(t: TransformBuilder): Matrix = t.build()
-  implicit def operationToMatrix(o: Transform): Matrix = o.matrix
+  implicit def operationToMatrix(o: Transforms): Matrix = o.matrix
 
   def mkString(name: String, xs: Double*): String = {
     xs.map(doubleToString).mkString(s"$name(", ", ", ")")

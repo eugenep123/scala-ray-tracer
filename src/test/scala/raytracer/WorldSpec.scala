@@ -1,6 +1,6 @@
 package raytracer
 import raytracer.math.{Intersection, Ray}
-import raytracer.math.Transform.{Scaling, Translation}
+import raytracer.math.Transforms.{Scaling, Translation}
 import raytracer.patterns.TestPattern
 import raytracer.shapes.Shape
 

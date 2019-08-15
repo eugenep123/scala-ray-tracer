@@ -3,7 +3,7 @@ package raytracer.shapes
 import raytracer.BaseSpec
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import raytracer.math.Ray
-import raytracer.math.Transform.Translation
+import raytracer.math.Transforms.Translation
 
 class CsgSpec extends BaseSpec {
 

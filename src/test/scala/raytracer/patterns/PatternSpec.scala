@@ -1,7 +1,7 @@
 package raytracer.patterns
 
 import raytracer.math.{Matrix, UVMaps}
-import raytracer.math.Transform._
+import raytracer.math.Transforms._
 import raytracer.shapes.{Cube, Shape}
 import raytracer.{BaseSpec, Color}
 import org.scalatest.prop.TableDrivenPropertyChecks._

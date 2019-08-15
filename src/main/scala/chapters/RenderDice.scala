@@ -108,7 +108,7 @@ object Dice {
     val csgDots = Csg.unionAll(ys, matDots).get
 
     val csg = Csg(Csg.Difference, csgBody, csgDots,
-      Transform()
+      Transforms()
         .scale(2.0)
         .rotateZ(PI/5).rotateY(PI/5).rotateX(PI/5)
     )

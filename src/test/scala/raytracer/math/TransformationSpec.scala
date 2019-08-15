@@ -1,7 +1,7 @@
 package raytracer.math
 
 import raytracer.BaseSpec
-import raytracer.math.Transform._
+import raytracer.math.Transforms._
 
 import scala.math.sqrt
 
@@ -237,7 +237,7 @@ class TransformationSpec extends BaseSpec {
       When("T ← C * B * A")
       Then("T * p = point(15, 0, 7)")
       val p = point(1, 0, 1)
-      val T = Transform()
+      val T = Transforms()
         .rotateX(π / 2)
         .scale(5, 5, 5)
         .translate(10, 5, 7)

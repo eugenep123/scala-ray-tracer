@@ -1,7 +1,7 @@
 package raytracer
 package shapes
 
-import raytracer.math.Transform._
+import raytracer.math.Transforms._
 
 import scala.math.sqrt
 import raytracer.math._

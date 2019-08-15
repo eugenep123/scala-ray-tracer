@@ -5,6 +5,8 @@ TODO:
     - render server (ui)
     - yaml (debug/named objects)
         - show groups (again)
+        - cache transfroms
+        - new transform class
     - invisible shapes
         http://forum.raytracerchallenge.com/thread/25/visible-invisible-shapes
     - special materials:
@@ -30,3 +32,31 @@ TODO:
         - dont return intersection Seq, rather create one up front, then pass it in and add to it
         - in shadow? do we need to render all objects? or can we stop at 1st hit? csg?
         - optimize worldToObject (pre calculate/cache based on path or parent)
+
+
+
+
+
+
+
+
+
+
+Building bvh for: dragon.obj...
+Divided 'dragon.obj' in 78321.656879 ms (threshold = 1174)
+Using cached obj file: dragon.obj
+Building bvh for: dragon.obj...
+Divided 'dragon.obj' in 80094.80174 ms (threshold = 1174)
+Using cached obj file: dragon.obj
+Building bvh for: dragon.obj...
+Divided 'dragon.obj' in 79306.69292 ms (threshold = 1174)
+Using cached obj file: dragon.obj
+Building bvh for: dragon.obj...
+Divided 'dragon.obj' in 78991.29584 ms (threshold = 1174)
+Using cached obj file: dragon.obj
+Building bvh for: dragon.obj...
+Divided 'dragon.obj' in 80423.764013 ms (threshold = 1174)
+Using cached obj file: dragon.obj
+Building bvh for: dragon.obj...
+Divided 'dragon.obj' in 80720.156953 ms (threshold = 1174)
+Render time: 156627.567792 ms

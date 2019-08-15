@@ -1,7 +1,7 @@
 package raytracer.resource.yaml
 
 import raytracer.Color
-import raytracer.math.{Point3D, Transform, Vector3D}
+import raytracer.math.{Point3D, Transforms, Vector3D}
 import raytracer.patterns.UVMapping
 
 object AST {
@@ -13,7 +13,7 @@ object AST {
   case class TransformList(xs: Seq[TransformItem])
   sealed trait TransformItem
   case class TransformReference(key:String) extends TransformItem
-  case class TransformOperation(op: Transform) extends TransformItem
+  case class TransformOperation(op: Transforms) extends TransformItem
 
   // Patterns
   sealed trait PatternValue {
